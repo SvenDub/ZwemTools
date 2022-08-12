@@ -1,0 +1,75 @@
+﻿@page "/lenex-viewer"
+@using Schotejil.Clubkampioen.Data.Lenex
+@using Schotejil.Clubkampioen.Data.Lenex.Xml
+@inject LenexParser LenexParser
+@inject IStringLocalizer<Strings> Localizer
+
+<h3>Lenex Viewer</h3>
+
+<InputFile OnChange="@LoadFile" accept=".lxf" />
+
+@if (!this.IsLoading && this.LenexElement is not null)
+{
+    <table class="table my-3">
+        <thead>
+            <tr>
+                <th>@Localizer["Property"]</th>
+                <th>@Localizer["Value"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Localizer["LenexVersion"]</td>
+                <td>@this.LenexElement.Version</td>
+            </tr>
+            <tr>
+                <td>@Localizer["Software"]</td>
+                <td>@this.LenexElement.Constructor.Name (@this.LenexElement.Constructor.Version)</td>
+            </tr>
+            <tr>
+                <td>@Localizer["RegisteredTo"]</td>
+                <td>@this.LenexElement.Constructor.Registration</td>
+            </tr>
+            <tr>
+                <td>@Localizer["Software contact"]</td>
+                <td>@this.LenexElement.Constructor.Contact.Email</td>
+            </tr>
+        </tbody>
+    </table>
+
+    @if (LenexElement.Meets is not null)
+    {
+        <RadzenTabs @bind-SelectedIndex=@selectedIndex>
+            <Tabs>
+                @foreach (MeetElement meet in LenexElement.Meets)
+                {
+                    <LenexViewMeet Meet="meet"></LenexViewMeet>
+                }
+            </Tabs>
+    </RadzenTabs>
+    }
+}
+else if (this.IsLoading)
+{
+    <p class="my-3">@Localizer["Loading"]</p>
+}
+else
+{
+    <p class="my-3">@Localizer["NoData"]</p>
+}
+
+@code {
+    private LenexElement? LenexElement { get; set; }
+    private bool IsLoading { get; set; } = false;
+    private int selectedIndex = 0;
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        this.IsLoading = true;
+        await using Stream stream = e.File.OpenReadStream();
+        MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        this.LenexElement = this.LenexParser.Parse(ms);
+        this.IsLoading = false;
+    }
+}
