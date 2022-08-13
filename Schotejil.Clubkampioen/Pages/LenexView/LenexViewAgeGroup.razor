@@ -1,0 +1,33 @@
+﻿@using Schotejil.Clubkampioen.Data.Lenex.Xml
+@inject IStringLocalizer<Strings> Localizer
+
+<RadzenCard>
+    <RadzenDataGrid Data="Event.AgeGroups.OrderBy(a => a.MinAge).ThenBy(a => a.MaxAge)" TItem="AgeGroupElement" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single">
+        <Template Context="a">
+            <LenexViewRanking AgeGroup="a" Meet="Meet"/>
+        </Template>
+
+        <Columns>
+            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MinAge" Title="@Localizer["MinAge"]" />
+            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MaxAge" Title="@Localizer["MaxAge"]" />
+            <RadzenDataGridColumn TItem="AgeGroupElement" Title="@Localizer["Gender"]">
+                <Template Context="data">
+                    @(data.Gender ?? Event.Gender)
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public EventElement Event { get; set; } = new();
+
+    [Parameter]
+    public MeetElement Meet { get; set; } = new();
+
+    void RowRender(RowRenderEventArgs<AgeGroupElement> args)
+    {
+        args.Expandable = args.Data.Rankings is {Count: > 0};
+    }
+}

@@ -8,18 +8,12 @@ public class AgeDateElement
     public AgeDateType Type { get; set; }
 
     [XmlAttribute("type")]
-    public string TypeString
+    public string TypeProxy
     {
-        get
-        {
-            return Type.ToXmlString();
-        }
-        set
-        {
-            Type = XmlEnumExtensions.FromXmlString<AgeDateType>(value);
-        }
+        get => Type.ToXmlString();
+        set => Type = XmlEnumExtensions.FromXmlString<AgeDateType>(value);
     }
 
-    [XmlAttribute("value")]
+    [XmlAttribute("value", DataType = "date")]
     public DateTime Value { get; set; }
 }

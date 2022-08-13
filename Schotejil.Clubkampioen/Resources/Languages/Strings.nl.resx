@@ -174,4 +174,28 @@
   <data name="AgeCalculation" xml:space="preserve">
     <value>Leeftijdsbepaling</value>
   </data>
+  <data name="Session" xml:space="preserve">
+    <value>Sessie</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tijd</value>
+  </data>
+  <data name="Warmup" xml:space="preserve">
+    <value>Inzwemmen</value>
+  </data>
+  <data name="OfficialsMeeting" xml:space="preserve">
+    <value>Juryvergadering</value>
+  </data>
+  <data name="Stroke" xml:space="preserve">
+    <value>Slag</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Geslacht</value>
+  </data>
+  <data name="MinAge" xml:space="preserve">
+    <value>Leeftijd vanaf</value>
+  </data>
+  <data name="MaxAge" xml:space="preserve">
+    <value>Leeftijd tot</value>
+  </data>
 </root>

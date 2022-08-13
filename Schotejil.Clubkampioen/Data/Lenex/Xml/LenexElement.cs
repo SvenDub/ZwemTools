@@ -13,7 +13,7 @@ public class LenexElement {
     
     [XmlArray("MEETS")]
     [XmlArrayItem("MEET")]
-    public List<MeetElement>? Meets { get; set; }
+    public Collection<MeetElement>? Meets { get; set; }
 
         /*
     [XmlArray("RECORDLISTS")]

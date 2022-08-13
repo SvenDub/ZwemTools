@@ -33,4 +33,21 @@ public class MeetElement
 
     [XmlAttribute("result.url")]
     public string? LiveTiming { get; set; }
+
+    [XmlArray("SESSIONS")]
+    [XmlArrayItem("SESSION")]
+    public Collection<SessionElement> Sessions { get; set; } = new();
+
+    [XmlArray("CLUBS")]
+    [XmlArrayItem("CLUB")]
+    public Collection<ClubElement> Clubs { get; set; } = new();
+
+    public AthleteElement? GetAthleteForResult(int resultId) => Clubs
+        .SelectMany(c => c.Athletes)
+        .FirstOrDefault(a => a.Results.Any(r => r.ResultId == resultId));
+
+    public ResultElement? GetResult(int resultId) => Clubs
+        .SelectMany(c => c.Athletes)
+        .SelectMany(a => a.Results)
+        .FirstOrDefault(r => r.ResultId == resultId);
 }

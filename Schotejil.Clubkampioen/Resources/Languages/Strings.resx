@@ -174,4 +174,28 @@
   <data name="AgeCalculation" xml:space="preserve">
     <value>Age calculation</value>
   </data>
+  <data name="Session" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Warmup" xml:space="preserve">
+    <value>Warmup</value>
+  </data>
+  <data name="OfficialsMeeting" xml:space="preserve">
+    <value>Officials meeting</value>
+  </data>
+  <data name="Stroke" xml:space="preserve">
+    <value>Stroke</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="MinAge" xml:space="preserve">
+    <value>Minimum age</value>
+  </data>
+  <data name="MaxAge" xml:space="preserve">
+    <value>Maximum age</value>
+  </data>
 </root>

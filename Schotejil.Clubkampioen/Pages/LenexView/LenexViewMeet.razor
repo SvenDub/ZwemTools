@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <td>@Localizer["City"]</td>
-                <td>@Meet.City</td>
+                <td>@Meet.City (@Meet.Nation)</td>
             </tr>
             <tr>
                 <td>@Localizer["Course"]</td>
@@ -50,9 +50,20 @@
             }
         </tbody>
     </table>
+
+    <RadzenTabs @bind-SelectedIndex=@selectedIndex>
+        <Tabs>
+            @foreach (SessionElement session in Meet.Sessions)
+            {
+                <LenexViewSession Session="session" Meet="Meet"></LenexViewSession>
+            }
+        </Tabs>
+    </RadzenTabs>
 </RadzenTabsItem>
 
 @code {
+    private int selectedIndex = 0;
+
     [Parameter]
     public MeetElement Meet { get; set; } = new();
 }
