@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Xml.Serialization;
-
-namespace Schotejil.Clubkampioen.Data.Lenex.Xml;
+﻿namespace Schotejil.Clubkampioen.Data.Lenex.Xml;
 public class AgeDateElement
 {
     [XmlIgnore]

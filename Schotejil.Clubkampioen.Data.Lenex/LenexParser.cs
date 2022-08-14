@@ -1,6 +1,5 @@
 ﻿using Schotejil.Clubkampioen.Data.Lenex.Xml;
 using System.IO.Compression;
-using System.Xml.Serialization;
 
 namespace Schotejil.Clubkampioen.Data.Lenex;
 

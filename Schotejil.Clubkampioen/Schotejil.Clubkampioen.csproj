@@ -67,6 +67,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Schotejil.Clubkampioen.Data.Lenex\Schotejil.Clubkampioen.Data.Lenex.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Update="Resources\Languages\Strings.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>

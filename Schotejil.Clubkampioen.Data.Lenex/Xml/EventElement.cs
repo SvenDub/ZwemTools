@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Xml.Serialization;
 
 namespace Schotejil.Clubkampioen.Data.Lenex.Xml;
 
