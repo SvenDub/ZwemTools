@@ -40,11 +40,11 @@ public class MeetElement
     [XmlArrayItem("CLUB")]
     public Collection<ClubElement> Clubs { get; set; } = new();
 
-    public AthleteElement? GetAthleteForResult(int resultId) => Clubs
+    public AthleteElement? GetAthleteForResult(int resultId) => this.Clubs
         .SelectMany(c => c.Athletes)
         .FirstOrDefault(a => a.Results.Any(r => r.ResultId == resultId));
 
-    public ResultElement? GetResult(int resultId) => Clubs
+    public ResultElement? GetResult(int resultId) => this.Clubs
         .SelectMany(c => c.Athletes)
         .SelectMany(a => a.Results)
         .FirstOrDefault(r => r.ResultId == resultId);

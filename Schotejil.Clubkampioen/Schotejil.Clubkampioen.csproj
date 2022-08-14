@@ -58,16 +58,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="C:\git\clubkampioenschappen\Schotejil.Clubkampioen\Schotejil.Clubkampioen\.editorconfig" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.8" />
       <PackageReference Include="Radzen.Blazor" Version="3.20.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Schotejil.Clubkampioen.Data.Lenex\Schotejil.Clubkampioen.Data.Lenex.csproj" />
+      <ProjectReference Include="..\Schotejil.Clubkampioen.Data.Sql\Schotejil.Clubkampioen.Data.Sql.csproj" />
     </ItemGroup>
 
     <ItemGroup>

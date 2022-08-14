@@ -9,8 +9,8 @@ public class SessionElement
     [XmlAttribute("daytime")]
     public string? StartTimeProxy
     {
-        get => StartTime?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => StartTime = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.StartTime?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.StartTime = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]
@@ -19,8 +19,8 @@ public class SessionElement
     [XmlAttribute("endtime")]
     public string? EndTimeProxy
     {
-        get => EndTime?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => EndTime = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.EndTime?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.EndTime = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]
@@ -39,8 +39,8 @@ public class SessionElement
     [XmlAttribute("officialmeeting")]
     public string? OfficialMeetingProxy
     {
-        get => OfficialMeeting?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => OfficialMeeting = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.OfficialMeeting?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.OfficialMeeting = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]
@@ -49,8 +49,8 @@ public class SessionElement
     [XmlAttribute("warmupfrom")]
     public string? WarmupStartProxy
     {
-        get => WarmupStart?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => WarmupStart = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.WarmupStart?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.WarmupStart = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]
@@ -59,8 +59,8 @@ public class SessionElement
     [XmlAttribute("warmupuntil")]
     public string? WarmupEndProxy
     {
-        get => WarmupEnd?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => WarmupEnd = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.WarmupEnd?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.WarmupEnd = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]

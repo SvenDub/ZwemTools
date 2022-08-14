@@ -17,8 +17,8 @@ public class AthleteElement
     [XmlAttribute("gender")]
     public string GenderProxy
     {
-        get => Gender.ToXmlString();
-        set => Gender = XmlEnumExtensions.FromXmlString<Gender>(value);
+        get => this.Gender.ToXmlString();
+        set => this.Gender = XmlEnumExtensions.FromXmlString<Gender>(value);
     }
 
     [XmlAttribute("lastname")]
@@ -35,5 +35,5 @@ public class AthleteElement
     public Collection<ResultElement> Results { get; set; } = new();
 
     [XmlIgnore]
-    public string FullName => string.Join(" ", new[] { FirstName, NamePrefix, LastName }.Where(x => x is not null));
+    public string FullName => string.Join(" ", new[] { this.FirstName, this.NamePrefix, this.LastName }.Where(x => x is not null));
 }

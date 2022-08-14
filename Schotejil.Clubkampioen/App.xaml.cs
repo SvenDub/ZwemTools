@@ -6,7 +6,7 @@ public partial class App : Application
 {
 	public App()
 	{
-		InitializeComponent();
+        this.InitializeComponent();
 
 		string language = Preferences.Get("language", CultureInfo.CurrentCulture.Name);
 		CultureInfo cultureInfo = new(language);
@@ -15,7 +15,7 @@ public partial class App : Application
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-        MainPage = new MainPage();
+        this.MainPage = new MainPage();
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)

@@ -16,11 +16,11 @@ public class AgeGroupElement
 
     [XmlAttribute("gender")]
     public string? GenderProxy {
-        get => Gender?.ToXmlString();
-        set => Gender = value is not null ? XmlEnumExtensions.FromXmlString<Gender>(value) : null;
+        get => this.Gender?.ToXmlString();
+        set => this.Gender = value is not null ? XmlEnumExtensions.FromXmlString<Gender>(value) : null;
     }
 
     [XmlArray("RANKINGS")]
     [XmlArrayItem("RANKING")]
-    public Collection<RankingElement>? Rankings { get; set; }
+    public Collection<RankingElement> Rankings { get; set; } = new();
 }

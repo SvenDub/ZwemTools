@@ -11,8 +11,8 @@ public class SwimStyleElement
     [XmlAttribute("stroke")]
     public string StrokeProxy
     {
-        get => Stroke.ToXmlString();
-        set => Stroke = XmlEnumExtensions.FromXmlString<Stroke>(value);
+        get => this.Stroke.ToXmlString();
+        set => this.Stroke = XmlEnumExtensions.FromXmlString<Stroke>(value);
     }
 
     [XmlIgnore]

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using Schotejil.Clubkampioen.Data;
+﻿using Microsoft.EntityFrameworkCore;
 using Schotejil.Clubkampioen.Data.Lenex;
+using Schotejil.Clubkampioen.Data.Sql;
 
 namespace Schotejil.Clubkampioen;
 
@@ -24,6 +24,16 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<LenexParser>();
 
-        return builder.Build();
+        builder.Services.AddDbContext<DatabaseContext>();
+
+        MauiApp app = builder.Build();
+
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            DatabaseContext db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+            db.Database.Migrate();
+        }
+
+        return app;
     }
 }

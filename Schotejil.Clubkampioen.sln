@@ -6,10 +6,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schotejil.Clubkampioen", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BFEA786-A15B-49BC-8AFA-63944DCA4D70}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schotejil.Clubkampioen.Data.Lenex", "Schotejil.Clubkampioen.Data.Lenex\Schotejil.Clubkampioen.Data.Lenex.csproj", "{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schotejil.Clubkampioen.Data.Sql", "Schotejil.Clubkampioen.Data.Sql\Schotejil.Clubkampioen.Data.Sql.csproj", "{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +30,10 @@ Global
 		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

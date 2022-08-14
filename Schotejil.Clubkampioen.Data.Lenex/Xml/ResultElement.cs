@@ -10,8 +10,8 @@ public class ResultElement
     [XmlAttribute("heatid")]
     public string? HeatIdProxy
     {
-        get => HeatId?.ToString();
-        set => HeatId = value is not null ? int.Parse(value) : null;
+        get => this.HeatId?.ToString();
+        set => this.HeatId = value is not null ? int.Parse(value) : null;
     }
 
     [XmlIgnore]
@@ -20,8 +20,8 @@ public class ResultElement
     [XmlAttribute("lane")]
     public string? LaneProxy
     {
-        get => Lane?.ToString();
-        set => Lane = value is not null ? int.Parse(value) : null;
+        get => this.Lane?.ToString();
+        set => this.Lane = value is not null ? int.Parse(value) : null;
     }
 
     [XmlIgnore]
@@ -33,8 +33,8 @@ public class ResultElement
     [XmlAttribute("swimtime")]
     public string SwimTimeProxy
     {
-        get => SwimTime.ToString(@"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture);
-        set => SwimTime = TimeSpan.Parse(value);
+        get => this.SwimTime.ToString(@"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture);
+        set => this.SwimTime = TimeSpan.Parse(value);
     }
 
     [XmlIgnore]

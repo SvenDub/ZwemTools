@@ -5,8 +5,8 @@ public class RankingElement
     [XmlAttribute("order")]
     public string? OrderProxy
     {
-        get => Order?.ToString();
-        set => Order = value is not null ? int.Parse(value) : null;
+        get => this.Order?.ToString();
+        set => this.Order = value is not null ? int.Parse(value) : null;
     }
 
     [XmlIgnore]

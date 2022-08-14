@@ -8,10 +8,10 @@ public class LenexElement {
     [XmlElement("CONSTRUCTOR")]
     public ConstructorElement Constructor { get; set; } = new ();
 
-    
+
     [XmlArray("MEETS")]
     [XmlArrayItem("MEET")]
-    public Collection<MeetElement>? Meets { get; set; }
+    public Collection<MeetElement> Meets { get; set; } = new();
 
         /*
     [XmlArray("RECORDLISTS")]

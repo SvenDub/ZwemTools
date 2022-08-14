@@ -10,8 +10,8 @@ public class EventElement
 
     [XmlAttribute("daytime")]
     public string? TimeProxy {
-        get => Time?.ToString("HH:mm", CultureInfo.InvariantCulture);
-        set => Time = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
+        get => this.Time?.ToString("HH:mm", CultureInfo.InvariantCulture);
+        set => this.Time = value is not null ? TimeOnly.ParseExact(value, "HH:mm", CultureInfo.InvariantCulture) : null;
     }
 
     [XmlIgnore]
@@ -22,8 +22,8 @@ public class EventElement
 
     [XmlAttribute("gender")]
     public string? GenderProxy {
-        get => Gender?.ToXmlString();
-        set => Gender = value is not null ? XmlEnumExtensions.FromXmlString<Gender>(value) : null;
+        get => this.Gender?.ToXmlString();
+        set => this.Gender = value is not null ? XmlEnumExtensions.FromXmlString<Gender>(value) : null;
     }
 
     [XmlIgnore]
