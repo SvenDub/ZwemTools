@@ -6,7 +6,7 @@ public class Result
 
     public int EventId { get; set; }
 
-    public Event Event { get; set; } = null!;
+    public virtual Event Event { get; set; } = null!;
 
     public int? Lane { get; set; }
 

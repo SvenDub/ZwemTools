@@ -1,0 +1,45 @@
+﻿@page "/meets/{Id:int}"
+@using Schotejil.Clubkampioen.Data.Sql
+@inject IStringLocalizer<Strings> Localizer
+@inject DatabaseContext Context
+
+@if (this.Meet is not null)
+{
+    <h1>@this.Meet.Name</h1>
+
+    <table class="table mb-3">
+        <thead>
+            <tr>
+                <th>@Localizer["Property"]</th>
+                <th>@Localizer["Value"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Localizer["Athletes"]</td>
+                <td>@this.Meet.Clubs.SelectMany(x => x.Athletes).Count()</td>
+            </tr>
+            <tr>
+                <td>@Localizer["Results"]</td>
+                <td>@this.Meet.Clubs.SelectMany(x => x.Athletes).SelectMany(x => x.Results).Count()</td>
+            </tr>
+        </tbody>
+    </table>
+
+}
+else
+{
+    <p>@Localizer["MeetNotFound"]</p>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Meet? Meet { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.Meet = this.Context.Meets.SingleOrDefault(x => x.Id == this.Id);
+    }
+}

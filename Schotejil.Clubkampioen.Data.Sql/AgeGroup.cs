@@ -6,7 +6,7 @@ public class AgeGroup
 
     public int EventId { get; set; }
 
-    public Event Event { get; set; } = null!;
+    public virtual Event Event { get; set; } = null!;
 
     public int MaxAge { get; set; }
 
@@ -14,5 +14,5 @@ public class AgeGroup
 
     public Gender? Gender { get; set; }
 
-    public Collection<Ranking> Rankings { get; set; } = new();
+    public virtual ICollection<Ranking> Rankings { get; set; } = new Collection<Ranking>();
 }

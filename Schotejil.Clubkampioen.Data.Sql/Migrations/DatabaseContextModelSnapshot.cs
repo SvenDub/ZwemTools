@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Schotejil.Clubkampioen.Data.Sql;
+using Schotejil.Clubkampioen.Data.Sql.Migrations;
 
 #nullable disable
 
@@ -39,7 +40,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("AgeGroups");
+                    b.ToTable("AgeGroups", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Athlete", b =>
@@ -75,7 +76,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("ClubId");
 
-                    b.ToTable("Athletes");
+                    b.ToTable("Athletes", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Club", b =>
@@ -95,7 +96,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("MeetId");
 
-                    b.ToTable("Clubs");
+                    b.ToTable("Clubs", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Event", b =>
@@ -120,7 +121,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("SessionId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Meet", b =>
@@ -155,7 +156,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Meets");
+                    b.ToTable("Meets", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Ranking", b =>
@@ -182,7 +183,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("ResultId");
 
-                    b.ToTable("Rankings");
+                    b.ToTable("Rankings", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Result", b =>
@@ -209,7 +210,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Results");
+                    b.ToTable("Results", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Session", b =>
@@ -249,7 +250,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                     b.HasIndex("MeetId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("Sessions", (string)null);
                 });
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.AgeGroup", b =>
@@ -293,7 +294,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Schotejil.Clubkampioen.Data.Sql.SwimStyle", "SwimStyle", b1 =>
+                    b.OwnsOne("Schotejil.Clubkampioen.Data.Sql.Event.SwimStyle#Schotejil.Clubkampioen.Data.Sql.SwimStyle", "SwimStyle", b1 =>
                         {
                             b1.Property<int>("EventId")
                                 .HasColumnType("INTEGER");
@@ -309,7 +310,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                             b1.HasKey("EventId");
 
-                            b1.ToTable("Events");
+                            b1.ToTable("Events", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("EventId");
@@ -323,7 +324,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
             modelBuilder.Entity("Schotejil.Clubkampioen.Data.Sql.Meet", b =>
                 {
-                    b.OwnsOne("Schotejil.Clubkampioen.Data.Sql.AgeDate", "AgeDate", b1 =>
+                    b.OwnsOne("Schotejil.Clubkampioen.Data.Sql.Meet.AgeDate#Schotejil.Clubkampioen.Data.Sql.AgeDate", "AgeDate", b1 =>
                         {
                             b1.Property<int>("MeetId")
                                 .HasColumnType("INTEGER");
@@ -336,7 +337,7 @@ namespace Schotejil.Clubkampioen.Data.Sql.Migrations
 
                             b1.HasKey("MeetId");
 
-                            b1.ToTable("Meets");
+                            b1.ToTable("Meets", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("MeetId");

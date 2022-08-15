@@ -8,7 +8,7 @@ public class Club
 
     public int MeetId { get; set; }
 
-    public Meet Meet { get; set; } = null!;
+    public virtual Meet Meet { get; set; } = null!;
 
-    public Collection<Athlete> Athletes { get; set; } = new();
+    public virtual ICollection<Athlete> Athletes { get; set; } = new Collection<Athlete>();
 }

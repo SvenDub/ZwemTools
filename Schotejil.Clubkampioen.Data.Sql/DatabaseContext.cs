@@ -30,6 +30,7 @@ public class DatabaseContext : DbContext
         logger.LogDebug("Using database {DbPath}", this.DbPath);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={this.DbPath}");
+    protected override void OnConfiguring(DbContextOptionsBuilder options) => options
+        .UseLazyLoadingProxies()
+        .UseSqlite($"Data Source={this.DbPath}");
 }

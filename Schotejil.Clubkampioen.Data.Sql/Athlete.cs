@@ -4,11 +4,11 @@ public class Athlete
 {
     public int Id { get; set; }
 
-    public DateTime Birthdate { get; set; }
+    public DateOnly Birthdate { get; set; }
 
     public int ClubId { get; set; }
 
-    public Club Club { get; set; } = null!;
+    public virtual Club Club { get; set; } = null!;
 
     public string FirstName { get; set; } = string.Empty;
 
@@ -20,5 +20,5 @@ public class Athlete
 
     public string? NamePrefix { get; set; }
 
-    public Collection<Result> Results { get; set; } = new();
+    public virtual ICollection<Result> Results { get; set; } = new Collection<Result>();
 }

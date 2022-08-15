@@ -1,8 +1,10 @@
 ﻿@page "/lenex-viewer"
 @using Schotejil.Clubkampioen.Data.Lenex
 @using Schotejil.Clubkampioen.Data.Lenex.Xml
+@using Schotejil.Clubkampioen.Data.Sql
 @inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
+@inject DatabaseContext Context  
 
 <h3>Lenex Viewer</h3>
 
@@ -10,6 +12,7 @@
 
 @if (!this.IsLoading && this.LenexElement is not null)
 {
+    <RadzenButton IsBusy="@IsSaving" Click="@OnSave" Text="@Localizer["Save"]"/>
     <table class="table my-3">
         <thead>
             <tr>
@@ -62,6 +65,7 @@ else
     private LenexElement? LenexElement { get; set; }
     private bool IsLoading { get; set; } = false;
     private int selectedIndex = 0;
+    private bool IsSaving { get; set; } = false;
 
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
@@ -71,5 +75,18 @@ else
         await stream.CopyToAsync(ms);
         this.LenexElement = this.LenexParser.Parse(ms);
         this.IsLoading = false;
+    }
+
+    private async Task OnSave(MouseEventArgs args)
+    {
+        this.IsSaving = true;
+
+        if (this.LenexElement is not null)
+        {
+            await this.Context.Meets.AddRangeAsync(this.LenexElement.Meets.Select(x => x.ToSql()));
+            await this.Context.SaveChangesAsync();
+        }
+
+        this.IsSaving = false;
     }
 }

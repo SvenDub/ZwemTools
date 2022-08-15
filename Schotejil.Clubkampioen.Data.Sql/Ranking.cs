@@ -10,5 +10,5 @@ public class Ranking
 
     public int ResultId { get; set; }
 
-    public Result Result { get; set; } = null!;
+    public virtual Result Result { get; set; } = null!;
 }

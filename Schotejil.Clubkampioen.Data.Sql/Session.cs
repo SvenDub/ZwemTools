@@ -10,7 +10,7 @@ public class Session
 
     public TimeOnly? EndTime { get; set; }
 
-    public Collection<Event> Events { get; set; } = new();
+    public virtual ICollection<Event> Events { get; set; } = new Collection<Event>();
 
     public string? Name { get; set; }
 
@@ -18,7 +18,7 @@ public class Session
 
     public int MeetId { get; set; }
 
-    public Meet Meet { get; set; } = null!;
+    public virtual Meet Meet { get; set; } = null!;
 
     public TimeOnly? OfficialMeeting { get; set; }
 

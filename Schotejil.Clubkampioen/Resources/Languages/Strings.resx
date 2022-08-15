@@ -198,4 +198,13 @@
   <data name="MaxAge" xml:space="preserve">
     <value>Maximum age</value>
   </data>
+  <data name="Athletes" xml:space="preserve">
+    <value>Athletes</value>
+  </data>
+  <data name="Results" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="MeetNotFound" xml:space="preserve">
+    <value>The meet could not be found.</value>
+  </data>
 </root>

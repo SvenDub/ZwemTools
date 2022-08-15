@@ -1,7 +1,29 @@
 ﻿@page "/"
+@using Schotejil.Clubkampioen.Data.Sql
+@inject DatabaseContext Context
 
-<h1>Hello, world!</h1>
+<h1>Meets</h1>
 
-Welcome to your new app.
+@foreach (Meet meet in this.Meets)
+{
+    <ul>
+        <li>
+            <a href="@($"meets/{meet.Id}")">
+                @meet.Id - @meet.Name (@meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min())
+            </a>
+        </li>
+    </ul>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private List<Meet> Meets { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        this.Meets = this.Context.Meets.ToList();
+        this.Context.SavedChanges += (_, _) =>
+        {
+            this.Meets = this.Context.Meets.ToList();
+        };
+    }
+}

@@ -4,7 +4,7 @@ public class Meet
 {
     public int Id { get; set; }
 
-    public AgeDate? AgeDate { get; set; }
+    public virtual AgeDate? AgeDate { get; set; }
 
     public string City { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ public class Meet
 
     public string? LiveTiming { get; set; }
 
-    public Collection<Session> Sessions { get; set; } = new();
+    public virtual ICollection<Session> Sessions { get; set; } = new Collection<Session>();
 
-    public Collection<Club> Clubs { get; set; } = new();
+    public virtual ICollection<Club> Clubs { get; set; } = new Collection<Club>();
 }

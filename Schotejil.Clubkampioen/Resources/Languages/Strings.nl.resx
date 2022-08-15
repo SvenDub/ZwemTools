@@ -198,4 +198,13 @@
   <data name="MaxAge" xml:space="preserve">
     <value>Leeftijd tot</value>
   </data>
+  <data name="Athletes" xml:space="preserve">
+    <value>Zwemmers</value>
+  </data>
+  <data name="Results" xml:space="preserve">
+    <value>Resultaten</value>
+  </data>
+  <data name="MeetNotFound" xml:space="preserve">
+    <value>De wedstrijd kon niet worden gevonden.</value>
+  </data>
 </root>
