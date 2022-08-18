@@ -15,4 +15,6 @@ public class Result
     public int AthleteId { get; set; }
 
     public virtual Athlete Athlete { get; set; } = null!;
+
+    public ResultStatus? Status { get; set; }
 }

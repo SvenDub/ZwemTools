@@ -23,7 +23,7 @@ public class EventElement
     [XmlAttribute("gender")]
     public string? GenderProxy {
         get => this.Gender?.ToXmlString();
-        set => this.Gender = value is not null ? XmlEnumExtensions.FromXmlString<Gender>(value) : null;
+        set => this.Gender = XmlEnumExtensions.FromXmlString<Gender>(value);
     }
 
     [XmlIgnore]

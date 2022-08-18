@@ -13,8 +13,8 @@ public class MeetElement
 
     [XmlAttribute("course")]
     public string? CourseString {
-        get { return this.Course?.ToXmlString(); }
-        set { this.Course = value is not null ? XmlEnumExtensions.FromXmlString<Course>(value) : null; }
+        get => this.Course?.ToXmlString();
+        set => this.Course = XmlEnumExtensions.FromXmlString<Course>(value);
     }
 
     [XmlIgnore]

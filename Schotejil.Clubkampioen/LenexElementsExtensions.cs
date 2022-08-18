@@ -183,5 +183,17 @@ public static class LenexElementsExtensions
         Lane = lenex.Lane,
         Id = lenex.ResultId,
         SwimTime = lenex.SwimTime,
+        Status = lenex.Status?.ToSql(),
+    };
+
+    private static Data.Sql.ResultStatus ToSql(this Data.Lenex.Xml.ResultStatus lenex) => lenex switch
+    {
+        Data.Lenex.Xml.ResultStatus.Exhibition => Data.Sql.ResultStatus.Exhibition,
+        Data.Lenex.Xml.ResultStatus.Disqualified => Data.Sql.ResultStatus.Disqualified,
+        Data.Lenex.Xml.ResultStatus.DidNotStart => Data.Sql.ResultStatus.DidNotStart,
+        Data.Lenex.Xml.ResultStatus.DidNotFinish => Data.Sql.ResultStatus.DidNotFinish,
+        Data.Lenex.Xml.ResultStatus.Sick => Data.Sql.ResultStatus.Sick,
+        Data.Lenex.Xml.ResultStatus.Withdrawn => Data.Sql.ResultStatus.Withdrawn,
+        _ => throw new ArgumentOutOfRangeException(nameof(lenex), lenex, "Unknown value"),
     };
 }

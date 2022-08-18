@@ -39,4 +39,14 @@ public class ResultElement
 
     [XmlIgnore]
     public TimeSpan SwimTime { get; set; }
+
+    [XmlAttribute("status")]
+    public string? StatusProxy
+    {
+        get => this.Status?.ToXmlString();
+        set => this.Status = XmlEnumExtensions.FromXmlString<ResultStatus>(value);
+    }
+
+    [XmlIgnore]
+    public ResultStatus? Status { get; set; }
 }

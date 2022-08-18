@@ -25,7 +25,7 @@ public class BoomsmaService
         {
             foreach (Gender gender in genders)
             {
-                ICollection<BoomsmaResult> fly = new Collection<BoomsmaResult>();
+                ICollection<BoomsmaResult> resultsForStrokeGender = new Collection<BoomsmaResult>();
                 foreach (Event @event in to.Events)
                 {
                     foreach (Result result in @event.Results)
@@ -39,13 +39,14 @@ public class BoomsmaService
                         if (@event.SwimStyle.Stroke == stroke && athlete.Gender == gender)
                         {
 
-                            fly.Add(new BoomsmaResult(athlete, fromResult, result, fromResult is not null ? this.CalculateDifference(fromResult, result) : null));
+                            resultsForStrokeGender.Add(new BoomsmaResult(athlete, fromResult, result, fromResult is { Status: null} && result is { Status: null } ? this.CalculateDifference(fromResult, result) : null));
                         }
                     }
                 }
 
-                fly = fly.OrderBy(x => x.Difference ?? TimeSpan.MaxValue).ToList();
-                boomsmaResults[(stroke, gender)] = fly;
+                boomsmaResults[(stroke, gender)] = resultsForStrokeGender
+                    .OrderBy(x => x.Difference ?? TimeSpan.MaxValue)
+                    .ToList();
             }
         }
 
@@ -75,7 +76,7 @@ public class BoomsmaService
 
     private TimeSpan CalculateDifference(Result from, Result to)
     {
-        int factor = to.Event.SwimStyle.Distance / from.Event.SwimStyle.Distance;
+        double factor = (double)to.Event.SwimStyle.Distance / from.Event.SwimStyle.Distance;
         TimeSpan convertedTime = from.SwimTime.Multiply(factor).Add(TimeSpan.FromSeconds(5 * factor - 5));
         return to.SwimTime - convertedTime;
     }

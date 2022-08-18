@@ -210,4 +210,16 @@
   <data name="Calculate" xml:space="preserve">
     <value>Berekenen</value>
   </data>
+  <data name="Distance" xml:space="preserve">
+    <value>Afstand</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Verschil</value>
+  </data>
+  <data name="FromResultTime" xml:space="preserve">
+    <value>Vorig resultaat</value>
+  </data>
+  <data name="ToResultTime" xml:space="preserve">
+    <value>Huidig resultaat</value>
+  </data>
 </root>

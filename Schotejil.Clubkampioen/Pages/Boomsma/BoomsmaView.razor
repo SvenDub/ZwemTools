@@ -45,18 +45,28 @@
                 <RadzenCard>
                     <RadzenDataGrid TItem="BoomsmaResult" Data="results">
                         <Columns>
-                            <RadzenDataGridColumn TItem="BoomsmaResult" Property="Athlete.FullName" />
-                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Property="Athlete.FullName" Title="@Strings.Name" />
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.FromResultTime">
                                 <Template>
-                                    @this.FormatSwimTime(context.FromResult?.SwimTime)
+                                    @this.FormatSwimTime(context.FromResult?.SwimTime) <span class="text-danger">@(context.FromResult?.Status)</span>
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Distance">
                                 <Template>
-                                    @this.FormatSwimTime(context.ToResult?.SwimTime)
+                                    @(context.FromResult?.Event.SwimStyle.Distance.ToString(@"#m"))
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.ToResultTime">
+                                <Template>
+                                    @this.FormatSwimTime(context.ToResult?.SwimTime) <span class="text-danger">@(context.ToResult?.Status)</span>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Distance">
+                                <Template>
+                                    @(context.ToResult?.Event.SwimStyle.Distance.ToString(@"#m"))
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Difference">
                                 <Template>
                                     @this.FormatSwimTime(context.Difference)
                                 </Template>
@@ -67,9 +77,9 @@
             </ChildContent>
             <SummaryTemplate>
                 <RadzenCard>
-                    @if (results.Count > 0)
+                    @if (results.Any(x => x.Difference is not null))
                     {
-                        <b>@results.First().Athlete.FullName (@this.FormatSwimTime(results.First().Difference))</b>
+                        <b>@results.First(x => x.Difference is not null).Athlete.FullName (@this.FormatSwimTime(results.First().Difference))</b>
                     }
                     else
                     {

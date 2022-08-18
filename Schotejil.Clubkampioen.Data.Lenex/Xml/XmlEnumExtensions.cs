@@ -1,4 +1,6 @@
-﻿namespace Schotejil.Clubkampioen.Data.Lenex.Xml;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Schotejil.Clubkampioen.Data.Lenex.Xml;
 
 public static class XmlEnumExtensions
 {
@@ -14,9 +16,15 @@ public static class XmlEnumExtensions
         return value.ToString();
     }
 
-    public static T FromXmlString<T>(string value)
+    [return: NotNullIfNotNull("value")]
+    public static T? FromXmlString<T>(string? value)
         where T : notnull, Enum
     {
+        if (value is null)
+        {
+            return default;
+        }
+
         T? enumValue = typeof(T).GetEnumValues()
             .Cast<T>()
             .SingleOrDefault(x => x.GetAttributeOfType<XmlEnumAttribute>() is { Name: { } } attr && attr.Name == value);
