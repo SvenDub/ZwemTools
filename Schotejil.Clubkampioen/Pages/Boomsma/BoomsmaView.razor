@@ -1,7 +1,125 @@
 ﻿@page "/boomsma"
+@using Schotejil.Clubkampioen.Data.Sql
+@inject DatabaseContext Context
+@inject BoomsmaService BoomsmaService
 
-<h3>BoomsmaView</h3>
+<h3>Boomsma Bokalen</h3>
+
+<div class="row">
+    <div class="col">
+        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="this.Sessions" Change="@OnFromSelected" style="height: auto;">
+            <Template>
+                @if (context is Session session)
+                {
+                    <span class="d-block">@session.Name (@session.Number)</span>
+                    <span class="d-block text-muted small">@session.Date (@session.StartTime)</span>
+                }
+            </Template>
+        </RadzenDropDown>
+    </div>
+    <div class="col">
+        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="this.Sessions" Change="@OnToSelected" style="height: auto;">
+            <Template>
+                @if (context is Session session)
+                {
+                    <span class="d-block">@session.Name (@session.Number)</span>
+                    <span class="d-block text-muted small">@session.Date (@session.StartTime)</span>
+                }
+            </Template>
+        </RadzenDropDown>
+    </div>
+    <div class="col">
+        <RadzenButton Text="@Strings.Calculate" Click="@OnCalculate" />
+    </div>
+</div>
+
+@if (this.Results is not null)
+{
+    foreach (var (key, results) in this.Results.Results)
+    {
+        <RadzenPanel AllowCollapse="true" Collapsed="true">
+            <HeaderTemplate>
+                <h4>@key.Stroke - @key.Gender</h4>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenCard>
+                    <RadzenDataGrid TItem="BoomsmaResult" Data="results">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Property="Athlete.FullName" />
+                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                                <Template>
+                                    @this.FormatSwimTime(context.FromResult?.SwimTime)
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                                <Template>
+                                    @this.FormatSwimTime(context.ToResult?.SwimTime)
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="BoomsmaResult">
+                                <Template>
+                                    @this.FormatSwimTime(context.Difference)
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenCard>
+            </ChildContent>
+            <SummaryTemplate>
+                <RadzenCard>
+                    @if (results.Count > 0)
+                    {
+                        <b>@results.First().Athlete.FullName (@this.FormatSwimTime(results.First().Difference))</b>
+                    }
+                    else
+                    {
+                        <b>@Strings.NoData</b>
+                    }
+                </RadzenCard>
+            </SummaryTemplate>
+        </RadzenPanel>
+    }
+}
 
 @code {
+    private IQueryable<Session> Sessions { get; set; } = null!;
 
+    private Session? FromSession { get; set; }
+    private Session? ToSession { get; set; }
+    private BoomsmaResults? Results { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.Sessions = this.Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime);
+        this.Context.SavedChanges += (_, _) =>
+        {
+            this.Sessions = this.Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime);
+        };
+    }
+
+    void OnFromSelected(object o)
+    {
+        if (o is Session session)
+        {
+            this.FromSession = session;
+        }
+    }
+
+    void OnToSelected(object o)
+    {
+        if (o is Session session)
+        {
+            this.ToSession = session;
+        }
+    }
+
+    void OnCalculate()
+    {
+        if (this.FromSession is not null && this.ToSession is not null)
+        {
+            this.Results = this.BoomsmaService.CalculateResults(this.FromSession, this.ToSession);
+        }
+    }
+
+    string FormatSwimTime(TimeSpan? time) => (time is { TotalSeconds: < 0 } ? "-" : "") + time?.ToString(@"mm\:ss\.ff");
 }

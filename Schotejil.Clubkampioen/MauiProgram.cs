@@ -23,6 +23,7 @@ public static class MauiProgram
         builder.Services.AddLocalization();
 
         builder.Services.AddSingleton<LenexParser>();
+        builder.Services.AddSingleton<BoomsmaService>();
 
         builder.Services.AddDbContext<DatabaseContext>();
 

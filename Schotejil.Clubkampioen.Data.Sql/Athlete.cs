@@ -1,4 +1,6 @@
-﻿namespace Schotejil.Clubkampioen.Data.Sql;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Schotejil.Clubkampioen.Data.Sql;
 
 public class Athlete
 {
@@ -21,4 +23,7 @@ public class Athlete
     public string? NamePrefix { get; set; }
 
     public virtual ICollection<Result> Results { get; set; } = new Collection<Result>();
+
+    [NotMapped]
+    public string FullName => string.Join(" ", new[] { this.FirstName, this.NamePrefix, this.LastName }.Where(x => x is not null));
 }

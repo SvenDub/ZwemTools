@@ -11,4 +11,8 @@ public class Result
     public int? Lane { get; set; }
 
     public TimeSpan SwimTime { get; set; }
+
+    public int AthleteId { get; set; }
+
+    public virtual Athlete Athlete { get; set; } = null!;
 }
