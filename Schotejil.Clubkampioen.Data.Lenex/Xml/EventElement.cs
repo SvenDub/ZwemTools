@@ -34,4 +34,8 @@ public class EventElement
 
     [XmlElement("SWIMSTYLE")]
     public SwimStyleElement SwimStyle { get; set; } = new();
+
+    [XmlArray("HEATS")]
+    [XmlArrayItem("HEAT")]
+    public Collection<HeatElement> Heats { get; set; } = new();
 }

@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>;net6.0-ios</TargetFrameworks>
+        <TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
+        <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
         <RootNamespace>Schotejil.Clubkampioen</RootNamespace>
         <UseMaui>true</UseMaui>
@@ -15,7 +16,7 @@
         <ApplicationTitle>Schotejil.Clubkampioen</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>nl.schotejil.clubkampioen</ApplicationId>
+        <ApplicationId>com.companyname.schotejil.clubkampioen</ApplicationId>
         <ApplicationIdGuid>E814678F-1B0B-4462-9EFC-36B392FD1522</ApplicationIdGuid>
 
         <!-- Versions -->
@@ -29,14 +30,20 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <PropertyGroup>
-      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
+        <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <PackageCertificateThumbprint>5CC2BECA84B93DA89083DD432210F6EDB3D424F6</PackageCertificateThumbprint>
+        <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+        <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+        <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+        <GenerateTestArtifacts>True</GenerateTestArtifacts>
+        <AppInstallerUri>\\weedle\home\Schotejil\Schotejil.Clubkampioen.msix</AppInstallerUri>
+        <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     </PropertyGroup>
 
     <ItemGroup>
         <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -61,7 +68,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Pages\LAC\LAC.razor.css" />
       <None Remove="Resources\AppIcon\appicon.svg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Pages\LAC\LAC.razor.css" />
     </ItemGroup>
 
     <ItemGroup>
@@ -70,9 +82,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.3" />
       <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
-      <PackageReference Include="Radzen.Blazor" Version="3.20.3" />
+      <PackageReference Include="Radzen.Blazor" Version="4.7.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -94,30 +107,4 @@
         <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resources\Images\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <MauiIcon Include="Resources\AppIcon\appicon.svg" />
-      <MauiImage Include="wwwroot\img\logo.svg" />
-    </ItemGroup>
-
-	<PropertyGroup Condition="$(TargetFramework.Contains('-windows')) and '$(Configuration)' == 'Release'">
-	  <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
-	  <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
-		<RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
-	</PropertyGroup>
-
-	<Target Name="_RemoveStaticWebAssetsDevelopmentManifest" BeforeTargets="GetCopyToOutputDirectoryItems">
-		<!-- Remove the development manifest from the output since its not used and it will otherwise get incorrectly loaded in production. -->
-		<ItemGroup>
-			<ContentWithTargetPath Remove="$(StaticWebAssetDevelopmentManifestPath)" />
-		</ItemGroup>
-	</Target>
-
 </Project>

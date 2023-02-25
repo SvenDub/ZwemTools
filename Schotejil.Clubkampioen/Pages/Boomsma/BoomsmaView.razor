@@ -135,5 +135,5 @@
         }
     }
 
-    string FormatSwimTime(TimeSpan? time) => (time is { TotalSeconds: < 0 } ? "-" : "") + time?.ToString(@"mm\:ss\.ff");
+    string FormatSwimTime(TimeSpan? time) => time.Format();
 }
