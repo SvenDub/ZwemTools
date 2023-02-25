@@ -104,4 +104,20 @@
       <MauiImage Include="wwwroot\img\logo.svg" />
     </ItemGroup>
 
+	<PropertyGroup Condition="$(TargetFramework.Contains('-windows')) and '$(Configuration)' == 'Release'">
+	  <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+	  <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
+		<RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<Target Name="_RemoveStaticWebAssetsDevelopmentManifest" BeforeTargets="GetCopyToOutputDirectoryItems">
+		<!-- Remove the development manifest from the output since its not used and it will otherwise get incorrectly loaded in production. -->
+		<ItemGroup>
+			<ContentWithTargetPath Remove="$(StaticWebAssetDevelopmentManifestPath)" />
+		</ItemGroup>
+	</Target>
+
 </Project>

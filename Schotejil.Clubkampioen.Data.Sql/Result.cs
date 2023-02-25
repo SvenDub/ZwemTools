@@ -1,4 +1,6 @@
-﻿namespace Schotejil.Clubkampioen.Data.Sql;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Schotejil.Clubkampioen.Data.Sql;
 
 public class Result
 {
@@ -17,4 +19,23 @@ public class Result
     public virtual Athlete Athlete { get; set; } = null!;
 
     public ResultStatus? Status { get; set; }
+
+    [NotMapped]
+    public TimeSpan SwimTimeWithPenalty { 
+        get
+        {
+            if (this.Status is ResultStatus.Disqualified)
+            {
+                return this.Event.SwimStyle.Distance switch
+                {
+                    25 => this.SwimTime,
+                    50 => this.SwimTime + TimeSpan.FromSeconds(3),
+                    100 => this.SwimTime + TimeSpan.FromSeconds(6),
+                    _ => throw new ArgumentOutOfRangeException(nameof(this.Event.SwimStyle.Distance), this.Event.SwimStyle.Distance, "No time penalty defined for distance."),
+                };
+            }
+
+            return this.SwimTime;
+        }
+    }
 }

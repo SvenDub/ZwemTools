@@ -58,7 +58,11 @@
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.ToResultTime">
                                 <Template>
-                                    @this.FormatSwimTime(context.ToResult?.SwimTime) <span class="text-danger">@(context.ToResult?.Status)</span>
+                                    @this.FormatSwimTime(context.ToResult?.SwimTime)
+                                    @if (context.ToResult is { Status: not null })
+                                    {
+                                        <span class="text-danger">&#32;@(context.ToResult?.Status) (@this.FormatSwimTime(context.ToResult?.SwimTimeWithPenalty))</span>
+                                    }
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Distance">

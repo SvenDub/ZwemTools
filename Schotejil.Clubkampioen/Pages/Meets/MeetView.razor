@@ -6,6 +6,8 @@
 {
     <h1>@this.Meet.Name</h1>
 
+    <RadzenButton Text="@Strings.Delete" Click="@OnDelete" />
+
     <table class="table mb-3">
         <thead>
             <tr>
@@ -40,5 +42,15 @@ else
     protected override void OnInitialized()
     {
         this.Meet = this.Context.Meets.SingleOrDefault(x => x.Id == this.Id);
+    }
+
+    void OnDelete()
+    {
+        if (this.Meet is not null)
+        {
+            this.Context.Meets.Remove(this.Meet);
+            this.Context.SaveChanges();
+            this.Meet = null;
+        }
     }
 }

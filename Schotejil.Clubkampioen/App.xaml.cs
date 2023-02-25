@@ -8,7 +8,7 @@ public partial class App : Application
 	{
         this.InitializeComponent();
 
-		string language = Preferences.Get("language", CultureInfo.CurrentCulture.Name);
+		string language = Preferences.Get("language", CultureInfo.CurrentCulture.Name) ?? CultureInfo.CurrentCulture.Name;
 		CultureInfo cultureInfo = new(language);
         Thread.CurrentThread.CurrentCulture = cultureInfo;
         Thread.CurrentThread.CurrentUICulture = cultureInfo;

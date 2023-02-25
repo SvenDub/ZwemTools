@@ -222,4 +222,7 @@
   <data name="ToResultTime" xml:space="preserve">
     <value>Huidig resultaat</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
 </root>

@@ -39,7 +39,7 @@ public class BoomsmaService
                         if (@event.SwimStyle.Stroke == stroke && athlete.Gender == gender)
                         {
 
-                            resultsForStrokeGender.Add(new BoomsmaResult(athlete, fromResult, result, fromResult is { Status: null} && result is { Status: null } ? this.CalculateDifference(fromResult, result) : null));
+                            resultsForStrokeGender.Add(new BoomsmaResult(athlete, fromResult, result, fromResult is { Status: not ResultStatus.Withdrawn } && result is { Status: not ResultStatus.Withdrawn } ? this.CalculateDifference(fromResult, result) : null));
                         }
                     }
                 }
@@ -77,7 +77,31 @@ public class BoomsmaService
     private TimeSpan CalculateDifference(Result from, Result to)
     {
         double factor = (double)to.Event.SwimStyle.Distance / from.Event.SwimStyle.Distance;
-        TimeSpan convertedTime = from.SwimTime.Multiply(factor).Add(TimeSpan.FromSeconds(5 * factor - 5));
-        return to.SwimTime - convertedTime;
+
+        TimeSpan fromTime = from.SwimTime;
+        TimeSpan toTime = this.CalculateSwimTime(to);
+
+        TimeSpan convertedTime = fromTime.Multiply(factor).Add(TimeSpan.FromSeconds(5 * factor - 5));
+        return toTime - convertedTime;
+    }
+
+    private TimeSpan CalculateSwimTime(Result result)
+    {
+        if (result.Status is ResultStatus.Disqualified)
+        {
+            switch (result.Event.SwimStyle.Distance)
+            {
+                case 25:
+                    return result.SwimTime;
+                case 50:
+                    return result.SwimTime + TimeSpan.FromSeconds(3);
+                case 100:
+                    return result.SwimTime + TimeSpan.FromSeconds(6);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result.Event.SwimStyle.Distance), result.Event.SwimStyle.Distance, "No time penalty defined for distance.");
+            }
+        }
+
+        return result.SwimTime;
     }
 }
