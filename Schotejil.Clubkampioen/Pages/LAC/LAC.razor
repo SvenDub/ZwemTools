@@ -16,17 +16,11 @@
     {
         var meet = this.LenexElement.Meets.First();
         var session = meet.Sessions.First();
-        @foreach (var club in meet.Clubs)
+        @foreach (var (club, athlete, entry) in this.GetEntries(meet, session))
         {
-            @foreach (var athlete in club.Athletes)
-            {
-                @foreach (var entry in athlete.Entries)
-                {
-                    <div class="pagebreak">
-                        <Card Meet="meet" Session="session" Club="club" Athlete="athlete" Entry="entry"/>
-                    </div>
-                }
-            }
+            <div class="pagebreak">
+                <Card Meet="meet" Session="session" Club="club" Athlete="athlete" Entry="entry"/>
+            </div>
         }
     }
     else
@@ -56,5 +50,37 @@ else
         await stream.CopyToAsync(ms);
         this.LenexElement = this.LenexParser.Parse(ms);
         this.IsLoading = false;
+    }
+
+    private IEnumerable<(ClubElement club, AthleteElement athlete, EntryElement entry)> GetEntries(MeetElement meet, SessionElement session)
+    {
+        IEnumerable<(ClubElement club, AthleteElement athlete, EntryElement entry)> Entries()
+        {
+            foreach (var club in meet.Clubs)
+            {
+                foreach (var athlete in club.Athletes)
+                {
+                    foreach (var entry in athlete.Entries)
+                    {
+                        yield return (club, athlete, entry);
+                    }
+                }
+            }
+        }
+
+        return Entries()
+            .OrderBy(tuple => GetEvent(session, tuple.entry.EventId).Number)
+            .ThenBy(tuple => tuple.entry.HeatId is { } heatId ? GetHeat(session, heatId).Number : 0)
+            .ThenBy(tuple => tuple.entry.Lane);
+    }
+
+    private EventElement GetEvent(SessionElement session, int eventId)
+    {
+        return session.Events.First(e => e.EventId == eventId);
+    }
+
+    private HeatElement GetHeat(SessionElement session, int heatId)
+    {
+        return session.Events.SelectMany(e => e.Heats).First(h => h.HeatId == heatId);
     }
 }
