@@ -91,6 +91,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Schotejil.Clubkampioen.Data.Lenex\Schotejil.Clubkampioen.Data.Lenex.csproj" />
       <ProjectReference Include="..\Schotejil.Clubkampioen.Data.Sql\Schotejil.Clubkampioen.Data.Sql.csproj" />
+      <ProjectReference Include="..\Schotejil.Clubkampioen.Data.TeamManager\Schotejil.Clubkampioen.Data.TeamManager.csproj" />
     </ItemGroup>
 
     <ItemGroup>

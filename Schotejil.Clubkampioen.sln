@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schotejil.Clubkampioen.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schotejil.Clubkampioen.Data.Sql", "Schotejil.Clubkampioen.Data.Sql\Schotejil.Clubkampioen.Data.Sql.csproj", "{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schotejil.Clubkampioen.Data.TeamManager", "Schotejil.Clubkampioen.Data.TeamManager\Schotejil.Clubkampioen.Data.TeamManager.csproj", "{4F828181-02A9-4B07-91FB-5C681364B60F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

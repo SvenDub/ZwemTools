@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Schotejil.Clubkampioen.Data.Lenex;
 using Schotejil.Clubkampioen.Data.Sql;
+using Schotejil.Clubkampioen.Data.TeamManager;
 
 namespace Schotejil.Clubkampioen;
 
@@ -25,7 +28,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<LenexParser>();
         builder.Services.AddSingleton<BoomsmaService>();
 
+        if (OperatingSystem.IsWindows())
+        {
+            builder.Services.AddSingleton<TeamManagerDatabase>();
+        }
+
         builder.Services.AddDbContext<DatabaseContext>();
+        builder.Services.AddLogging(logging => logging.AddDebug());
 
         MauiApp app = builder.Build();
 

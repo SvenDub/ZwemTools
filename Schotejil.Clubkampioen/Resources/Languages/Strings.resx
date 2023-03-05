@@ -225,4 +225,7 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Relays" xml:space="preserve">
+    <value>Relays</value>
+  </data>
 </root>

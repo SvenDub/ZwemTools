@@ -1,0 +1,93 @@
+﻿@page "/relays"
+@using Schotejil.Clubkampioen.Data.TeamManager;
+@inject TeamManagerDatabase Database
+@inject IStringLocalizer<Strings> Localizer
+
+<h3>@Strings.Relays</h3>
+
+@if (!OperatingSystem.IsWindows())
+{
+    <p>Windows only!</p>
+    return;
+}
+
+<div class="row">
+    <div class="col">
+        <RadzenDropDown TValue="Meet" AllowVirtualization="false" Data="this.Meets" Change="@OnMeetSelected" style="height: auto;" @bind-Value="this.SelectedMeet">
+            <Template>
+                @if (context is Meet meet)
+                {
+                    <span class="d-block">@meet.Name (@meet.Place)</span>
+                    <span class="d-block text-muted small">@meet.MaxDate.ToString("d")</span>
+                }
+            </Template>
+        </RadzenDropDown>
+    </div>
+    @if (this.Events is not null) {
+        <div class="col">
+            <RadzenDropDown TValue="Event" AllowVirtualization="false" Data="this.Events" Change="@OnEventSelected" style="height: auto;" @bind-Value="this.SelectedEvent">
+                <Template>
+                    @if (context is Event ev)
+                    {
+                        <span class="d-block">@ev.Number - @(ev.SwimStyle?.RelayCount)x@(ev.SwimStyle?.Distance)m @ev.SwimStyle?.Stroke (@ev.MinAge-@ev.MaxAge, @ev.Gender)</span>
+                    }
+                </Template>
+            </RadzenDropDown>
+        </div>
+    }
+</div>
+
+@if (this.MembersInMeet is not null)
+{
+    <ul>
+    @foreach (Member member in this.MembersInMeet)
+    {
+        <li>@member.Firstname @member.Lastname</li>
+    }
+    </ul>
+}
+
+@code {
+    private IEnumerable<Meet>? Meets { get; set; }
+    private IEnumerable<Member>? Members { get; set; }
+    private Meet? SelectedMeet { get; set; }
+    private IEnumerable<Event>? Events { get; set; }
+    private Event? SelectedEvent { get; set; }
+    private IEnumerable<Member>? MembersInMeet { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.Meets = this.Database.GetMeets();
+        this.Members = this.Database.GetMembers();
+    }
+
+    void OnMeetSelected(object o)
+    {
+        if (o is Meet meet)
+        {
+            this.SelectedMeet = meet;
+            this.Events = this.Database.GetRelays(meet.Id);
+            this.SelectedEvent = null;
+            this.MembersInMeet = this.Database.GetMembers(meet.Id);
+        }
+        else
+        {
+            this.SelectedMeet = null;
+            this.Events = null;
+            this.SelectedEvent = null;
+            this.MembersInMeet = null;
+        }
+    }
+
+    void OnEventSelected(object o)
+    {
+        if (o is Event ev)
+        {
+            this.SelectedEvent = ev;
+        }
+        else
+        {
+            this.SelectedEvent = null;
+        }
+    }
+}
