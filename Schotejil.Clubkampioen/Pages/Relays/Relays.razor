@@ -88,6 +88,7 @@
                 Text="@Strings.SelectAllInMeet"
                 ButtonStyle="ButtonStyle.Secondary"
                 Click="@SelectAllInMeet"></RadzenButton>
+                <RadzenNumeric Min="1" @bind-Value="@RelayCount"/>
         </div>
     </div>
 }
@@ -97,23 +98,26 @@
     <p class="my-3">@Localizer["Loading"]</p>
 }
 
-@if (this.Relay is { } relay && this.SelectedEvent is { SwimStyle: { } swimStyle })
+@if (this.GeneratedRelays is { } relays && this.SelectedEvent is { SwimStyle: { } swimStyle })
 {
-    <RadzenDataGrid TItem="RelayPosition" Data="relay.Positions">
-        <Columns>
-            <RadzenDataGridColumn TItem="RelayPosition" Property="Number"/>
-            <RadzenDataGridColumn TItem="RelayPosition" Property="Member.FullName" Title="@Strings.Name" />
-            <RadzenDataGridColumn TItem="RelayPosition" Title="@Strings.Time">
-                <Template>
-                    @context.EntryTimeSpan.Format()
-                </Template>
-                <FooterTemplate>
-                    <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">@relay.EntryTime.Format()</span>
-                </FooterTemplate>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="RelayPosition" Property="@nameof(RelayPosition.Stroke)" Title="@Strings.Stroke"/>
-        </Columns>
-    </RadzenDataGrid>
+    @foreach (var relay in relays)
+    {
+        <RadzenDataGrid TItem="RelayPosition" Data="relay.Positions" class="mb-2">
+            <Columns>
+                <RadzenDataGridColumn TItem="RelayPosition" Property="Number"/>
+                <RadzenDataGridColumn TItem="RelayPosition" Property="Member.FullName" Title="@Strings.Name" />
+                <RadzenDataGridColumn TItem="RelayPosition" Title="@Strings.Time">
+                    <Template>
+                        @context.EntryTimeSpan.Format()
+                    </Template>
+                    <FooterTemplate>
+                        <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">@relay.EntryTime.Format()</span>
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="RelayPosition" Property="@nameof(RelayPosition.Stroke)" Title="@Strings.Stroke"/>
+            </Columns>
+        </RadzenDataGrid>
+    }
 }
 
 @code {
@@ -127,8 +131,9 @@
     private IEnumerable<Data.TeamManager.Group>? Groups { get; set; }
     private IEnumerable<Data.TeamManager.Group> SelectedGroups { get; set; } = new List<Data.TeamManager.Group>();
     private List<Member> FilteredMembers { get; } = new List<Member>();
-    private Relay? Relay { get; set; }
+    private IEnumerable<Relay>? GeneratedRelays { get; set; }
     private bool IsLoading { get; set; } = false;
+    private int RelayCount { get; set; } = 1;
 
     protected async override Task OnInitializedAsync()
     {
@@ -141,7 +146,7 @@
 
     async Task OnMeetSelected(object o)
     {
-        this.Relay = null;
+        this.GeneratedRelays = null;
         if (o is Meet meet)
         {
             this.SelectedMeet = meet;
@@ -160,7 +165,7 @@
 
     void OnEventSelected(object o)
     {
-        this.Relay = null;
+        this.GeneratedRelays = null;
         if (o is Event ev)
         {
             this.SelectedEvent = ev;
@@ -196,7 +201,7 @@
             {
                 this.IsLoading = true;
                 await Task.Delay(10);
-                this.Relay = await this.RelaysService.CalculateRelay(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers);
+                this.GeneratedRelays = await this.RelaysService.CalculateRelays(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers, this.RelayCount);
             }
             catch (Exception e)
             {

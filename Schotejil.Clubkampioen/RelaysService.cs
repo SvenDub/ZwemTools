@@ -15,6 +15,22 @@ public class RelaysService
         this.localizer = localizer;
     }
 
+    public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count)
+    {
+        if (count <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count), count, this.localizer["The amount of relays must not be negative."]);
+        }
+
+        ICollection<Relay> relays = new List<Relay>();
+        for (int i = 0; i < count; i++)
+        {
+            relays.Add(await this.CalculateRelay(meet, ev, availableMembers.Except(relays.SelectMany(r => r.Positions.Select(p => p.Member).WhereNotNull())).ToList()));
+        }
+
+        return relays;
+    }
+
     public Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
     {
         if (ev.SwimStyle is null || ev.SwimStyle.RelayCount <= 1)
