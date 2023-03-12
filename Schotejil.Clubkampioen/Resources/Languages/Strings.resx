@@ -234,4 +234,13 @@
   <data name="SelectAllInMeet" xml:space="preserve">
     <value>Select all in meet</value>
   </data>
+  <data name="The event must be a relay event." xml:space="preserve">
+    <value>The event must be a relay event.</value>
+  </data>
+  <data name="The amount of available swimmers must be at least the amount of relay positions." xml:space="preserve">
+    <value>The amount of available swimmers must be at least the amount of relay positions.</value>
+  </data>
+  <data name="This type of relay is not supported." xml:space="preserve">
+    <value>This type of relay is not supported.</value>
+  </data>
 </root>

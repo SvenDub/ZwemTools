@@ -22,6 +22,8 @@ public static class LenexFormatExtensions
         };
     }
 
+    public static string Format(this TimeSpan time) => Format(time as TimeSpan?);
+
     public static string Format(this TimeSpan? time)
     {
         if (time is not null)

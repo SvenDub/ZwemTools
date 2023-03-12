@@ -1,7 +1,12 @@
 ﻿@page "/relays"
+@using Microsoft.Extensions.Logging;
 @using Schotejil.Clubkampioen.Data.TeamManager;
-@inject TeamManagerDatabase Database
+@using Schotejil.Clubkampioen;
+@inject ITeamManagerDatabase Database
+@inject RelaysService RelaysService
 @inject IStringLocalizer<Strings> Localizer
+@inject DialogService DialogService
+@inject ILogger<Relays> Logger
 
 <h3>@Strings.Relays</h3>
 
@@ -37,7 +42,7 @@
     }
 </div>
 
-@if (this.FilteredMembers is not null)
+@if (this.FilteredMembers is not null && this.SelectedEvent is { SwimStyle: { } })
 {
     <div class="row">
         <div class="col-2">
@@ -76,6 +81,27 @@
             ></RadzenListBox>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <RadzenButton
+                Text="@Strings.Calculate"
+                ButtonStyle="ButtonStyle.Primary"
+                Click="@(_ => CalculateRelay())"
+                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)"
+            ></RadzenButton>
+        </div>
+    </div>
+}
+
+@if (this.Relay is { } relay && this.SelectedEvent is { SwimStyle: { } swimStyle })
+{
+    <p>@relay.EntryTime.Format() <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">(@relay.Positions.Count/@swimStyle.RelayCount)</span></p>
+    <ul>
+        @foreach (var position in relay.Positions)
+        {
+            <li>@position.Member?.FullName - @(position.EntryTimeSpan.Format())</li>
+        }
+    </ul>
 }
 
 @code {
@@ -89,10 +115,11 @@
     private IEnumerable<Data.TeamManager.Group>? Groups { get; set; }
     private IEnumerable<Data.TeamManager.Group> SelectedGroups { get; set; } = new List<Data.TeamManager.Group>();
     private List<Member> FilteredMembers { get; } = new List<Member>();
+    private Relay? Relay { get; set; }
 
     protected override void OnInitialized()
     {
-        this.Meets = this.Database.GetMeets().ToList();
+        this.Meets = this.Database.GetMeetsWithRelays().ToList();
         this.Members = this.Database.GetMembers().ToList();
         this.Groups = this.Database.GetGroups().ToList();
         this.SelectedGroups = this.Groups.Where(g => g.Id == "LICENTIE").ToList();
@@ -101,6 +128,7 @@
 
     void OnMeetSelected(object o)
     {
+        this.Relay = null;
         if (o is Meet meet)
         {
             this.SelectedMeet = meet;
@@ -119,6 +147,7 @@
 
     void OnEventSelected(object o)
     {
+        this.Relay = null;
         if (o is Event ev)
         {
             this.SelectedEvent = ev;
@@ -142,6 +171,22 @@
             foreach (var member in this.MembersInMeet.Where(member => !this.SelectedMembers.Contains(member)))
             {
                 this.SelectedMembers.Add(member);
+            }
+        }
+    }
+
+    void CalculateRelay()
+    {
+        if (this.SelectedMeet is not null && this.SelectedEvent is not null)
+        {
+            try
+            {
+                this.Relay = this.RelaysService.CalculateRelay(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers);
+            }
+            catch (Exception e)
+            {
+                this.Logger.LogError(e, "Error");
+                this.DialogService.Alert(e.Message, "Error");
             }
         }
     }

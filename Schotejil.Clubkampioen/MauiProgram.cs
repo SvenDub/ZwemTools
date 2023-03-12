@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Radzen;
 using Schotejil.Clubkampioen.Data.Lenex;
 using Schotejil.Clubkampioen.Data.Sql;
 using Schotejil.Clubkampioen.Data.TeamManager;
@@ -30,8 +31,11 @@ public static class MauiProgram
 
         if (OperatingSystem.IsWindows())
         {
-            builder.Services.AddSingleton<TeamManagerDatabase>();
+            builder.Services.AddSingleton<ITeamManagerDatabase, TeamManagerDatabase>();
+            builder.Services.AddSingleton<RelaysService>();
         }
+
+        builder.Services.AddRadzenServices();
 
         builder.Services.AddDbContext<DatabaseContext>();
         builder.Services.AddLogging(logging => logging.AddDebug());
@@ -45,5 +49,12 @@ public static class MauiProgram
         }
 
         return app;
+    }
+
+    public static IServiceCollection AddRadzenServices(this IServiceCollection services)
+    {
+        services.AddScoped<DialogService>();
+        services.AddScoped<NotificationService>();
+        return services;
     }
 }

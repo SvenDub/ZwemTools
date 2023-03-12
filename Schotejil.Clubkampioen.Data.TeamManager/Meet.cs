@@ -16,4 +16,7 @@ public record Meet
     [Column("PLACE")]
     public required string Place { get; set; }
 
+    [Column("AGEDATE")]
+    public required DateTime AgeDate { get; set; }
+
 }
