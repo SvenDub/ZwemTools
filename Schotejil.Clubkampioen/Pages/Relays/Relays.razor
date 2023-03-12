@@ -82,14 +82,19 @@
             <RadzenButton
                 Text="@Strings.Calculate"
                 ButtonStyle="ButtonStyle.Primary"
-                Click="@(_ => CalculateRelay())"
+                Click="@CalculateRelay"
                 Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)"></RadzenButton>
             <RadzenButton
                 Text="@Strings.SelectAllInMeet"
                 ButtonStyle="ButtonStyle.Secondary"
-                Click="@(_ => SelectAllInMeet())"></RadzenButton>
+                Click="@SelectAllInMeet"></RadzenButton>
         </div>
     </div>
+}
+
+@if (this.IsLoading)
+{
+    <p class="my-3">@Localizer["Loading"]</p>
 }
 
 @if (this.Relay is { } relay && this.SelectedEvent is { SwimStyle: { } swimStyle })
@@ -123,25 +128,26 @@
     private IEnumerable<Data.TeamManager.Group> SelectedGroups { get; set; } = new List<Data.TeamManager.Group>();
     private List<Member> FilteredMembers { get; } = new List<Member>();
     private Relay? Relay { get; set; }
+    private bool IsLoading { get; set; } = false;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        this.Meets = this.Database.GetMeetsWithRelays().ToList();
-        this.Members = this.Database.GetMembers().ToList();
-        this.Groups = this.Database.GetGroups().ToList();
+        this.Meets = (await this.Database.GetMeetsWithRelays()).ToList();
+        this.Members = (await this.Database.GetMembers()).ToList();
+        this.Groups = (await this.Database.GetGroups()).ToList();
         this.SelectedGroups = this.Groups.Where(g => g.Id == "LICENTIE").ToList();
         this.UpdateFilteredMembers();
     }
 
-    void OnMeetSelected(object o)
+    async Task OnMeetSelected(object o)
     {
         this.Relay = null;
         if (o is Meet meet)
         {
             this.SelectedMeet = meet;
-            this.Events = this.Database.GetRelays(meet.Id);
+            this.Events = await this.Database.GetRelays(meet.Id);
             this.SelectedEvent = null;
-            this.MembersInMeet = this.Database.GetMembers(meet.Id);
+            this.MembersInMeet = await this.Database.GetMembers(meet.Id);
         }
         else
         {
@@ -182,18 +188,24 @@
         }
     }
 
-    void CalculateRelay()
+    async Task CalculateRelay()
     {
         if (this.SelectedMeet is not null && this.SelectedEvent is not null)
         {
             try
             {
-                this.Relay = this.RelaysService.CalculateRelay(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers);
+                this.IsLoading = true;
+                await Task.Delay(10);
+                this.Relay = await this.RelaysService.CalculateRelay(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers);
             }
             catch (Exception e)
             {
                 this.Logger.LogError(e, "Error");
-                this.DialogService.Alert(e.Message, "Error");
+                await this.DialogService.Alert(e.Message, "Error");
+            }
+            finally
+            {
+                this.IsLoading = false;
             }
         }
     }
