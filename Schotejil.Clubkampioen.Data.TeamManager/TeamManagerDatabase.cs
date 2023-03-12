@@ -88,19 +88,18 @@ public class TeamManagerDatabase : ITeamManagerDatabase
         return connection.Query<Group>("select * from GROUPS");
     }
 
-    public IEnumerable<(Member Member, TimeSpan EntryTime)> GetFastestMembers(SwimStyle swimStyle, Gender gender, int minAge, int maxAge, DateTime ageDate, IEnumerable<Member> availableMembers)
+    public IEnumerable<(Member Member, TimeSpan EntryTime)> GetFastestMembers(int distance, Stroke stroke, Gender gender, int minAge, int maxAge, DateTime ageDate, IEnumerable<Member> availableMembers)
     {
         DateTime minDate = ageDate.AddYears(-maxAge);
         DateTime maxDate = ageDate.AddYears(-minAge);
         using var connection = new OleDbConnection(ConnectionString);
-        int styleId = connection.QueryFirst<int>("select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke", new { swimStyle.Distance, swimStyle.Stroke });
+        int styleId = connection.QueryFirst<int>("select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke", new { Distance = distance, Stroke = stroke });
 
         return connection.Query<Member, int, (Member Member, TimeSpan EntryTime)>(
             "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER = @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",
             (member, entryTime) => (member, TimeSpan.FromMilliseconds(entryTime)),
             new { StyleId = styleId, Gender = (int)gender, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id) },
-            splitOn: "TOTALTIME")
-            .Take(swimStyle.RelayCount);
+            splitOn: "TOTALTIME");
     }
 
     private static void MapAttributes<T>()

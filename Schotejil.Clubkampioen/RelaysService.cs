@@ -37,6 +37,51 @@ public class RelaysService
 
     private Relay CalculateMedleyRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
     {
+        Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
+
+        if (ev.SwimStyle.RelayCount == 4 && ev.Gender != Gender.Mixed)
+        {
+            var relayOptions = new[] { Stroke.Fly, Stroke.Back, Stroke.Breast, Stroke.Free }
+            .Permute()
+            .Select(strokes =>
+            {
+                Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
+                foreach (var stroke in strokes)
+                {
+                    var fastestForStroke = this.database.GetFastestMembers(ev.SwimStyle.Distance, stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers.Except(members.Select(x => x.Value.Member))).FirstOrDefault();
+                    members[stroke] = fastestForStroke;
+                }
+
+                RelayPosition CreateRelayPosition(Stroke stroke, int number)
+                {
+                    (Member Member, TimeSpan EntryTime) m = members[stroke];
+                    return new RelayPosition()
+                    {
+                        RelayId = -1,
+                        Number = number,
+                        EntryTime = (int)Math.Round(m.EntryTime.TotalMilliseconds),
+                        Member = m.Member,
+                        Stroke = stroke,
+                    };
+                }
+
+                ICollection<RelayPosition> relayPositions = new List<RelayPosition>() {
+                    CreateRelayPosition(Stroke.Back, 1),
+                    CreateRelayPosition(Stroke.Breast, 2),
+                    CreateRelayPosition(Stroke.Fly, 3),
+                    CreateRelayPosition(Stroke.Free, 4),
+                };
+
+                return new Relay()
+                {
+                    Id = -1,
+                    Positions = relayPositions,
+                };
+            }).ToList();
+
+            return relayOptions.MinBy(relay => relay.EntryTime)!;
+        }
+
         throw new NotImplementedException(this.localizer["This type of relay is not supported."]);
     }
 
@@ -45,16 +90,17 @@ public class RelaysService
         Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
         if (ev.Gender != Gender.Mixed)
         {
-            IEnumerable<(Member Member, TimeSpan EntryTime)> members = this.database.GetFastestMembers(ev.SwimStyle, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers);
+            IEnumerable<(Member Member, TimeSpan EntryTime)> members = this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers).Take(ev.SwimStyle.RelayCount);
             return new Relay()
             {
                 Id = -1,
                 Positions = members.Select((x, i) => new RelayPosition()
                 {
                     RelayId = -1,
-                    Number = i,
+                    Number = i + 1,
                     Member = x.Member,
-                    EntryTime = ((int)Math.Round(x.EntryTime.TotalMilliseconds))
+                    EntryTime = (int)Math.Round(x.EntryTime.TotalMilliseconds),
+                    Stroke = ev.SwimStyle.Stroke,
                 }).ToList(),
             };
         }

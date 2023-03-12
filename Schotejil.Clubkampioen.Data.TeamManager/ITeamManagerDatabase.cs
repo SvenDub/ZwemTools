@@ -3,7 +3,7 @@
 public interface ITeamManagerDatabase
 {
     IEnumerable<Event> GetEvents(int meetId);
-    IEnumerable<(Member Member, TimeSpan EntryTime)> GetFastestMembers(SwimStyle swimStyle, Gender gender, int minAge, int maxAge, DateTime ageDate, IEnumerable<Member> availableMembers);
+    IEnumerable<(Member Member, TimeSpan EntryTime)> GetFastestMembers(int distance, Stroke stroke, Gender gender, int minAge, int maxAge, DateTime ageDate, IEnumerable<Member> availableMembers);
     IEnumerable<Group> GetGroups();
     IEnumerable<Meet> GetMeets();
     IEnumerable<Meet> GetMeetsWithRelays();

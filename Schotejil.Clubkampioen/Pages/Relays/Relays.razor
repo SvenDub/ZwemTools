@@ -44,13 +44,9 @@
 
 @if (this.FilteredMembers is not null && this.SelectedEvent is { SwimStyle: { } })
 {
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-2">
-            <RadzenButton
-                Text="@Strings.SelectAllInMeet"
-                ButtonStyle="ButtonStyle.Primary"
-                Click="@(_ => SelectAllInMeet())"
-            ></RadzenButton>
+            
         </div>
         <div class="col">
             <RadzenListBox
@@ -81,27 +77,38 @@
             ></RadzenListBox>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-2">
         <div class="col">
             <RadzenButton
                 Text="@Strings.Calculate"
                 ButtonStyle="ButtonStyle.Primary"
                 Click="@(_ => CalculateRelay())"
-                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)"
-            ></RadzenButton>
+                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)"></RadzenButton>
+            <RadzenButton
+                Text="@Strings.SelectAllInMeet"
+                ButtonStyle="ButtonStyle.Secondary"
+                Click="@(_ => SelectAllInMeet())"></RadzenButton>
         </div>
     </div>
 }
 
 @if (this.Relay is { } relay && this.SelectedEvent is { SwimStyle: { } swimStyle })
 {
-    <p>@relay.EntryTime.Format() <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">(@relay.Positions.Count/@swimStyle.RelayCount)</span></p>
-    <ul>
-        @foreach (var position in relay.Positions)
-        {
-            <li>@position.Member?.FullName - @(position.EntryTimeSpan.Format())</li>
-        }
-    </ul>
+    <RadzenDataGrid TItem="RelayPosition" Data="relay.Positions">
+        <Columns>
+            <RadzenDataGridColumn TItem="RelayPosition" Property="Number"/>
+            <RadzenDataGridColumn TItem="RelayPosition" Property="Member.FullName" Title="@Strings.Name" />
+            <RadzenDataGridColumn TItem="RelayPosition" Title="@Strings.Time">
+                <Template>
+                    @context.EntryTimeSpan.Format()
+                </Template>
+                <FooterTemplate>
+                    <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">@relay.EntryTime.Format()</span>
+                </FooterTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="RelayPosition" Property="@nameof(RelayPosition.Stroke)" Title="@Strings.Stroke"/>
+        </Columns>
+    </RadzenDataGrid>
 }
 
 @code {

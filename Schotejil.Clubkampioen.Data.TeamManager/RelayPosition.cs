@@ -16,4 +16,6 @@ public record RelayPosition
     public TimeSpan EntryTimeSpan => TimeSpan.FromMilliseconds(this.EntryTime);
 
     public Member? Member { get; set; }
+
+    public Stroke? Stroke { get; set; }
 }
