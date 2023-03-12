@@ -228,4 +228,10 @@
   <data name="Relays" xml:space="preserve">
     <value>Estafettes</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="SelectAllInMeet" xml:space="preserve">
+    <value>Iedereen in wedstrijd selecteren</value>
+  </data>
 </root>

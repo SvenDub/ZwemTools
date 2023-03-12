@@ -20,6 +20,8 @@ public class TeamManagerDatabase
         MapAttributes<Meet>();
         MapAttributes<Event>();
         MapAttributes<SwimStyle>();
+        MapAttributes<Member>();
+        MapAttributes<Group>();
     }
 
     public bool TestConnection()
@@ -70,6 +72,12 @@ public class TeamManagerDatabase
         return connection.Query<Member>(
             "select distinct m.* from RESULTS r INNER JOIN MEMBERS m on r.MEMBERSID = m.MEMBERSID where r.MEETSID = @Id",
             new { Id = meetId });
+    }
+
+    public IEnumerable<Group> GetGroups()
+    {
+        using var connection = new OleDbConnection(ConnectionString);
+        return connection.Query<Group>("select * from GROUPS");
     }
 
     private static void MapAttributes<T>()

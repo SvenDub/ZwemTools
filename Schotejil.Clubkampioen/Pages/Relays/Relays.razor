@@ -11,7 +11,7 @@
     return;
 }
 
-<div class="row">
+<div class="row mb-2">
     <div class="col">
         <RadzenDropDown TValue="Meet" AllowVirtualization="false" Data="this.Meets" Change="@OnMeetSelected" style="height: auto;" @bind-Value="this.SelectedMeet">
             <Template>
@@ -37,14 +37,45 @@
     }
 </div>
 
-@if (this.MembersInMeet is not null)
+@if (this.FilteredMembers is not null)
 {
-    <ul>
-    @foreach (Member member in this.MembersInMeet)
-    {
-        <li>@member.Firstname @member.Lastname</li>
-    }
-    </ul>
+    <div class="row">
+        <div class="col-2">
+            <RadzenButton
+                Text="@Strings.SelectAllInMeet"
+                ButtonStyle="ButtonStyle.Primary"
+                Click="@(_ => SelectAllInMeet())"
+            ></RadzenButton>
+        </div>
+        <div class="col">
+            <RadzenListBox
+                @bind-Value="@SelectedMembers"
+                Data="@FilteredMembers"
+                Multiple
+                AllowClear
+                AllowFiltering
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterOperator="StringFilterOperator.Contains"
+                TextProperty="@nameof(Member.FullName)"
+                Style="height: 400px"
+            ></RadzenListBox>
+        </div>
+        <div class="col">
+            <RadzenListBox
+                TValue="IEnumerable<Data.TeamManager.Group>"
+                Value="@SelectedGroups"
+                ValueChanged="@OnFilterChanged"
+                Data="@Groups"
+                Multiple
+                AllowClear
+                AllowFiltering
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterOperator="StringFilterOperator.Contains"
+                TextProperty="@nameof(Data.TeamManager.Group.Name)"
+                Style="height: 400px"
+            ></RadzenListBox>
+        </div>
+    </div>
 }
 
 @code {
@@ -54,11 +85,18 @@
     private IEnumerable<Event>? Events { get; set; }
     private Event? SelectedEvent { get; set; }
     private IEnumerable<Member>? MembersInMeet { get; set; }
+    private List<Member> SelectedMembers { get; set; } = new List<Member>();
+    private IEnumerable<Data.TeamManager.Group>? Groups { get; set; }
+    private IEnumerable<Data.TeamManager.Group> SelectedGroups { get; set; } = new List<Data.TeamManager.Group>();
+    private List<Member> FilteredMembers { get; } = new List<Member>();
 
     protected override void OnInitialized()
     {
-        this.Meets = this.Database.GetMeets();
-        this.Members = this.Database.GetMembers();
+        this.Meets = this.Database.GetMeets().ToList();
+        this.Members = this.Database.GetMembers().ToList();
+        this.Groups = this.Database.GetGroups().ToList();
+        this.SelectedGroups = this.Groups.Where(g => g.Id == "LICENTIE").ToList();
+        this.UpdateFilteredMembers();
     }
 
     void OnMeetSelected(object o)
@@ -89,5 +127,28 @@
         {
             this.SelectedEvent = null;
         }
+    }
+
+    void OnFilterChanged(IEnumerable<Data.TeamManager.Group> o)
+    {
+        this.SelectedGroups = o;
+        this.UpdateFilteredMembers();
+    }
+
+    void SelectAllInMeet()
+    {
+        if (this.MembersInMeet is not null)
+        {
+            foreach (var member in this.MembersInMeet.Where(member => !this.SelectedMembers.Contains(member)))
+            {
+                this.SelectedMembers.Add(member);
+            }
+        }
+    }
+
+    private void UpdateFilteredMembers()
+    {
+        this.FilteredMembers.Clear();
+        this.FilteredMembers.AddRange(this.Members?.Where(member => member.GroupNames.Any(group => this.SelectedGroups.Any(s => s.Id == group))) ?? Enumerable.Empty<Member>());
     }
 }

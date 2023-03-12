@@ -15,4 +15,11 @@ public record Member
 
     [Column("BIRTHDATE")]
     public required DateTime Birthdate { get; set; }
+
+    [Column("GROUPS")]
+    public required string Groups { get; set; }
+
+    public IEnumerable<string> GroupNames => this.Groups.Split(", ");
+
+    public string FullName => $"{this.Firstname} {this.Lastname}";
 }

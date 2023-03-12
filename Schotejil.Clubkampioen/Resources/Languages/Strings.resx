@@ -228,4 +228,10 @@
   <data name="Relays" xml:space="preserve">
     <value>Relays</value>
   </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="SelectAllInMeet" xml:space="preserve">
+    <value>Select all in meet</value>
+  </data>
 </root>
