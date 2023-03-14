@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
@@ -16,7 +15,7 @@
         <ApplicationTitle>Schotejil.Clubkampioen</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.schotejil.clubkampioen</ApplicationId>
+        <ApplicationId>nl.schotejil.clubkampioen</ApplicationId>
         <ApplicationIdGuid>E814678F-1B0B-4462-9EFC-36B392FD1522</ApplicationIdGuid>
 
         <!-- Versions -->
@@ -35,9 +34,9 @@
         <PackageCertificateThumbprint>5CC2BECA84B93DA89083DD432210F6EDB3D424F6</PackageCertificateThumbprint>
         <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
         <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-        <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+        <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
         <GenerateTestArtifacts>True</GenerateTestArtifacts>
-        <AppInstallerUri>\\weedle\home\Schotejil\Schotejil.Clubkampioen.msix</AppInstallerUri>
+        <AppInstallerUri>\\weedle\home\Schotejil\Schotejil.Clubkampioen</AppInstallerUri>
         <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     </PropertyGroup>
 
@@ -85,6 +84,7 @@
       <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="7.0.0" />
       <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
       <PackageReference Include="Radzen.Blazor" Version="4.7.9" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />

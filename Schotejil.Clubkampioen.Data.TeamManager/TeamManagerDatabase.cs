@@ -25,12 +25,12 @@ public class TeamManagerDatabase : ITeamManagerDatabase
         MapAttributes<RelayPosition>();
     }
 
-    public bool TestConnection()
+    public async Task<bool> TestConnection()
     {
         using var connection = new OleDbConnection(ConnectionString);
         try
         {
-            connection.Open();
+            await connection.OpenAsync();
             this.logger.LogInformation("Sucessfully connected to Team Manager database");
             return true;
         }

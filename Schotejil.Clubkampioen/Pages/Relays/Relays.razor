@@ -12,7 +12,18 @@
 
 @if (!OperatingSystem.IsWindows())
 {
-    <p>Windows only!</p>
+    <p>@this.Localizer["Windows only!"]</p>
+    return;
+}
+
+@if (this.TeamManagerFound is null)
+{
+    <p>@this.Localizer["Looking for Team Manager..."]</p>
+    return;
+}
+else if (!this.TeamManagerFound.Value)
+{
+    <p>@this.Localizer["Team Manager not found."]</p>
     return;
 }
 
@@ -121,6 +132,7 @@
 }
 
 @code {
+    private bool? TeamManagerFound { get; set; }
     private IEnumerable<Meet>? Meets { get; set; }
     private IEnumerable<Member>? Members { get; set; }
     private Meet? SelectedMeet { get; set; }
@@ -137,6 +149,7 @@
 
     protected async override Task OnInitializedAsync()
     {
+        this.TeamManagerFound = await this.Database.TestConnection();
         this.Meets = (await this.Database.GetMeetsWithRelays()).ToList();
         this.Members = (await this.Database.GetMembers()).ToList();
         this.Groups = (await this.Database.GetGroups()).ToList();

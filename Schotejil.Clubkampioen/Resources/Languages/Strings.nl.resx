@@ -243,4 +243,7 @@
   <data name="This type of relay is not supported." xml:space="preserve">
     <value>Dit type estafette wordt niet ondersteund.</value>
   </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versie</value>
+  </data>
 </root>

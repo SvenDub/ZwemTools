@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.EventLog;
 using Radzen;
 using Schotejil.Clubkampioen.Data.Lenex;
 using Schotejil.Clubkampioen.Data.Sql;
@@ -38,7 +39,10 @@ public static class MauiProgram
         builder.Services.AddRadzenServices();
 
         builder.Services.AddDbContext<DatabaseContext>();
-        builder.Services.AddLogging(logging => logging.AddDebug());
+        builder.Services.AddLogging(logging => {
+            logging.AddDebug();
+            logging.AddEventLog();
+        });
 
         MauiApp app = builder.Build();
 
