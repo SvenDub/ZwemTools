@@ -1,0 +1,50 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31611.283
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools", "ZwemTools\ZwemTools.csproj", "{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0BFEA786-A15B-49BC-8AFA-63944DCA4D70}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.Lenex", "ZwemTools.Data.Lenex\ZwemTools.Data.Lenex.csproj", "{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.Sql", "ZwemTools.Data.Sql\ZwemTools.Data.Sql.csproj", "{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.TeamManager", "ZwemTools.Data.TeamManager\ZwemTools.Data.TeamManager.csproj", "{4F828181-02A9-4B07-91FB-5C681364B60F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F54CC6E-8F36-4ED2-AA11-8661BEF413E6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24B1FE22-668A-44A8-99ED-A8A050D9BE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F52ADB2-AC8D-497A-9F2E-579E2709A54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
+	EndGlobalSection
+EndGlobal
