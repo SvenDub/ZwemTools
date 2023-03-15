@@ -1,71 +1,76 @@
 ﻿@inherits LayoutComponentBase
+
 @inject IStringLocalizer<Strings> Localizer
 
-<RadzenDialog />
-<RadzenNotification />
+<RadzenDialog/>
+<RadzenNotification/>
 
 <div class="page">
-	<div class="sidebar d-print-none">
-		<NavMenu />
-	</div>
+    <div class="sidebar d-print-none">
+        <NavMenu/>
+    </div>
 
-	<main>
-		<div class="top-row px-4 d-print-none">
-			@Localizer["Version"]
-			@AppInfo.Version
-			|
-			@Localizer["Language"]&nbsp;
-			<RadzenDropDown TValue="CultureInfo" Data="cultures" TextProperty="NativeName" @bind-Value="Culture">
-			</RadzenDropDown>
-		</div>
+    <main>
+        <div class="top-row px-4 d-print-none">
+            @Localizer["Version"]
+            @AppInfo.Version
+            |
+            @Localizer["Language"]&nbsp;
+            <RadzenDropDown TValue="CultureInfo" Data="cultures" TextProperty="NativeName" @bind-Value="Culture">
+            </RadzenDropDown>
+        </div>
 
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
 </div>
 
 @code {
-	List<CultureInfo> cultures = new()
-		{
-		new CultureInfo("en-US"),
-		new CultureInfo("nl-NL"),
-	};
 
-	protected override void OnInitialized() {
-		base.OnInitialized();
-		if (!cultures.Contains(CultureInfo.CurrentCulture))
-		{
-			cultures.Insert(0, CultureInfo.CurrentCulture);
-		}
-	}
+    readonly List<CultureInfo> cultures = new()
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("nl-NL"),
+    };
 
-	CultureInfo Culture
-	{
-		get => CultureInfo.CurrentCulture;
-		set {
-			if (CultureInfo.CurrentCulture != value)
-			{
-				Thread.CurrentThread.CurrentCulture = value;
-				Thread.CurrentThread.CurrentUICulture = value;
-				CultureInfo.DefaultThreadCurrentCulture = value;
-				CultureInfo.DefaultThreadCurrentUICulture = value;
-				CultureInfo.CurrentCulture = value;
-				CultureInfo.CurrentUICulture = value;
-				Preferences.Set("language", value.Name);
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!cultures.Contains(CultureInfo.CurrentCulture))
+        {
+            cultures.Insert(0, CultureInfo.CurrentCulture);
+        }
+    }
 
-				MainThread.InvokeOnMainThreadAsync(async () =>
-				{
-					if (Application.Current?.MainPage is not null)
-					{
-						bool close = await Application.Current.MainPage.DisplayAlert(Localizer["RestartLanguageTitle"], Localizer["RestartLanguage"], Localizer["Ok"], Localizer["Cancel"]);
-						if (close)
-						{
-							Application.Current.CloseWindow(Application.Current.MainPage.Window);
-						}
-					}
-				});
-			}
-		}
-	}
+    CultureInfo Culture
+    {
+        get => CultureInfo.CurrentCulture;
+        set
+        {
+            if (CultureInfo.CurrentCulture != value)
+            {
+                Thread.CurrentThread.CurrentCulture = value;
+                Thread.CurrentThread.CurrentUICulture = value;
+                CultureInfo.DefaultThreadCurrentCulture = value;
+                CultureInfo.DefaultThreadCurrentUICulture = value;
+                CultureInfo.CurrentCulture = value;
+                CultureInfo.CurrentUICulture = value;
+                Preferences.Set("language", value.Name);
+
+                MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    if (Application.Current?.MainPage is not null)
+                    {
+                        bool close = await Application.Current.MainPage.DisplayAlert(Localizer["RestartLanguageTitle"], Localizer["RestartLanguage"], Localizer["Ok"], Localizer["Cancel"]);
+                        if (close)
+                        {
+                            Application.Current.CloseWindow(Application.Current.MainPage.Window);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
 }

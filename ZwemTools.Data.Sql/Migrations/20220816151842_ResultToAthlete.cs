@@ -10,6 +10,7 @@ namespace ZwemTools.Data.Sql.Migrations
 {
     public partial class ResultToAthlete : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -35,6 +36,7 @@ namespace ZwemTools.Data.Sql.Migrations
                 onDelete: ReferentialAction.Cascade);
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

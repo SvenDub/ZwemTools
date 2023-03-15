@@ -11,17 +11,24 @@ public class DatabaseContext : DbContext
     public string DbPath { get; }
 
     public DbSet<AgeGroup> AgeGroups { get; set; } = null!;
+
     public DbSet<Athlete> Athletes { get; set; } = null!;
+
     public DbSet<Club> Clubs { get; set; } = null!;
+
     public DbSet<Event> Events { get; set; } = null!;
+
     public DbSet<Meet> Meets { get; set; } = null!;
+
     public DbSet<Ranking> Rankings { get; set; } = null!;
+
     public DbSet<Result> Results { get; set; } = null!;
+
     public DbSet<Session> Sessions { get; set; } = null!;
 
     public DatabaseContext()
     {
-        Environment.SpecialFolder folder = Environment.SpecialFolder.LocalApplicationData;
+        const Environment.SpecialFolder folder = Environment.SpecialFolder.LocalApplicationData;
         string path = Environment.GetFolderPath(folder);
         path = Path.Join(path, "ZwemTools");
         Directory.CreateDirectory(path);
@@ -34,7 +41,8 @@ public class DatabaseContext : DbContext
         logger.LogDebug("Using database {DbPath}", this.DbPath);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options) => options
+    /// <inheritdoc/>
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
         .UseLazyLoadingProxies()
         .UseSqlite($"Data Source={this.DbPath}");
 }

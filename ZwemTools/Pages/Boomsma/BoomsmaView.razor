@@ -1,5 +1,7 @@
 ﻿@page "/boomsma"
+
 @using ZwemTools.Data.Sql
+
 @inject DatabaseContext Context
 @inject BoomsmaService BoomsmaService
 
@@ -7,7 +9,7 @@
 
 <div class="row">
     <div class="col">
-        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="this.Sessions" Change="@OnFromSelected" style="height: auto;">
+        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="Sessions" Change="@OnFromSelected" style="height: auto;">
             <Template>
                 @if (context is Session session)
                 {
@@ -18,7 +20,7 @@
         </RadzenDropDown>
     </div>
     <div class="col">
-        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="this.Sessions" Change="@OnToSelected" style="height: auto;">
+        <RadzenDropDown TValue="Session" AllowVirtualization="true" Data="Sessions" Change="@OnToSelected" style="height: auto;">
             <Template>
                 @if (context is Session session)
                 {
@@ -29,13 +31,13 @@
         </RadzenDropDown>
     </div>
     <div class="col">
-        <RadzenButton Text="@Strings.Calculate" Click="@OnCalculate" />
+        <RadzenButton Text="@Strings.Calculate" Click="@OnCalculate"/>
     </div>
 </div>
 
-@if (this.Results is not null)
+@if (Results is not null)
 {
-    foreach (var (key, results) in this.Results.Results)
+    foreach (((Stroke Stroke, Gender Gender) key, ICollection<BoomsmaResult> results) in Results.Results)
     {
         <RadzenPanel AllowCollapse="true" Collapsed="true">
             <HeaderTemplate>
@@ -45,10 +47,10 @@
                 <RadzenCard>
                     <RadzenDataGrid TItem="BoomsmaResult" Data="results">
                         <Columns>
-                            <RadzenDataGridColumn TItem="BoomsmaResult" Property="Athlete.FullName" Title="@Strings.Name" />
+                            <RadzenDataGridColumn TItem="BoomsmaResult" Property="Athlete.FullName" Title="@Strings.Name"/>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.FromResultTime">
                                 <Template>
-                                    @this.FormatSwimTime(context.FromResult?.SwimTime) <span class="text-danger">@(context.FromResult?.Status)</span>
+                                    @FormatSwimTime(context.FromResult?.SwimTime) <span class="text-danger">@(context.FromResult?.Status)</span>
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Distance">
@@ -58,10 +60,10 @@
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.ToResultTime">
                                 <Template>
-                                    @this.FormatSwimTime(context.ToResult?.SwimTime)
+                                    @FormatSwimTime(context.ToResult?.SwimTime)
                                     @if (context.ToResult is { Status: not null })
                                     {
-                                        <span class="text-danger">&#32;@(context.ToResult?.Status) (@this.FormatSwimTime(context.ToResult?.SwimTimeWithPenalty))</span>
+                                        <span class="text-danger">&#32;@(context.ToResult?.Status) (@FormatSwimTime(context.ToResult?.SwimTimeWithPenalty))</span>
                                     }
                                 </Template>
                             </RadzenDataGridColumn>
@@ -72,7 +74,7 @@
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn TItem="BoomsmaResult" Title="@Strings.Difference">
                                 <Template>
-                                    @this.FormatSwimTime(context.Difference)
+                                    @FormatSwimTime(context.Difference)
                                 </Template>
                             </RadzenDataGridColumn>
                         </Columns>
@@ -83,7 +85,7 @@
                 <RadzenCard>
                     @if (results.Any(x => x.Difference is not null))
                     {
-                        <b>@results.First(x => x.Difference is not null).Athlete.FullName (@this.FormatSwimTime(results.First().Difference))</b>
+                        <b>@results.First(x => x.Difference is not null).Athlete.FullName (@FormatSwimTime(results.First().Difference))</b>
                     }
                     else
                     {
@@ -104,18 +106,15 @@
 
     protected override void OnInitialized()
     {
-        this.Sessions = this.Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime);
-        this.Context.SavedChanges += (_, _) =>
-        {
-            this.Sessions = this.Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime);
-        };
+        Sessions = Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime);
+        Context.SavedChanges += (_, _) => { Sessions = Context.Sessions.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime); };
     }
 
     void OnFromSelected(object o)
     {
         if (o is Session session)
         {
-            this.FromSession = session;
+            FromSession = session;
         }
     }
 
@@ -123,15 +122,15 @@
     {
         if (o is Session session)
         {
-            this.ToSession = session;
+            ToSession = session;
         }
     }
 
     void OnCalculate()
     {
-        if (this.FromSession is not null && this.ToSession is not null)
+        if (FromSession is not null && ToSession is not null)
         {
-            this.Results = this.BoomsmaService.CalculateResults(this.FromSession, this.ToSession);
+            Results = BoomsmaService.CalculateResults(FromSession, ToSession);
         }
     }
 

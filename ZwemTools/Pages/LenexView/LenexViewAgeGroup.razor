@@ -1,4 +1,5 @@
 ﻿@using ZwemTools.Data.Lenex.Xml
+
 @inject IStringLocalizer<Strings> Localizer
 
 <RadzenCard>
@@ -8,8 +9,8 @@
         </Template>
 
         <Columns>
-            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MinAge" Title="@Localizer["MinAge"]" />
-            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MaxAge" Title="@Localizer["MaxAge"]" />
+            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MinAge" Title="@Localizer["MinAge"]"/>
+            <RadzenDataGridColumn TItem="AgeGroupElement" Property="MaxAge" Title="@Localizer["MaxAge"]"/>
             <RadzenDataGridColumn TItem="AgeGroupElement" Title="@Localizer["Gender"]">
                 <Template Context="data">
                     @(data.Gender ?? Event.Gender)
@@ -20,6 +21,7 @@
 </RadzenCard>
 
 @code {
+
     [Parameter]
     public EventElement Event { get; set; } = new();
 
@@ -30,4 +32,5 @@
     {
         args.Expandable = args.Data.Rankings is {Count: > 0};
     }
+
 }

@@ -8,6 +8,7 @@ using ZwemTools.Data.TeamManager;
 using ZwemTools.Resources.Languages;
 
 namespace ZwemTools;
+
 public class RelaysService
 {
     private readonly ITeamManagerDatabase database;
@@ -61,44 +62,51 @@ public class RelaysService
 
         if (ev.SwimStyle.RelayCount == 4 && ev.Gender != Gender.Mixed)
         {
-            var relayOptions = await new[] { Stroke.Fly, Stroke.Back, Stroke.Breast, Stroke.Free }
-            .Permute()
-            .ToAsyncEnumerable()
-            .SelectAwait(async strokes =>
-            {
-                Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
-                foreach (var stroke in strokes)
+            List<Relay> relayOptions = await new[] { Stroke.Fly, Stroke.Back, Stroke.Breast, Stroke.Free }
+                .Permute()
+                .ToAsyncEnumerable()
+                .SelectAwait(async strokes =>
                 {
-                    var fastestForStroke = (await this.database.GetFastestMembers(ev.SwimStyle.Distance, stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers.Except(members.Select(x => x.Value.Member)))).FirstOrDefault();
-                    members[stroke] = fastestForStroke;
-                }
-
-                RelayPosition CreateRelayPosition(Stroke stroke, int number)
-                {
-                    (Member Member, TimeSpan EntryTime) m = members[stroke];
-                    return new RelayPosition()
+                    Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
+                    foreach (Stroke stroke in strokes)
                     {
-                        RelayId = -1,
-                        Number = number,
-                        EntryTime = (int)Math.Round(m.EntryTime.TotalMilliseconds),
-                        Member = m.Member,
-                        Stroke = stroke,
+                        (Member Member, TimeSpan EntryTime) fastestForStroke = (await this.database.GetFastestMembers(ev.SwimStyle.Distance,
+                            stroke,
+                            ev.Gender,
+                            ev.MinAge,
+                            ev.MaxAge,
+                            meet.AgeDate,
+                            availableMembers.Except(members.Select(x => x.Value.Member)))).FirstOrDefault();
+                        members[stroke] = fastestForStroke;
+                    }
+
+                    RelayPosition CreateRelayPosition(Stroke stroke, int number)
+                    {
+                        (Member Member, TimeSpan EntryTime) m = members[stroke];
+                        return new RelayPosition
+                        {
+                            RelayId = -1,
+                            Number = number,
+                            EntryTime = (int)Math.Round(m.EntryTime.TotalMilliseconds),
+                            Member = m.Member,
+                            Stroke = stroke,
+                        };
+                    }
+
+                    ICollection<RelayPosition> relayPositions = new List<RelayPosition>
+                    {
+                        CreateRelayPosition(Stroke.Back, 1),
+                        CreateRelayPosition(Stroke.Breast, 2),
+                        CreateRelayPosition(Stroke.Fly, 3),
+                        CreateRelayPosition(Stroke.Free, 4),
                     };
-                }
 
-                ICollection<RelayPosition> relayPositions = new List<RelayPosition>() {
-                    CreateRelayPosition(Stroke.Back, 1),
-                    CreateRelayPosition(Stroke.Breast, 2),
-                    CreateRelayPosition(Stroke.Fly, 3),
-                    CreateRelayPosition(Stroke.Free, 4),
-                };
-
-                return new Relay()
-                {
-                    Id = -1,
-                    Positions = relayPositions,
-                };
-            }).ToListAsync();
+                    return new Relay
+                    {
+                        Id = -1,
+                        Positions = relayPositions,
+                    };
+                }).ToListAsync();
 
             return relayOptions.MinBy(relay => relay.EntryTime)!;
         }
@@ -111,11 +119,13 @@ public class RelaysService
         Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
         if (ev.Gender != Gender.Mixed)
         {
-            IEnumerable<(Member Member, TimeSpan EntryTime)> members = (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(ev.SwimStyle.RelayCount);
-            return new Relay()
+            IEnumerable<(Member Member, TimeSpan EntryTime)> members =
+                (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                    ev.SwimStyle.RelayCount);
+            return new Relay
             {
                 Id = -1,
-                Positions = members.Select((x, i) => new RelayPosition()
+                Positions = members.Select((x, i) => new RelayPosition
                 {
                     RelayId = -1,
                     Number = i + 1,

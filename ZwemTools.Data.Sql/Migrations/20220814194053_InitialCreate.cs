@@ -11,6 +11,7 @@ namespace ZwemTools.Data.Sql.Migrations
 {
     public partial class InitialCreate : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -27,7 +28,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     Nation = table.Column<string>(type: "TEXT", nullable: false),
                     Organizer = table.Column<string>(type: "TEXT", nullable: true),
                     OrganizerUrl = table.Column<string>(type: "TEXT", nullable: true),
-                    LiveTiming = table.Column<string>(type: "TEXT", nullable: true)
+                    LiveTiming = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -41,7 +42,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    MeetId = table.Column<int>(type: "INTEGER", nullable: false)
+                    MeetId = table.Column<int>(type: "INTEGER", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -68,7 +69,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     MeetId = table.Column<int>(type: "INTEGER", nullable: false),
                     OfficialMeeting = table.Column<TimeOnly>(type: "TEXT", nullable: true),
                     WarmupStart = table.Column<TimeOnly>(type: "TEXT", nullable: true),
-                    WarmupEnd = table.Column<TimeOnly>(type: "TEXT", nullable: true)
+                    WarmupEnd = table.Column<TimeOnly>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -93,7 +94,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     Gender = table.Column<int>(type: "INTEGER", nullable: false),
                     LastName = table.Column<string>(type: "TEXT", nullable: false),
                     License = table.Column<string>(type: "TEXT", nullable: true),
-                    NamePrefix = table.Column<string>(type: "TEXT", nullable: true)
+                    NamePrefix = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -117,7 +118,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     SessionId = table.Column<int>(type: "INTEGER", nullable: false),
                     SwimStyle_Distance = table.Column<int>(type: "INTEGER", nullable: false),
                     SwimStyle_RelayCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    SwimStyle_Stroke = table.Column<int>(type: "INTEGER", nullable: false)
+                    SwimStyle_Stroke = table.Column<int>(type: "INTEGER", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -139,7 +140,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     EventId = table.Column<int>(type: "INTEGER", nullable: false),
                     MaxAge = table.Column<int>(type: "INTEGER", nullable: false),
                     MinAge = table.Column<int>(type: "INTEGER", nullable: false),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: true)
+                    Gender = table.Column<int>(type: "INTEGER", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -161,7 +162,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     EventId = table.Column<int>(type: "INTEGER", nullable: false),
                     Lane = table.Column<int>(type: "INTEGER", nullable: true),
                     SwimTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    AthleteId = table.Column<int>(type: "INTEGER", nullable: true)
+                    AthleteId = table.Column<int>(type: "INTEGER", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -188,7 +189,7 @@ namespace ZwemTools.Data.Sql.Migrations
                     Order = table.Column<int>(type: "INTEGER", nullable: true),
                     Place = table.Column<int>(type: "INTEGER", nullable: false),
                     ResultId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AgeGroupId = table.Column<int>(type: "INTEGER", nullable: true)
+                    AgeGroupId = table.Column<int>(type: "INTEGER", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -252,6 +253,7 @@ namespace ZwemTools.Data.Sql.Migrations
                 column: "MeetId");
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

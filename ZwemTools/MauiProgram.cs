@@ -15,13 +15,10 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var builder = MauiApp.CreateBuilder();
+        MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
+            .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
@@ -49,16 +46,19 @@ public static class MauiProgram
 
         MauiApp app = builder.Build();
 
-        using (IServiceScope scope = app.Services.CreateScope())
-        {
-            DatabaseContext db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-            db.Database.Migrate();
-        }
+        RunStartupTasks(app);
 
         return app;
     }
 
-    public static IServiceCollection AddRadzenServices(this IServiceCollection services)
+    private static void RunStartupTasks(MauiApp app)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        DatabaseContext db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        db.Database.Migrate();
+    }
+
+    private static IServiceCollection AddRadzenServices(this IServiceCollection services)
     {
         services.AddScoped<DialogService>();
         services.AddScoped<NotificationService>();

@@ -1,35 +1,36 @@
 ﻿@using ZwemTools.Data.Lenex.Xml
+
 @inject IStringLocalizer<Strings> Localizer
 
 <RadzenTabsItem Text="@Title">
     <table class="table mb-3">
         <thead>
-            <tr>
-                <th>@Localizer["Property"]</th>
-                <th>@Localizer["Value"]</th>
-            </tr>
+        <tr>
+            <th>@Localizer["Property"]</th>
+            <th>@Localizer["Value"]</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>@Localizer["Session"]</td>
-                <td>@Session.Number</td>
-            </tr>
-            <tr>
-                <td>@Localizer["Name"]</td>
-                <td>@Session.Name</td>
-            </tr>
-            <tr>
-                <td>@Localizer["Time"]</td>
-                <td>@Session.StartTime?.ToShortTimeString() - @Session.EndTime?.ToShortTimeString()</td>
-            </tr>
-            <tr>
-                <td>@Localizer["OfficialsMeeting"]</td>
-                <td>@Session.OfficialMeeting?.ToShortTimeString()</td>
-            </tr>
-            <tr>
-                <td>@Localizer["Warmup"]</td>
-                <td>@Session.WarmupStart?.ToShortTimeString() - @Session.WarmupEnd?.ToShortTimeString()</td>
-            </tr>
+        <tr>
+            <td>@Localizer["Session"]</td>
+            <td>@Session.Number</td>
+        </tr>
+        <tr>
+            <td>@Localizer["Name"]</td>
+            <td>@Session.Name</td>
+        </tr>
+        <tr>
+            <td>@Localizer["Time"]</td>
+            <td>@Session.StartTime?.ToShortTimeString() - @Session.EndTime?.ToShortTimeString()</td>
+        </tr>
+        <tr>
+            <td>@Localizer["OfficialsMeeting"]</td>
+            <td>@Session.OfficialMeeting?.ToShortTimeString()</td>
+        </tr>
+        <tr>
+            <td>@Localizer["Warmup"]</td>
+            <td>@Session.WarmupStart?.ToShortTimeString() - @Session.WarmupEnd?.ToShortTimeString()</td>
+        </tr>
         </tbody>
     </table>
 
@@ -39,19 +40,20 @@
         </Template>
 
         <Columns>
-            <RadzenDataGridColumn TItem="EventElement" Property="Number" Title="#" />
+            <RadzenDataGridColumn TItem="EventElement" Property="Number" Title="#"/>
             <RadzenDataGridColumn TItem="EventElement" Title="@Localizer["Stroke"]">
                 <Template Context="data">
                     @data.SwimStyle.Distance @data.SwimStyle.Stroke
                 </Template>
-                </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="EventElement" Property="Gender" Title="@Localizer["Gender"]" />
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="EventElement" Property="Gender" Title="@Localizer["Gender"]"/>
 
         </Columns>
     </RadzenDataGrid>
 </RadzenTabsItem>
 
 @code {
+
     [Parameter]
     public SessionElement Session { get; set; } = new();
 

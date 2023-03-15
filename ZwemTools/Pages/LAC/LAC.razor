@@ -1,25 +1,27 @@
 ﻿@page "/lac"
+
 @using ZwemTools.Data.Lenex
 @using ZwemTools.Data.Lenex.Xml
+
 @inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
 
 <div class="d-print-none">
     <h3>LAC</h3>
 
-    <InputFile OnChange="@LoadFile" accept=".lxf" />
+    <InputFile OnChange="@LoadFile" accept=".lxf"/>
 </div>
 
-@if (!this.IsLoading && this.LenexElement is not null)
+@if (!IsLoading && LenexElement is not null)
 {
-    @if (this.LenexElement.Meets is { Count: >0 })
+    if (LenexElement.Meets is { Count: >0 })
     {
-        var meet = this.LenexElement.Meets.First();
-        var session = meet.Sessions.First();
-        @foreach (var (club, athlete, entry) in this.GetEntries(meet, session))
+        MeetElement meet = LenexElement.Meets.First();
+        SessionElement session = meet.Sessions.First();
+        foreach ((ClubElement club, AthleteElement athlete, EntryElement entry) in GetEntries(meet, session))
         {
             <div class="pagebreak">
-                <Card Meet="meet" Session="session" Club="club" Athlete="athlete" Entry="entry"/>
+                <Card Meet="@meet" Session="@session" Club="@club" Athlete="@athlete" Entry="@entry"/>
             </div>
         }
     }
@@ -28,7 +30,7 @@
         <p class="my-3">@Localizer["NoData"]</p>
     }
 }
-else if (this.IsLoading)
+else if (IsLoading)
 {
     <p class="my-3">@Localizer["Loading"]</p>
 }
@@ -39,28 +41,27 @@ else
 
 @code {
     private LenexElement? LenexElement { get; set; }
-    private bool IsLoading { get; set; } = false;
-    private bool IsSaving { get; set; } = false;
+    private bool IsLoading { get; set; }
 
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
-        this.IsLoading = true;
+        IsLoading = true;
         await using Stream stream = e.File.OpenReadStream();
         MemoryStream ms = new();
         await stream.CopyToAsync(ms);
-        this.LenexElement = this.LenexParser.Parse(ms);
-        this.IsLoading = false;
+        LenexElement = LenexParser.Parse(ms);
+        IsLoading = false;
     }
 
     private IEnumerable<(ClubElement club, AthleteElement athlete, EntryElement entry)> GetEntries(MeetElement meet, SessionElement session)
     {
         IEnumerable<(ClubElement club, AthleteElement athlete, EntryElement entry)> Entries()
         {
-            foreach (var club in meet.Clubs)
+            foreach (ClubElement club in meet.Clubs)
             {
-                foreach (var athlete in club.Athletes)
+                foreach (AthleteElement athlete in club.Athletes)
                 {
-                    foreach (var entry in athlete.Entries)
+                    foreach (EntryElement entry in athlete.Entries)
                     {
                         yield return (club, athlete, entry);
                     }
@@ -83,4 +84,5 @@ else
     {
         return session.Events.SelectMany(e => e.Heats).First(h => h.HeatId == heatId);
     }
+
 }

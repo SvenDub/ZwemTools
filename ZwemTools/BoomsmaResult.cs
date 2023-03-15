@@ -10,5 +10,4 @@ public record BoomsmaResult(
     Athlete Athlete,
     Result? FromResult,
     Result? ToResult,
-    TimeSpan? Difference
-);
+    TimeSpan? Difference);

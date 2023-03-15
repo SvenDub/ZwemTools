@@ -8,12 +8,7 @@ public static class EnumerableExtensions
 {
     public static IEnumerable<IEnumerable<T>> Permute<T>(this IEnumerable<T> sequence)
     {
-        if (sequence == null)
-        {
-            yield break;
-        }
-
-        var list = sequence.ToList();
+        List<T> list = sequence.ToList();
 
         if (!list.Any())
         {
@@ -21,14 +16,14 @@ public static class EnumerableExtensions
         }
         else
         {
-            var startingElementIndex = 0;
+            int startingElementIndex = 0;
 
-            foreach (var startingElement in list)
+            foreach (T? startingElement in list)
             {
-                var index = startingElementIndex;
-                var remainingItems = list.Where((e, i) => i != index);
+                int index = startingElementIndex;
+                IEnumerable<T> remainingItems = list.Where((_, i) => i != index);
 
-                foreach (var permutationOfRemainder in remainingItems.Permute())
+                foreach (IEnumerable<T>? permutationOfRemainder in remainingItems.Permute())
                 {
                     yield return permutationOfRemainder.Prepend(startingElement);
                 }
@@ -38,7 +33,8 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> values) where T : notnull
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> values)
+        where T : notnull
     {
         return values.OfType<T>();
     }

@@ -13,10 +13,10 @@ namespace ZwemTools.Data.TeamManager;
 [SupportedOSPlatform("windows")]
 public class TeamManagerDatabase : ITeamManagerDatabase
 {
+    private readonly ILogger<TeamManagerDatabase> logger;
+
     private static string ConnectionString =>
         @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\ProgramData\Team Manager\Team.mdb";
-
-    private readonly ILogger<TeamManagerDatabase> logger;
 
     public TeamManagerDatabase(ILogger<TeamManagerDatabase> logger)
     {
@@ -31,11 +31,11 @@ public class TeamManagerDatabase : ITeamManagerDatabase
 
     public async Task<bool> TestConnection()
     {
-        using var connection = new OleDbConnection(ConnectionString);
+        await using OleDbConnection connection = new(ConnectionString);
         try
         {
             await connection.OpenAsync();
-            this.logger.LogInformation("Sucessfully connected to Team Manager database");
+            this.logger.LogInformation("Successfully connected to Team Manager database");
             return true;
         }
         catch
@@ -44,60 +44,70 @@ public class TeamManagerDatabase : ITeamManagerDatabase
         }
     }
 
-    public Task<IEnumerable<Meet>> GetMeets()
+    public async Task<IEnumerable<Meet>> GetMeets()
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Meet>("select * from MEETS order by MAXDATE desc");
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Meet>("select * from MEETS order by MAXDATE desc");
     }
 
-    public Task<IEnumerable<Meet>> GetMeetsWithRelays()
+    public async Task<IEnumerable<Meet>> GetMeetsWithRelays()
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Meet>("select distinct m.* from (MEETS m inner join EVENTS e on e.MEETSID = m.MEETSID) inner join SWIMSTYLE s on e.STYLESID = s.SWIMSTYLEID where s.RELAYCOUNT > 1 order by m.MAXDATE desc");
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Meet>(
+            "select distinct m.* from (MEETS m inner join EVENTS e on e.MEETSID = m.MEETSID) inner join SWIMSTYLE s on e.STYLESID = s.SWIMSTYLEID where s.RELAYCOUNT > 1 order by m.MAXDATE desc");
     }
 
-    public Task<IEnumerable<Event>> GetEvents(int meetId)
+    public async Task<IEnumerable<Event>> GetEvents(int meetId)
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Event>("select * from EVENTS where MEETSID=@Id", new { Id = meetId });
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Event>("select * from EVENTS where MEETSID=@Id", new { Id = meetId });
     }
 
-    public Task<IEnumerable<Event>> GetRelays(int meetId)
+    public async Task<IEnumerable<Event>> GetRelays(int meetId)
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Event, SwimStyle, Event>(
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Event, SwimStyle, Event>(
             "select * from EVENTS e INNER JOIN SWIMSTYLE s on e.STYLESID = s.SWIMSTYLEID where e.MEETSID = @Id and s.RELAYCOUNT > 1",
             (ev, swimStyle) => ev with { SwimStyle = swimStyle },
             new { Id = meetId },
             splitOn: "SWIMSTYLEID");
     }
 
-    public Task<IEnumerable<Member>> GetMembers()
+    public async Task<IEnumerable<Member>> GetMembers()
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Member>("select * from MEMBERS");
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Member>("select * from MEMBERS");
     }
 
-    public Task<IEnumerable<Member>> GetMembers(int meetId)
+    public async Task<IEnumerable<Member>> GetMembers(int meetId)
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Member>(
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Member>(
             "select distinct m.* from RESULTS r INNER JOIN MEMBERS m on r.MEMBERSID = m.MEMBERSID where r.MEETSID = @Id",
             new { Id = meetId });
     }
 
-    public Task<IEnumerable<Group>> GetGroups()
+    public async Task<IEnumerable<Group>> GetGroups()
     {
-        using var connection = new OleDbConnection(ConnectionString);
-        return connection.QueryAsync<Group>("select * from GROUPS");
+        await using OleDbConnection connection = new(ConnectionString);
+        return await connection.QueryAsync<Group>("select * from GROUPS");
     }
 
-    public async Task<IEnumerable<(Member Member, TimeSpan EntryTime)>> GetFastestMembers(int distance, Stroke stroke, Gender gender, int minAge, int maxAge, DateTime ageDate, IEnumerable<Member> availableMembers)
+    public async Task<IEnumerable<(Member Member, TimeSpan EntryTime)>> GetFastestMembers(
+        int distance,
+        Stroke stroke,
+        Gender gender,
+        int minAge,
+        int maxAge,
+        DateTime ageDate,
+        IEnumerable<Member> availableMembers)
     {
         DateTime minDate = ageDate.AddYears(-maxAge);
         DateTime maxDate = ageDate.AddYears(-minAge);
-        using var connection = new OleDbConnection(ConnectionString);
-        int styleId = await connection.QueryFirstAsync<int>("select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke", new { Distance = distance, Stroke = stroke });
+        await using OleDbConnection connection = new(ConnectionString);
+        int styleId = await connection.QueryFirstAsync<int>(
+            "select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke",
+            new { Distance = distance, Stroke = stroke });
 
         return await connection.QueryAsync<Member, int, (Member Member, TimeSpan EntryTime)>(
             "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER = @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",

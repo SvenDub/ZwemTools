@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="MS Access DB - Team.mdb" read-only="true" uuid="60b232b4-fa29-4eef-8ba8-c8b2fbf02b88">
+      <driver-ref>java.sql.Driver</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>net.ucanaccess.jdbc.UcanaccessDriver</jdbc-driver>
+      <jdbc-url>jdbc:ucanaccess://C:/ProgramData/Team Manager/Team.mdb;newdatabaseversion=V2010</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

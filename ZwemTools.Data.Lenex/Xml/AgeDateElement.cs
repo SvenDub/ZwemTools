@@ -3,6 +3,7 @@
 // </copyright>
 
 namespace ZwemTools.Data.Lenex.Xml;
+
 public class AgeDateElement
 {
     [XmlIgnore]

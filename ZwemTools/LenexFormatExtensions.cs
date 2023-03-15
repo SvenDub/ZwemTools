@@ -32,7 +32,7 @@ public static class LenexFormatExtensions
     {
         if (time is not null)
         {
-            return (time is { TotalSeconds: < 0 } ? "-" : "") + time?.ToString(@"mm\:ss\.ff");
+            return (time is { TotalSeconds: < 0 } ? "-" : string.Empty) + time?.ToString(@"mm\:ss\.ff");
         }
 
         return "NT";

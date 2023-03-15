@@ -3,6 +3,7 @@
 // </copyright>
 
 using ZwemTools.Data.Sql;
+using ZwemTools.Resources.Languages;
 
 namespace ZwemTools;
 
@@ -43,8 +44,14 @@ public class BoomsmaService
                         Result? fromResult = eventResults.SingleOrDefault();
                         if (@event.SwimStyle.Stroke == stroke && athlete.Gender == gender)
                         {
-
-                            resultsForStrokeGender.Add(new BoomsmaResult(athlete, fromResult, result, fromResult is { Status: not ResultStatus.Withdrawn } && result is { Status: not ResultStatus.Withdrawn } ? this.CalculateDifference(fromResult, result) : null));
+                            TimeSpan? difference = fromResult is { Status: not ResultStatus.Withdrawn } && result is { Status: not ResultStatus.Withdrawn }
+                                ? this.CalculateDifference(fromResult, result)
+                                : null;
+                            resultsForStrokeGender.Add(new BoomsmaResult(
+                                athlete,
+                                fromResult,
+                                result,
+                                difference));
                         }
                     }
                 }
@@ -60,23 +67,17 @@ public class BoomsmaService
 
     private static Func<Result, bool> MatchResult(Stroke stroke, Athlete athlete)
     {
-        return x =>
-        {
-            return x.Event.SwimStyle.Stroke == stroke
-                && (
-
-                        x.Athlete.License != null
-                        && x.Athlete.License == athlete.License
-
-                    ||
-
-                        x.Athlete.FirstName == athlete.FirstName
-                        && x.Athlete.LastName == athlete.LastName
-                        && x.Athlete.NamePrefix == athlete.NamePrefix
-                        && x.Athlete.Birthdate == athlete.Birthdate
-
-                );
-        };
+        return x => x.Event.SwimStyle.Stroke == stroke
+                    && (
+                        (
+                            x.Athlete.License != null
+                            && x.Athlete.License == athlete.License)
+                        ||
+                        (
+                            x.Athlete.FirstName == athlete.FirstName
+                            && x.Athlete.LastName == athlete.LastName
+                            && x.Athlete.NamePrefix == athlete.NamePrefix
+                            && x.Athlete.Birthdate == athlete.Birthdate));
     }
 
     private TimeSpan CalculateDifference(Result from, Result to)
@@ -86,7 +87,7 @@ public class BoomsmaService
         TimeSpan fromTime = from.SwimTime;
         TimeSpan toTime = this.CalculateSwimTime(to);
 
-        TimeSpan convertedTime = fromTime.Multiply(factor).Add(TimeSpan.FromSeconds(5 * factor - 5));
+        TimeSpan convertedTime = fromTime.Multiply(factor).Add(TimeSpan.FromSeconds((5 * factor) - 5));
         return toTime - convertedTime;
     }
 
@@ -94,17 +95,13 @@ public class BoomsmaService
     {
         if (result.Status is ResultStatus.Disqualified)
         {
-            switch (result.Event.SwimStyle.Distance)
+            return result.Event.SwimStyle.Distance switch
             {
-                case 25:
-                    return result.SwimTime;
-                case 50:
-                    return result.SwimTime + TimeSpan.FromSeconds(3);
-                case 100:
-                    return result.SwimTime + TimeSpan.FromSeconds(6);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(result.Event.SwimStyle.Distance), result.Event.SwimStyle.Distance, "No time penalty defined for distance.");
-            }
+                25 => result.SwimTime,
+                50 => result.SwimTime + TimeSpan.FromSeconds(3),
+                100 => result.SwimTime + TimeSpan.FromSeconds(6),
+                _ => throw new InvalidOperationException(Strings.No_time_penalty_defined_for_distance_),
+            };
         }
 
         return result.SwimTime;

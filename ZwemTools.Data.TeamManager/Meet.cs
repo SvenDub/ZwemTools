@@ -22,5 +22,4 @@ public record Meet
 
     [Column("AGEDATE")]
     public required DateTime AgeDate { get; set; }
-
 }

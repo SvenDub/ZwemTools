@@ -1,7 +1,9 @@
 ﻿@page "/relays"
+
 @using Microsoft.Extensions.Logging
 @using ZwemTools.Data.TeamManager
 @using Group = ZwemTools.Data.TeamManager.Group
+
 @inject ITeamManagerDatabase Database
 @inject RelaysService RelaysService
 @inject IStringLocalizer<Strings> Localizer
@@ -12,24 +14,24 @@
 
 @if (!OperatingSystem.IsWindows())
 {
-    <p>@this.Localizer["Windows only!"]</p>
+    <p>@Localizer["Windows only!"]</p>
     return;
 }
 
-@if (this.TeamManagerFound is null)
+@if (TeamManagerFound is null)
 {
-    <p>@this.Localizer["Looking for Team Manager..."]</p>
+    <p>@Localizer["Looking for Team Manager..."]</p>
     return;
 }
-else if (!this.TeamManagerFound.Value)
+@if (!TeamManagerFound.Value)
 {
-    <p>@this.Localizer["Team Manager not found."]</p>
+    <p>@Localizer["Team Manager not found."]</p>
     return;
 }
 
 <div class="row mb-2">
     <div class="col">
-        <RadzenDropDown TValue="Meet" AllowVirtualization="false" Data="this.Meets" Change="@OnMeetSelected" style="height: auto;" @bind-Value="this.SelectedMeet">
+        <RadzenDropDown TValue="Meet" AllowVirtualization="false" Data="Meets" Change="@OnMeetSelected" style="height: auto;" @bind-Value="SelectedMeet">
             <Template>
                 @if (context is Meet meet)
                 {
@@ -39,9 +41,10 @@ else if (!this.TeamManagerFound.Value)
             </Template>
         </RadzenDropDown>
     </div>
-    @if (this.Events is not null) {
+    @if (Events is not null)
+    {
         <div class="col">
-            <RadzenDropDown TValue="Event" AllowVirtualization="false" Data="this.Events" Change="@OnEventSelected" style="height: auto;" @bind-Value="this.SelectedEvent">
+            <RadzenDropDown TValue="Event" AllowVirtualization="false" Data="Events" Change="@OnEventSelected" style="height: auto;" @bind-Value="SelectedEvent">
                 <Template>
                     @if (context is Event ev)
                     {
@@ -53,11 +56,11 @@ else if (!this.TeamManagerFound.Value)
     }
 </div>
 
-@if (this.FilteredMembers is not null && this.SelectedEvent is { SwimStyle: { } })
+@if (SelectedEvent is { SwimStyle: { } })
 {
     <div class="row mb-2">
         <div class="col-2">
-            
+
         </div>
         <div class="col">
             <RadzenListBox
@@ -69,8 +72,8 @@ else if (!this.TeamManagerFound.Value)
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterOperator="StringFilterOperator.Contains"
                 TextProperty="@nameof(Member.FullName)"
-                Style="height: 400px"
-            ></RadzenListBox>
+                Style="height: 400px">
+            </RadzenListBox>
         </div>
         <div class="col">
             <RadzenListBox
@@ -84,8 +87,8 @@ else if (!this.TeamManagerFound.Value)
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterOperator="StringFilterOperator.Contains"
                 TextProperty="@nameof(Group.Name)"
-                Style="height: 400px"
-            ></RadzenListBox>
+                Style="height: 400px">
+            </RadzenListBox>
         </div>
     </div>
     <div class="row mb-2">
@@ -94,29 +97,31 @@ else if (!this.TeamManagerFound.Value)
                 Text="@Strings.Calculate"
                 ButtonStyle="ButtonStyle.Primary"
                 Click="@CalculateRelay"
-                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)"></RadzenButton>
+                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)">
+            </RadzenButton>
             <RadzenButton
                 Text="@Strings.SelectAllInMeet"
                 ButtonStyle="ButtonStyle.Secondary"
-                Click="@SelectAllInMeet"></RadzenButton>
-                <RadzenNumeric Min="1" @bind-Value="@RelayCount"/>
+                Click="@SelectAllInMeet">
+            </RadzenButton>
+            <RadzenNumeric Min="1" @bind-Value="@RelayCount"/>
         </div>
     </div>
 }
 
-@if (this.IsLoading)
+@if (IsLoading)
 {
     <p class="my-3">@Localizer["Loading"]</p>
 }
 
-@if (this.GeneratedRelays is { } relays && this.SelectedEvent is { SwimStyle: { } swimStyle })
+@if (GeneratedRelays is { } relays && SelectedEvent is { SwimStyle: { } swimStyle })
 {
-    @foreach (var relay in relays)
+    @foreach (Relay? relay in relays)
     {
         <RadzenDataGrid TItem="RelayPosition" Data="relay.Positions" class="mb-2">
             <Columns>
                 <RadzenDataGridColumn TItem="RelayPosition" Property="Number"/>
-                <RadzenDataGridColumn TItem="RelayPosition" Property="Member.FullName" Title="@Strings.Name" />
+                <RadzenDataGridColumn TItem="RelayPosition" Property="Member.FullName" Title="@Strings.Name"/>
                 <RadzenDataGridColumn TItem="RelayPosition" Title="@Strings.Time">
                     <Template>
                         @context.EntryTimeSpan.Format()
@@ -139,98 +144,99 @@ else if (!this.TeamManagerFound.Value)
     private IEnumerable<Event>? Events { get; set; }
     private Event? SelectedEvent { get; set; }
     private IEnumerable<Member>? MembersInMeet { get; set; }
-    private List<Member> SelectedMembers { get; set; } = new List<Member>();
+    private List<Member> SelectedMembers { get; set; } = new();
     private IEnumerable<Group>? Groups { get; set; }
     private IEnumerable<Group> SelectedGroups { get; set; } = new List<Group>();
-    private List<Member> FilteredMembers { get; } = new List<Member>();
+    private List<Member> FilteredMembers { get; } = new();
     private IEnumerable<Relay>? GeneratedRelays { get; set; }
-    private bool IsLoading { get; set; } = false;
+    private bool IsLoading { get; set; }
     private int RelayCount { get; set; } = 1;
 
     protected async override Task OnInitializedAsync()
     {
-        this.TeamManagerFound = await this.Database.TestConnection();
-        this.Meets = (await this.Database.GetMeetsWithRelays()).ToList();
-        this.Members = (await this.Database.GetMembers()).ToList();
-        this.Groups = (await this.Database.GetGroups()).ToList();
-        this.SelectedGroups = this.Groups.Where(g => g.Id == "LICENTIE").ToList();
-        this.UpdateFilteredMembers();
+        TeamManagerFound = await Database.TestConnection();
+        Meets = (await Database.GetMeetsWithRelays()).ToList();
+        Members = (await Database.GetMembers()).ToList();
+        Groups = (await Database.GetGroups()).ToList();
+        SelectedGroups = Groups.Where(g => g.Id == "LICENTIE").ToList();
+        UpdateFilteredMembers();
     }
 
     async Task OnMeetSelected(object o)
     {
-        this.GeneratedRelays = null;
+        GeneratedRelays = null;
         if (o is Meet meet)
         {
-            this.SelectedMeet = meet;
-            this.Events = await this.Database.GetRelays(meet.Id);
-            this.SelectedEvent = null;
-            this.MembersInMeet = await this.Database.GetMembers(meet.Id);
+            SelectedMeet = meet;
+            Events = await Database.GetRelays(meet.Id);
+            SelectedEvent = null;
+            MembersInMeet = await Database.GetMembers(meet.Id);
         }
         else
         {
-            this.SelectedMeet = null;
-            this.Events = null;
-            this.SelectedEvent = null;
-            this.MembersInMeet = null;
+            SelectedMeet = null;
+            Events = null;
+            SelectedEvent = null;
+            MembersInMeet = null;
         }
     }
 
     void OnEventSelected(object o)
     {
-        this.GeneratedRelays = null;
+        GeneratedRelays = null;
         if (o is Event ev)
         {
-            this.SelectedEvent = ev;
+            SelectedEvent = ev;
         }
         else
         {
-            this.SelectedEvent = null;
+            SelectedEvent = null;
         }
     }
 
     void OnFilterChanged(IEnumerable<Group> o)
     {
-        this.SelectedGroups = o;
-        this.UpdateFilteredMembers();
+        SelectedGroups = o;
+        UpdateFilteredMembers();
     }
 
     void SelectAllInMeet()
     {
-        if (this.MembersInMeet is not null)
+        if (MembersInMeet is not null)
         {
-            foreach (var member in this.MembersInMeet.Where(member => !this.SelectedMembers.Contains(member)))
+            foreach (Member? member in MembersInMeet.Where(member => !SelectedMembers.Contains(member)))
             {
-                this.SelectedMembers.Add(member);
+                SelectedMembers.Add(member);
             }
         }
     }
 
     async Task CalculateRelay()
     {
-        if (this.SelectedMeet is not null && this.SelectedEvent is not null)
+        if (SelectedMeet is not null && SelectedEvent is not null)
         {
             try
             {
-                this.IsLoading = true;
+                IsLoading = true;
                 await Task.Delay(10);
-                this.GeneratedRelays = await this.RelaysService.CalculateRelays(this.SelectedMeet, this.SelectedEvent, this.SelectedMembers, this.RelayCount);
+                GeneratedRelays = await RelaysService.CalculateRelays(SelectedMeet, SelectedEvent, SelectedMembers, RelayCount);
             }
             catch (Exception e)
             {
-                this.Logger.LogError(e, "Error");
-                await this.DialogService.Alert(e.Message, "Error");
+                Logger.LogError(e, "Error");
+                await DialogService.Alert(e.Message, "Error");
             }
             finally
             {
-                this.IsLoading = false;
+                IsLoading = false;
             }
         }
     }
 
     private void UpdateFilteredMembers()
     {
-        this.FilteredMembers.Clear();
-        this.FilteredMembers.AddRange(this.Members?.Where(member => member.GroupNames.Any(group => this.SelectedGroups.Any(s => s.Id == group))) ?? Enumerable.Empty<Member>());
+        FilteredMembers.Clear();
+        FilteredMembers.AddRange(Members?.Where(member => member.GroupNames.Any(group => SelectedGroups.Any(s => s.Id == group))) ?? Enumerable.Empty<Member>());
     }
+
 }

@@ -5,6 +5,7 @@
 using System.Globalization;
 
 namespace ZwemTools.Data.Lenex.Xml;
+
 public class SessionElement
 {
     [XmlAttribute("date", DataType = "date")]

@@ -5,6 +5,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZwemTools.Data.TeamManager;
+
 public record Result
 {
     [Column("RESULTSID")]

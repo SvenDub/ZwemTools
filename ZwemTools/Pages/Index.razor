@@ -1,10 +1,12 @@
 ﻿@page "/"
+
 @using ZwemTools.Data.Sql
+
 @inject DatabaseContext Context
 
 <h1>Meets</h1>
 
-@foreach (Meet meet in this.Meets)
+@foreach (Meet meet in Meets)
 {
     <ul>
         <li>
@@ -20,10 +22,8 @@
 
     protected override void OnInitialized()
     {
-        this.Meets = this.Context.Meets.ToList();
-        this.Context.SavedChanges += (_, _) =>
-        {
-            this.Meets = this.Context.Meets.ToList();
-        };
+        Meets = Context.Meets.ToList();
+        Context.SavedChanges += (_, _) => { Meets = Context.Meets.ToList(); };
     }
+
 }

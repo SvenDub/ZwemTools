@@ -10,6 +10,7 @@ namespace ZwemTools.Data.Sql.Migrations
 {
     public partial class ResultStatus : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
@@ -19,6 +20,7 @@ namespace ZwemTools.Data.Sql.Migrations
                 nullable: true);
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

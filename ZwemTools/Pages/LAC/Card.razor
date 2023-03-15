@@ -1,58 +1,59 @@
 ﻿@using ZwemTools.Data.Lenex.Xml
+
 <h3 class="text-center my-5">Startkaart</h3>
 
 <table class="table align-middle">
     <tbody>
-        <tr>
-            <td class="small">Programma</td>
-            <td class="text-center">@Event.Number</td>
-            <td class="small">Serie</td>
-            <td class="text-center">@Heat.Number</td>
-            <td class="small">Baan</td>
-            <td class="text-center">@Entry.Lane</td>
-        </tr>
-        <tr>
-            <td class="small">Startnummer</td>
-            <td colspan="1" class="text-center">@Athlete.License</td>
-            <td class="small">Vereniging</td>
-            <td colspan="1" class="text-center">@Club.Name</td>
-            <td class="small">Inschrijftijd</td>
-            <td colspan="1" class="text-center">@Entry.EntryTime.Format()</td>
-        </tr>
-        <tr>
-            <td colspan="6" class="fw-bold text-center">@Athlete.FullName</td>
-        </tr>
-        <tr>
-            <td colspan="6" class="text-center">@Event.SwimStyle.Format()</td>
-        </tr>
-        <tr>
-            <td class="p-3" colspan="6"></td>
-        </tr>
-        <tr>
-            <td class="small py-4">Tijd</td>
-            <td colspan="2">______ m ______ / ______ s</td>
-            <td class="small py-4">Paraaf official</td>
-            <td colspan="2"></td>
-        </tr>
-        <tr>
-            <td colspan="3"></td>
-            <td class="small">Datum</td>
-            <td colspan="2">@Session.Date.ToString("dd-MM-yyyy")</td>
-        </tr>
+    <tr>
+        <td class="small">Programma</td>
+        <td class="text-center">@Event.Number</td>
+        <td class="small">Serie</td>
+        <td class="text-center">@Heat.Number</td>
+        <td class="small">Baan</td>
+        <td class="text-center">@Entry.Lane</td>
+    </tr>
+    <tr>
+        <td class="small">Startnummer</td>
+        <td colspan="1" class="text-center">@Athlete.License</td>
+        <td class="small">Vereniging</td>
+        <td colspan="1" class="text-center">@Club.Name</td>
+        <td class="small">Inschrijftijd</td>
+        <td colspan="1" class="text-center">@Entry.EntryTime.Format()</td>
+    </tr>
+    <tr>
+        <td colspan="6" class="fw-bold text-center">@Athlete.FullName</td>
+    </tr>
+    <tr>
+        <td colspan="6" class="text-center">@Event.SwimStyle.Format()</td>
+    </tr>
+    <tr>
+        <td class="p-3" colspan="6"></td>
+    </tr>
+    <tr>
+        <td class="small py-4">Tijd</td>
+        <td colspan="2">______ m ______ / ______ s</td>
+        <td class="small py-4">Paraaf official</td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td colspan="3"></td>
+        <td class="small">Datum</td>
+        <td colspan="2">@Session.Date.ToString("dd-MM-yyyy")</td>
+    </tr>
     </tbody>
 </table>
 
 <div style="column-count: 2">
-<table class="table">
-    <thead style="break-inside: avoid">
+    <table class="table">
+        <thead style="break-inside: avoid">
         <tr>
             <th style="border-bottom-color: inherit">Afstand</th>
             <th style="border-bottom-color: inherit">Bord</th>
             <th style="border-bottom-color: inherit">Tussentijd</th>
         </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in this.GetRows())
+        </thead>
+        <tbody>
+        @foreach ((int Distance, int Sign) item in GetRows())
         {
             <tr>
                 <td class="fw-bold">@item.Distance</td>
@@ -60,11 +61,12 @@
                 <td>______ m ______ / ______ s</td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
 </div>
 
 @code {
+
     [Parameter]
     required public MeetElement Meet { get; set; }
 
@@ -80,19 +82,20 @@
     [Parameter]
     required public EntryElement Entry { get; set; }
 
-    private EventElement Event => this.Meet.Sessions.SelectMany(s => s.Events).First(e => e.EventId == this.Entry.EventId);
+    private EventElement Event => Meet.Sessions.SelectMany(s => s.Events).First(e => e.EventId == Entry.EventId);
 
-    private HeatElement Heat => this.Event.Heats.First(h => h.HeatId == this.Entry.HeatId);
+    private HeatElement Heat => Event.Heats.First(h => h.HeatId == Entry.HeatId);
 
     private IEnumerable<(int Distance, int Sign)> GetRows()
     {
-        int distance = this.Event.SwimStyle.Distance;
-        int poolLength = this.Meet.Course == Course.Lcm ? 50 : 25;
+        int distance = Event.SwimStyle.Distance;
+        int poolLength = Meet.Course == Course.Lcm ? 50 : 25;
         int laps = distance / poolLength;
 
-        for (int lap = 1; lap < laps; lap +=2)
+        for (int lap = 1; lap < laps; lap += 2)
         {
             yield return ((lap + 1) * poolLength, laps - lap);
         }
     }
+
 }

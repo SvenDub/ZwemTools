@@ -1,9 +1,10 @@
 ﻿@using ZwemTools.Data.Lenex.Xml
+
 @inject IStringLocalizer<Strings> Localizer
 
 <RadzenDataGrid Data="AgeGroup.Rankings" TItem="RankingElement">
     <Columns>
-        <RadzenDataGridColumn TItem="RankingElement" Property="Place" Title="#" />
+        <RadzenDataGridColumn TItem="RankingElement" Property="Place" Title="#"/>
         <RadzenDataGridColumn TItem="RankingElement" Title="@Localizer["Name"]">
             <Template Context="r">
                 @Meet.GetAthleteForResult(r.ResultId)?.FullName
@@ -18,9 +19,11 @@
 </RadzenDataGrid>
 
 @code {
+
     [Parameter]
     public AgeGroupElement AgeGroup { get; set; } = new();
 
     [Parameter]
     public MeetElement Meet { get; set; } = new();
+
 }

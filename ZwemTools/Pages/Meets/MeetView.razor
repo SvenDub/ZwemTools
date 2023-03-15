@@ -1,32 +1,33 @@
 ﻿@page "/meets/{Id:int}"
+
 @using ZwemTools.Data.Sql
+
 @inject DatabaseContext Context
 
-@if (this.Meet is not null)
+@if (Meet is not null)
 {
-    <h1>@this.Meet.Name</h1>
+    <h1>@Meet.Name</h1>
 
-    <RadzenButton Text="@Strings.Delete" Click="@OnDelete" />
+    <RadzenButton Text="@Strings.Delete" Click="@OnDelete"/>
 
     <table class="table mb-3">
         <thead>
-            <tr>
-                <th>@Strings.Property</th>
-                <th>@Strings.Value</th>
-            </tr>
+        <tr>
+            <th>@Strings.Property</th>
+            <th>@Strings.Value</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>@Strings.Athletes</td>
-                <td>@this.Meet.Clubs.SelectMany(x => x.Athletes).Count()</td>
-            </tr>
-            <tr>
-                <td>@Strings.Results</td>
-                <td>@this.Meet.Clubs.SelectMany(x => x.Athletes).SelectMany(x => x.Results).Count()</td>
-            </tr>
+        <tr>
+            <td>@Strings.Athletes</td>
+            <td>@Meet.Clubs.SelectMany(x => x.Athletes).Count()</td>
+        </tr>
+        <tr>
+            <td>@Strings.Results</td>
+            <td>@Meet.Clubs.SelectMany(x => x.Athletes).SelectMany(x => x.Results).Count()</td>
+        </tr>
         </tbody>
     </table>
-
 }
 else
 {
@@ -34,6 +35,7 @@ else
 }
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
 
@@ -41,16 +43,17 @@ else
 
     protected override void OnInitialized()
     {
-        this.Meet = this.Context.Meets.SingleOrDefault(x => x.Id == this.Id);
+        Meet = Context.Meets.SingleOrDefault(x => x.Id == Id);
     }
 
     void OnDelete()
     {
-        if (this.Meet is not null)
+        if (Meet is not null)
         {
-            this.Context.Meets.Remove(this.Meet);
-            this.Context.SaveChanges();
-            this.Meet = null;
+            Context.Meets.Remove(Meet);
+            Context.SaveChanges();
+            Meet = null;
         }
     }
+
 }

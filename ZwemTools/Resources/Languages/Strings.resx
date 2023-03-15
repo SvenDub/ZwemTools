@@ -246,4 +246,7 @@
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="No time penalty defined for distance." xml:space="preserve">
+    <value>No time penalty defined for distance.</value>
+  </data>
 </root>

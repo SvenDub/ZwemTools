@@ -3,6 +3,7 @@
 // </copyright>
 
 namespace ZwemTools.Data.Sql;
+
 public enum Course
 {
     Scm,
