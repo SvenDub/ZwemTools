@@ -1,8 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿// <copyright file="App.xaml.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
+// ReSharper disable once CheckNamespace
 namespace ZwemTools.WinUI;
 
 /// <summary>
@@ -21,4 +21,3 @@ public partial class App : MauiWinUIApplication
 
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
-

@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿// <copyright file="ResultElement.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System.Globalization;
 
 namespace ZwemTools.Data.Lenex.Xml;
 

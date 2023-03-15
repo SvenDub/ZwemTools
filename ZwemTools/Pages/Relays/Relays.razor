@@ -1,7 +1,7 @@
 ﻿@page "/relays"
-@using Microsoft.Extensions.Logging;
-@using ZwemTools.Data.TeamManager;
-@using ZwemTools;
+@using Microsoft.Extensions.Logging
+@using ZwemTools.Data.TeamManager
+@using Group = ZwemTools.Data.TeamManager.Group
 @inject ITeamManagerDatabase Database
 @inject RelaysService RelaysService
 @inject IStringLocalizer<Strings> Localizer
@@ -74,7 +74,7 @@ else if (!this.TeamManagerFound.Value)
         </div>
         <div class="col">
             <RadzenListBox
-                TValue="IEnumerable<Data.TeamManager.Group>"
+                TValue="IEnumerable<Group>"
                 Value="@SelectedGroups"
                 ValueChanged="@OnFilterChanged"
                 Data="@Groups"
@@ -83,7 +83,7 @@ else if (!this.TeamManagerFound.Value)
                 AllowFiltering
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterOperator="StringFilterOperator.Contains"
-                TextProperty="@nameof(Data.TeamManager.Group.Name)"
+                TextProperty="@nameof(Group.Name)"
                 Style="height: 400px"
             ></RadzenListBox>
         </div>
@@ -140,8 +140,8 @@ else if (!this.TeamManagerFound.Value)
     private Event? SelectedEvent { get; set; }
     private IEnumerable<Member>? MembersInMeet { get; set; }
     private List<Member> SelectedMembers { get; set; } = new List<Member>();
-    private IEnumerable<Data.TeamManager.Group>? Groups { get; set; }
-    private IEnumerable<Data.TeamManager.Group> SelectedGroups { get; set; } = new List<Data.TeamManager.Group>();
+    private IEnumerable<Group>? Groups { get; set; }
+    private IEnumerable<Group> SelectedGroups { get; set; } = new List<Group>();
     private List<Member> FilteredMembers { get; } = new List<Member>();
     private IEnumerable<Relay>? GeneratedRelays { get; set; }
     private bool IsLoading { get; set; } = false;
@@ -189,7 +189,7 @@ else if (!this.TeamManagerFound.Value)
         }
     }
 
-    void OnFilterChanged(IEnumerable<Data.TeamManager.Group> o)
+    void OnFilterChanged(IEnumerable<Group> o)
     {
         this.SelectedGroups = o;
         this.UpdateFilteredMembers();

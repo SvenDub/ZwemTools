@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿// <copyright file="RelayPosition.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZwemTools.Data.TeamManager;
 

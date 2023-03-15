@@ -1,8 +1,12 @@
-﻿using Dapper;
-using Microsoft.Extensions.Logging;
+﻿// <copyright file="TeamManagerDatabase.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.OleDb;
 using System.Runtime.Versioning;
+using Dapper;
+using Microsoft.Extensions.Logging;
 
 namespace ZwemTools.Data.TeamManager;
 

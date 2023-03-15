@@ -1,4 +1,8 @@
-﻿using ZwemTools.Data.Sql;
+﻿// <copyright file="BoomsmaResults.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using ZwemTools.Data.Sql;
 
 namespace ZwemTools;
 

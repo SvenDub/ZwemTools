@@ -1,5 +1,8 @@
-﻿using System.IO.Compression;
-using System.Xml;
+﻿// <copyright file="LenexParser.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System.IO.Compression;
 using ZwemTools.Data.Lenex.Xml;
 
 namespace ZwemTools.Data.Lenex;

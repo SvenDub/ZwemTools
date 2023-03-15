@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="20220814194053_InitialCreate.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable

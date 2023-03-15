@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.TeamManager;
+﻿// <copyright file="ITeamManagerDatabase.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.TeamManager;
 
 public interface ITeamManagerDatabase
 {

@@ -1,4 +1,7 @@
-﻿using ZwemTools;
+﻿// <copyright file="LenexElementsExtensions.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
 using ZwemTools.Data.Lenex.Xml;
 using ZwemTools.Data.Sql;
 

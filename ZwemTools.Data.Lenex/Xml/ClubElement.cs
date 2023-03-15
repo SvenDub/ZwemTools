@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.Lenex.Xml;
+﻿// <copyright file="ClubElement.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.Lenex.Xml;
 
 public class ClubElement
 {

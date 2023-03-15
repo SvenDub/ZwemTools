@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿// <copyright file="SessionElement.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System.Globalization;
 
 namespace ZwemTools.Data.Lenex.Xml;
 public class SessionElement

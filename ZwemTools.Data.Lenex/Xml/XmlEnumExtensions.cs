@@ -1,4 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="XmlEnumExtensions.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using System.Diagnostics.CodeAnalysis;
 
 namespace ZwemTools.Data.Lenex.Xml;
 

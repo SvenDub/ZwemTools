@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// <copyright file="DatabaseContext.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using Microsoft.Extensions.Logging;
 
 namespace ZwemTools.Data.Sql;
 

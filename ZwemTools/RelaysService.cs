@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.Localization;
-using ZwemTools.Resources.Languages;
+﻿// <copyright file="RelaysService.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
 using System.Diagnostics;
+using Microsoft.Extensions.Localization;
 using ZwemTools.Data.TeamManager;
+using ZwemTools.Resources.Languages;
 
 namespace ZwemTools;
 public class RelaysService

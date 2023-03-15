@@ -1,4 +1,8 @@
-﻿using ZwemTools.Data.Lenex.Xml;
+﻿// <copyright file="LenexFormatExtensions.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using ZwemTools.Data.Lenex.Xml;
 
 namespace ZwemTools;
 

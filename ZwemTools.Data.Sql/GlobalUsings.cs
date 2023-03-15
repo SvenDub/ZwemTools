@@ -1,4 +1,8 @@
-﻿global using System;
+﻿// <copyright file="GlobalUsings.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+global using System;
 global using System.Collections.Generic;
 global using System.Collections.ObjectModel;
 global using System.Linq;

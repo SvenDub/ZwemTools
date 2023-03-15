@@ -1,6 +1,11 @@
-﻿using ZwemTools.Data.Sql;
+﻿// <copyright file="BoomsmaService.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+using ZwemTools.Data.Sql;
 
 namespace ZwemTools;
+
 public class BoomsmaService
 {
     public BoomsmaResults CalculateResults(Session from, Session to)

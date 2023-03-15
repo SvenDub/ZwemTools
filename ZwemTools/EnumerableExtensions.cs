@@ -1,4 +1,8 @@
-﻿namespace ZwemTools;
+﻿// <copyright file="EnumerableExtensions.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools;
 
 public static class EnumerableExtensions
 {

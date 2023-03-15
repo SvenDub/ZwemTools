@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.TeamManager;
+﻿// <copyright file="Stroke.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.TeamManager;
 
 public enum Stroke
 {
