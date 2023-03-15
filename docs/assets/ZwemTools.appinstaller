@@ -13,8 +13,7 @@
 
     <UpdateSettings>
         <OnLaunch 
-            HoursBetweenUpdateChecks="0"
-            ShowPrompt="true" />
+            HoursBetweenUpdateChecks="0" />
     </UpdateSettings>
 
     <UpdateUris>
