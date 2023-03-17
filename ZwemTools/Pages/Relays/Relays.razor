@@ -152,14 +152,19 @@
     private bool IsLoading { get; set; }
     private int RelayCount { get; set; } = 1;
 
-    protected async override Task OnInitializedAsync()
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
     {
-        TeamManagerFound = await Database.TestConnection();
-        Meets = (await Database.GetMeetsWithRelays()).ToList();
-        Members = (await Database.GetMembers()).ToList();
-        Groups = (await Database.GetGroups()).ToList();
-        SelectedGroups = Groups.Where(g => g.Id == "LICENTIE").ToList();
-        UpdateFilteredMembers();
+            TeamManagerFound = await Database.TestConnection();
+
+            if (TeamManagerFound.Value)
+            {
+                Meets = (await Database.GetMeetsWithRelays()).ToList();
+                Members = (await Database.GetMembers()).ToList();
+                Groups = (await Database.GetGroups()).ToList();
+                SelectedGroups = Groups.Where(g => g.Id == "LICENTIE").ToList();
+                UpdateFilteredMembers();
+            }
     }
 
     async Task OnMeetSelected(object o)
