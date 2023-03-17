@@ -1,6 +1,7 @@
 ﻿@page "/settings"
 
 @using ZwemTools.Abstractions
+@using System.Diagnostics
 
 @inject IStringLocalizer<Strings> Localizer
 @inject IPreferenceService PreferenceService
@@ -22,8 +23,17 @@
         <span>@Localizer["Team Manager"]</span>
     </HeaderTemplate>
     <ChildContent>
-        <RadzenButton Click="ShowTeamManagerFilePicker">@Localizer["Select file"]</RadzenButton>
+        <RadzenButton Click="ShowTeamManagerFilePicker" Disabled="!OperatingSystem.IsWindows()">@Localizer["Select file"]</RadzenButton>
         <RadzenTextBox Value="@TeamManagerFile" Disabled="true"></RadzenTextBox>
+    </ChildContent>
+</RadzenFieldset>
+
+<RadzenFieldset>
+    <HeaderTemplate>
+        <span>@Localizer["Logs"]</span>
+    </HeaderTemplate>
+    <ChildContent>
+        <RadzenButton Click="LoadLogs" Disabled="!OperatingSystem.IsWindows()">@Localizer["Open folder"]</RadzenButton>
     </ChildContent>
 </RadzenFieldset>
 
@@ -97,6 +107,15 @@
         {
             TeamManagerFile = result.FullPath;
         }
+    }
+
+    private Task LoadLogs()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Process.Start("explorer.exe", Path.Combine(FileSystem.AppDataDirectory, "logs"));
+        }
+        return Task.CompletedTask;
     }
 
 }

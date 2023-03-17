@@ -15,6 +15,9 @@ namespace ZwemTools;
 [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global", Justification = "Non-static members are easier to mock in tests.")]
 public class PreferenceService : IPreferenceService
 {
+    [SuppressMessage("csharpsquid", "S1075", Justification = "Well known default path.")]
+    private const string DefaultTeamManagerFile = @"C:\ProgramData\Team Manager\Team.mdb";
+
     /// <inheritdoc/>
     public CultureInfo Language
     {
@@ -25,7 +28,7 @@ public class PreferenceService : IPreferenceService
     /// <inheritdoc/>
     public string? TeamManagerFile
     {
-        get => Preferences.Get("team_manager_file", null);
+        get => Preferences.Get("team_manager_file", OperatingSystem.IsWindows() && File.Exists(DefaultTeamManagerFile) ? DefaultTeamManagerFile : null);
         set => Preferences.Set("team_manager_file", value);
     }
 }

@@ -249,4 +249,19 @@
   <data name="No time penalty defined for distance." xml:space="preserve">
     <value>No time penalty defined for distance.</value>
   </data>
+  <data name="Team Manager" xml:space="preserve">
+    <value>Team Manager</value>
+  </data>
+  <data name="Select file" xml:space="preserve">
+    <value>Select file</value>
+  </data>
+  <data name="Open folder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
 </root>
