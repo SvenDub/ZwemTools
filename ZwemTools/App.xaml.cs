@@ -3,17 +3,22 @@
 // </copyright>
 
 using System.Globalization;
+using ZwemTools.Abstractions;
 
 namespace ZwemTools;
 
+/// <inheritdoc />
 public partial class App : Application
 {
-    public App()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="App"/> class.
+    /// </summary>
+    /// <param name="preferenceService">The preferences.</param>
+    public App(IPreferenceService preferenceService)
     {
         this.InitializeComponent();
 
-        string language = Preferences.Get("language", CultureInfo.CurrentCulture.Name);
-        CultureInfo cultureInfo = new(language);
+        CultureInfo cultureInfo = preferenceService.Language;
         Thread.CurrentThread.CurrentCulture = cultureInfo;
         Thread.CurrentThread.CurrentUICulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -22,6 +27,7 @@ public partial class App : Application
         this.MainPage = new MainPage();
     }
 
+    /// <inheritdoc/>
     protected override Window CreateWindow(IActivationState? activationState)
     {
         Window window = base.CreateWindow(activationState);

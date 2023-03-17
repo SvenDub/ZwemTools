@@ -21,4 +21,8 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ZwemTools.Abstractions\ZwemTools.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

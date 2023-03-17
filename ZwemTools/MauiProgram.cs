@@ -5,6 +5,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Radzen;
+using ZwemTools.Abstractions;
 using ZwemTools.Data.Lenex;
 using ZwemTools.Data.Sql;
 using ZwemTools.Data.TeamManager;
@@ -43,6 +44,8 @@ public static class MauiProgram
             logging.AddDebug();
             logging.AddEventLog();
         });
+
+        builder.Services.AddScoped<IPreferenceService, PreferenceService>();
 
         MauiApp app = builder.Build();
 

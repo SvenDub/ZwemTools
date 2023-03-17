@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.Sql", "ZwemT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.TeamManager", "ZwemTools.Data.TeamManager\ZwemTools.Data.TeamManager.csproj", "{4F828181-02A9-4B07-91FB-5C681364B60F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZwemTools.Abstractions", "ZwemTools.Abstractions\ZwemTools.Abstractions.csproj", "{E57C1549-93D8-483E-A05F-74413E4960CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{4F828181-02A9-4B07-91FB-5C681364B60F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F828181-02A9-4B07-91FB-5C681364B60F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E57C1549-93D8-483E-A05F-74413E4960CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57C1549-93D8-483E-A05F-74413E4960CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57C1549-93D8-483E-A05F-74413E4960CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57C1549-93D8-483E-A05F-74413E4960CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

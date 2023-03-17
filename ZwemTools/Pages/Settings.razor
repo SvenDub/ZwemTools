@@ -1,0 +1,102 @@
+﻿@page "/settings"
+
+@using ZwemTools.Abstractions
+
+@inject IStringLocalizer<Strings> Localizer
+@inject IPreferenceService PreferenceService
+
+<h3>@Localizer["Settings"]</h3>
+
+<RadzenFieldset>
+    <HeaderTemplate>
+        <span>@Localizer["Language"]</span>
+    </HeaderTemplate>
+    <ChildContent>
+        <RadzenDropDown TValue="CultureInfo" Data="cultures" TextProperty="NativeName" @bind-Value="Culture">
+        </RadzenDropDown>
+    </ChildContent>
+</RadzenFieldset>
+
+<RadzenFieldset>
+    <HeaderTemplate>
+        <span>@Localizer["Team Manager"]</span>
+    </HeaderTemplate>
+    <ChildContent>
+        <RadzenButton Click="ShowTeamManagerFilePicker">@Localizer["Select file"]</RadzenButton>
+        <RadzenTextBox Value="@TeamManagerFile" Disabled="true"></RadzenTextBox>
+    </ChildContent>
+</RadzenFieldset>
+
+@code {
+
+    readonly List<CultureInfo> cultures = new()
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("nl-NL"),
+    };
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!cultures.Contains(CultureInfo.CurrentCulture))
+        {
+            cultures.Insert(0, CultureInfo.CurrentCulture);
+        }
+    }
+
+    private CultureInfo Culture
+    {
+        get => PreferenceService.Language;
+        set
+        {
+            if (Equals(CultureInfo.CurrentCulture, value))
+            {
+                return;
+            }
+
+            Thread.CurrentThread.CurrentCulture = value;
+            Thread.CurrentThread.CurrentUICulture = value;
+            CultureInfo.DefaultThreadCurrentCulture = value;
+            CultureInfo.DefaultThreadCurrentUICulture = value;
+            CultureInfo.CurrentCulture = value;
+            CultureInfo.CurrentUICulture = value;
+            PreferenceService.Language = value;
+
+            MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                if (Application.Current?.MainPage is not null)
+                {
+                    bool close = await Application.Current.MainPage.DisplayAlert(Localizer["RestartLanguageTitle"], Localizer["RestartLanguage"], Localizer["Ok"], Localizer["Cancel"]);
+                    if (close)
+                    {
+                        Application.Current.CloseWindow(Application.Current.MainPage.Window);
+                    }
+                }
+            });
+        }
+    }
+
+    private string? TeamManagerFile
+    {
+        get => PreferenceService.TeamManagerFile;
+        set => PreferenceService.TeamManagerFile = value;
+    }
+
+    private async Task ShowTeamManagerFilePicker()
+    {
+        PickOptions pickOptions = new()
+        {
+            FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>()
+            {
+                { DevicePlatform.WinUI, new[] { ".mdb" } },
+            }),
+        };
+        FileResult? result = await FilePicker.PickAsync(pickOptions);
+        if (result is not null)
+        {
+            TeamManagerFile = result.FullPath;
+        }
+    }
+
+}
