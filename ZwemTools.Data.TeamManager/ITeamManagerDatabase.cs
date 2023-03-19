@@ -11,9 +11,8 @@ public interface ITeamManagerDatabase : IAsyncDisposable
     Task<IEnumerable<Event>> GetEvents(int meetId);
 
     Task<IEnumerable<(Member Member, TimeSpan EntryTime)>> GetFastestMembers(
-        int distance,
-        Stroke stroke,
-        Gender gender,
+        SwimStyle swimStyle,
+        Gender? gender,
         int minAge,
         int maxAge,
         DateTime ageDate,
@@ -30,4 +29,13 @@ public interface ITeamManagerDatabase : IAsyncDisposable
     Task<IEnumerable<Member>> GetMembers(int meetId);
 
     Task<IEnumerable<Event>> GetRelays(int meetId);
+
+    /// <summary>
+    /// Gets the swim style matching the given parameters.
+    /// </summary>
+    /// <param name="distance">The distance.</param>
+    /// <param name="stroke">The stroke.</param>
+    /// <param name="relayCount">The relay count.</param>
+    /// <returns>The swim style matching the parameters, or null if not found.</returns>
+    Task<SwimStyle?> GetSwimStyle(int distance, Stroke stroke, int relayCount = 1);
 }

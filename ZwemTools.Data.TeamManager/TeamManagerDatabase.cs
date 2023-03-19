@@ -129,9 +129,8 @@ public sealed class TeamManagerDatabase : ITeamManagerDatabase
 
     /// <inheritdoc/>
     public async Task<IEnumerable<(Member Member, TimeSpan EntryTime)>> GetFastestMembers(
-        int distance,
-        Stroke stroke,
-        Gender gender,
+        SwimStyle swimStyle,
+        Gender? gender,
         int minAge,
         int maxAge,
         DateTime ageDate,
@@ -140,15 +139,22 @@ public sealed class TeamManagerDatabase : ITeamManagerDatabase
         DateTime minDate = ageDate.AddYears(-maxAge);
         DateTime maxDate = ageDate.AddYears(-minAge);
         OleDbConnection connection = this.GetConnection();
-        int styleId = await connection.QueryFirstAsync<int>(
-            "select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke",
-            new { Distance = distance, Stroke = stroke });
+        Gender[] genders = gender is { } g ? new[] { g } : new[] { Gender.Male, Gender.Female };
 
         return await connection.QueryAsync<Member, int, (Member Member, TimeSpan EntryTime)>(
-            "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER = @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",
+            "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER in @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",
             (member, entryTime) => (member, TimeSpan.FromMilliseconds(entryTime)),
-            new { StyleId = styleId, Gender = (int)gender, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id) },
+            new { StyleId = swimStyle.Id, Gender = genders, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id) },
             splitOn: "TOTALTIME");
+    }
+
+    /// <inheritdoc/>
+    public async Task<SwimStyle?> GetSwimStyle(int distance, Stroke stroke, int relayCount = 1)
+    {
+        OleDbConnection connection = this.GetConnection();
+        return await connection.QueryFirstOrDefaultAsync<SwimStyle>(
+            "select * from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke and RELAYCOUNT = @RelayCount",
+            new { Distance = distance, Stroke = stroke, RelayCount = relayCount });
     }
 
     /// <inheritdoc/>

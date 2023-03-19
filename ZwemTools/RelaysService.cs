@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Diagnostics;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using ZwemTools.Data.TeamManager;
 using ZwemTools.Resources.Languages;
@@ -16,6 +17,7 @@ public class RelaysService
 {
     private readonly ITeamManagerDatabase database;
     private readonly IStringLocalizer<Strings> localizer;
+    private readonly IMemoryCache swimStylesCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RelaysService"/> class.
@@ -26,15 +28,16 @@ public class RelaysService
     {
         this.database = database;
         this.localizer = localizer;
+        this.swimStylesCache = new MemoryCache(new MemoryCacheOptions());
     }
 
     /// <summary>
     /// Generates relays for the given event.
     /// </summary>
-    /// <param name="meet"></param>
-    /// <param name="ev"></param>
-    /// <param name="availableMembers"></param>
-    /// <param name="count"></param>
+    /// <param name="meet">The meet.</param>
+    /// <param name="ev">The event in the meet to generate the relays for.</param>
+    /// <param name="availableMembers">The members to consider.</param>
+    /// <param name="count">The amount of relays to generate.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count)
     {
@@ -52,7 +55,7 @@ public class RelaysService
         return relays;
     }
 
-    public Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
+    private Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
     {
         if (ev.SwimStyle is null || ev.SwimStyle.RelayCount <= 1)
         {
@@ -76,54 +79,27 @@ public class RelaysService
     {
         Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
 
-        if (ev.SwimStyle.RelayCount == 4 && ev.Gender != Gender.Mixed)
+        if (ev.SwimStyle.RelayCount == 4)
         {
             List<Relay> relayOptions = await new[] { Stroke.Fly, Stroke.Back, Stroke.Breast, Stroke.Free }
                 .Permute()
                 .ToAsyncEnumerable()
-                .SelectAwait(async strokes =>
-                {
-                    Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
-                    foreach (Stroke stroke in strokes)
+                .SelectManyAwait(
+                    async strokes =>
                     {
-                        (Member Member, TimeSpan EntryTime) fastestForStroke = (await this.database.GetFastestMembers(
-                            ev.SwimStyle.Distance,
-                            stroke,
-                            ev.Gender,
-                            ev.MinAge,
-                            ev.MaxAge,
-                            meet.AgeDate,
-                            availableMembers.Except(members.Select(x => x.Value.Member)))).FirstOrDefault();
-                        members[stroke] = fastestForStroke;
-                    }
-
-                    RelayPosition CreateRelayPosition(Stroke stroke, int number)
-                    {
-                        (Member Member, TimeSpan EntryTime) m = members[stroke];
-                        return new RelayPosition
+                        if (ev.Gender == Gender.Mixed)
                         {
-                            RelayId = -1,
-                            Number = number,
-                            EntryTime = (int)Math.Round(m.EntryTime.TotalMilliseconds),
-                            Member = m.Member,
-                            Stroke = stroke,
-                        };
-                    }
+                            int membersPerGender = ev.SwimStyle.RelayCount / 2;
+                            return Enumerable.Repeat(Gender.Male, membersPerGender).Concat(Enumerable.Repeat(Gender.Female, membersPerGender))
+                                .Permute()
+                                .Select(strokes.Zip)
+                                .ToAsyncEnumerable()
+                                .SelectAwait(async tuples => await this.GetRelay(meet, ev, availableMembers, tuples));
+                        }
 
-                    ICollection<RelayPosition> relayPositions = new List<RelayPosition>
-                    {
-                        CreateRelayPosition(Stroke.Back, 1),
-                        CreateRelayPosition(Stroke.Breast, 2),
-                        CreateRelayPosition(Stroke.Fly, 3),
-                        CreateRelayPosition(Stroke.Free, 4),
-                    };
-
-                    return new Relay
-                    {
-                        Id = -1,
-                        Positions = relayPositions,
-                    };
-                }).ToListAsync();
+                        return new[] { await this.GetRelay(meet, ev, availableMembers, strokes.Select(stroke => (stroke, ev.Gender))) }.ToAsyncEnumerable();
+                    })
+                .ToListAsync();
 
             return relayOptions.MinBy(relay => relay.EntryTime)!;
         }
@@ -131,13 +107,62 @@ public class RelaysService
         throw new NotImplementedException(this.localizer["This type of relay is not supported."]);
     }
 
+    private async Task<Relay> GetRelay(Meet meet, Event ev, ICollection<Member> availableMembers, IEnumerable<(Stroke Stroke, Gender Gender)> strokes)
+    {
+        Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
+
+        Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
+        foreach ((Stroke stroke, Gender gender) in strokes)
+        {
+            SwimStyle swimStyle = await this.GetSwimStyle(ev.SwimStyle.Distance, stroke);
+            (Member Member, TimeSpan EntryTime) fastestForStroke = (await this.database.GetFastestMembers(
+                swimStyle,
+                gender,
+                ev.MinAge,
+                ev.MaxAge,
+                meet.AgeDate,
+                availableMembers.ExceptBy(members.Select(x => x.Value.Member.Id), member => member.Id))).FirstOrDefault();
+            members[stroke] = fastestForStroke;
+        }
+
+        RelayPosition CreateRelayPosition(Stroke stroke, int number)
+        {
+            (Member Member, TimeSpan EntryTime) m = members[stroke];
+            return new RelayPosition
+            {
+                RelayId = -1,
+                Number = number,
+                EntryTime = (int)Math.Round(m.EntryTime.TotalMilliseconds),
+                Member = m.Member,
+                Stroke = stroke,
+            };
+        }
+
+        ICollection<RelayPosition> relayPositions = new List<RelayPosition>
+        {
+            CreateRelayPosition(Stroke.Back, 1),
+            CreateRelayPosition(Stroke.Breast, 2),
+            CreateRelayPosition(Stroke.Fly, 3),
+            CreateRelayPosition(Stroke.Free, 4),
+        };
+
+        return new Relay
+        {
+            Id = -1,
+            Positions = relayPositions,
+        };
+    }
+
     private async Task<Relay> CalculateSingleStrokeRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
     {
         Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
+
+        SwimStyle swimStyle = await this.GetSwimStyle(ev.SwimStyle.Distance, ev.SwimStyle.Stroke);
+
         if (ev.Gender != Gender.Mixed)
         {
             IEnumerable<(Member Member, TimeSpan EntryTime)> members =
-                (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                (await this.database.GetFastestMembers(swimStyle, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
                     ev.SwimStyle.RelayCount);
             return new Relay
             {
@@ -154,10 +179,10 @@ public class RelaysService
         }
 
         IEnumerable<(Member Member, TimeSpan EntryTime)> males =
-            (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, Gender.Male, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+            (await this.database.GetFastestMembers(swimStyle, Gender.Male, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
                 ev.SwimStyle.RelayCount / 2);
         IEnumerable<(Member Member, TimeSpan EntryTime)> females =
-            (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, Gender.Female, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+            (await this.database.GetFastestMembers(swimStyle, Gender.Female, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
                 ev.SwimStyle.RelayCount / 2);
         return new Relay
         {
@@ -171,5 +196,11 @@ public class RelaysService
                 Stroke = ev.SwimStyle.Stroke,
             }).ToList(),
         };
+    }
+
+    private async Task<SwimStyle> GetSwimStyle(int distance, Stroke stroke)
+    {
+        return await this.swimStylesCache.GetOrCreateAsync(distance + stroke.ToString(), async _ => await this.database.GetSwimStyle(distance, stroke))
+               ?? throw new InvalidOperationException($"Swim style not found. {distance}m {stroke.ToString()}");
     }
 }
