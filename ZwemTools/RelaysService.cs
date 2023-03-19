@@ -9,17 +9,33 @@ using ZwemTools.Resources.Languages;
 
 namespace ZwemTools;
 
+/// <summary>
+/// Calculates optimal relay teams.
+/// </summary>
 public class RelaysService
 {
     private readonly ITeamManagerDatabase database;
     private readonly IStringLocalizer<Strings> localizer;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RelaysService"/> class.
+    /// </summary>
+    /// <param name="database">The Team Manager database.</param>
+    /// <param name="localizer">The string localizer.</param>
     public RelaysService(ITeamManagerDatabase database, IStringLocalizer<Strings> localizer)
     {
         this.database = database;
         this.localizer = localizer;
     }
 
+    /// <summary>
+    /// Generates relays for the given event.
+    /// </summary>
+    /// <param name="meet"></param>
+    /// <param name="ev"></param>
+    /// <param name="availableMembers"></param>
+    /// <param name="count"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count)
     {
         if (count <= 0)
@@ -70,7 +86,8 @@ public class RelaysService
                     Dictionary<Stroke, (Member Member, TimeSpan EntryTime)> members = new();
                     foreach (Stroke stroke in strokes)
                     {
-                        (Member Member, TimeSpan EntryTime) fastestForStroke = (await this.database.GetFastestMembers(ev.SwimStyle.Distance,
+                        (Member Member, TimeSpan EntryTime) fastestForStroke = (await this.database.GetFastestMembers(
+                            ev.SwimStyle.Distance,
                             stroke,
                             ev.Gender,
                             ev.MinAge,
@@ -136,6 +153,23 @@ public class RelaysService
             };
         }
 
-        throw new NotImplementedException(this.localizer["This type of relay is not supported."]);
+        IEnumerable<(Member Member, TimeSpan EntryTime)> males =
+            (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, Gender.Male, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                ev.SwimStyle.RelayCount / 2);
+        IEnumerable<(Member Member, TimeSpan EntryTime)> females =
+            (await this.database.GetFastestMembers(ev.SwimStyle.Distance, ev.SwimStyle.Stroke, Gender.Female, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                ev.SwimStyle.RelayCount / 2);
+        return new Relay
+        {
+            Id = -1,
+            Positions = males.Zip(females).SelectMany(tuple => new[] { tuple.First, tuple.Second }).Select((x, i) => new RelayPosition
+            {
+                RelayId = -1,
+                Number = i + 1,
+                Member = x.Member,
+                EntryTime = (int)Math.Round(x.EntryTime.TotalMilliseconds),
+                Stroke = ev.SwimStyle.Stroke,
+            }).ToList(),
+        };
     }
 }
