@@ -123,6 +123,9 @@ public class RelaysService
                 meet.AgeDate,
                 availableMembers.ExceptBy(members.Select(x => x.Value.Member.Id), member => member.Id))).FirstOrDefault();
             members[stroke] = fastestForStroke;
+
+            // Yield control to prevent blocking the UI thread for a long time
+            await Task.Delay(1);
         }
 
         RelayPosition CreateRelayPosition(Stroke stroke, int number)
