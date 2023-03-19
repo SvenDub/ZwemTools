@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.TeamManager;
 
-public interface ITeamManagerDatabase
+public interface ITeamManagerDatabase : IAsyncDisposable
 {
     Task<bool> TestConnection();
 

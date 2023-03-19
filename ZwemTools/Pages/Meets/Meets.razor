@@ -1,0 +1,30 @@
+﻿@page "/meets"
+
+@using ZwemTools.Data.Sql
+
+@inject DatabaseContext Context
+
+<h1>Meets</h1>
+
+@foreach (Meet meet in SavedMeets)
+{
+    <ul>
+        <li>
+            <a href="@($"meets/{meet.Id}")">
+                @meet.Id - @meet.Name (@meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min())
+            </a>
+        </li>
+    </ul>
+}
+
+@code {
+    private List<Meet> SavedMeets { get; set; } = new();
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        SavedMeets = Context.Meets.ToList();
+        Context.SavedChanges += (_, _) => { SavedMeets = Context.Meets.ToList(); };
+    }
+
+}

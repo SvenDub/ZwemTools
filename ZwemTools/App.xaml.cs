@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Globalization;
+using Microsoft.AspNetCore.Components.WebView.Maui;
 using ZwemTools.Abstractions;
 
 namespace ZwemTools;
@@ -10,6 +11,8 @@ namespace ZwemTools;
 /// <inheritdoc />
 public partial class App : Application
 {
+    private readonly BlazorWebView webView;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="App"/> class.
     /// </summary>
@@ -24,7 +27,9 @@ public partial class App : Application
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-        this.MainPage = new MainPage();
+        MainPage mainPage = new();
+        this.MainPage = mainPage;
+        this.webView = mainPage.WebView;
     }
 
     /// <inheritdoc/>
@@ -32,6 +37,11 @@ public partial class App : Application
     {
         Window window = base.CreateWindow(activationState);
         window.Title = "ZwemTools";
+        window.Destroying += (_, _) =>
+        {
+            // Disconnect web view to dispose all scoped dependencies
+            this.webView.Handler?.DisconnectHandler();
+        };
         return window;
     }
 }

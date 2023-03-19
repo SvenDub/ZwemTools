@@ -44,7 +44,7 @@ public static class MauiProgram
 
         if (OperatingSystem.IsWindows())
         {
-            builder.Services.AddSingleton<ITeamManagerDatabase, TeamManagerDatabase>();
+            builder.Services.AddScoped<ITeamManagerDatabase, TeamManagerDatabase>();
             builder.Services.AddSingleton<RelaysService>();
         }
 
@@ -73,7 +73,7 @@ public static class MauiProgram
             .MinimumLevel.Verbose()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .Enrich.FromLogContext()
-            .WriteTo.File(file, flushToDiskInterval: flushInterval, encoding: Encoding.UTF8)
+            .WriteTo.File(file, flushToDiskInterval: flushInterval, encoding: Encoding.UTF8, rollingInterval: RollingInterval.Day)
             .CreateLogger();
     }
 

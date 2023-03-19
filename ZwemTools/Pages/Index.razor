@@ -1,29 +1,3 @@
 ﻿@page "/"
 
-@using ZwemTools.Data.Sql
-
-@inject DatabaseContext Context
-
-<h1>Meets</h1>
-
-@foreach (Meet meet in Meets)
-{
-    <ul>
-        <li>
-            <a href="@($"meets/{meet.Id}")">
-                @meet.Id - @meet.Name (@meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min())
-            </a>
-        </li>
-    </ul>
-}
-
-@code {
-    private List<Meet> Meets { get; set; } = new();
-
-    protected override void OnInitialized()
-    {
-        Meets = Context.Meets.ToList();
-        Context.SavedChanges += (_, _) => { Meets = Context.Meets.ToList(); };
-    }
-
-}
+<h1>ZwemTools</h1>

@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Data.OleDb;
 using System.Runtime.Versioning;
 using Dapper;
@@ -13,10 +14,13 @@ namespace ZwemTools.Data.TeamManager;
 
 /// <inheritdoc />
 [SupportedOSPlatform("windows")]
-public class TeamManagerDatabase : ITeamManagerDatabase
+public sealed class TeamManagerDatabase : ITeamManagerDatabase
 {
     private readonly IPreferenceService preferenceService;
     private readonly ILogger<TeamManagerDatabase> logger;
+    private readonly object @lock = new();
+
+    private OleDbConnection? sharedConnection;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TeamManagerDatabase"/> class.
@@ -45,30 +49,39 @@ public class TeamManagerDatabase : ITeamManagerDatabase
             return false;
         }
 
-        await using OleDbConnection connection = new(this.ConnectionString);
         try
         {
-            await connection.OpenAsync();
-            this.logger.LogInformation("Successfully connected to Team Manager database");
-            return true;
+            OleDbConnection connection = this.GetConnection();
+            if (connection.State == ConnectionState.Closed)
+            {
+                await connection.OpenAsync();
+                this.logger.LogDebug("Successfully connected to Team Manager database");
+            }
+
+            if (connection.State == ConnectionState.Open)
+            {
+                return true;
+            }
         }
-        catch
+        catch (Exception e)
         {
-            return false;
+            this.logger.LogError(e, "Could not connect to Team Manager database");
         }
+
+        return false;
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Meet>> GetMeets()
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Meet>("select * from MEETS order by MAXDATE desc");
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Meet>> GetMeetsWithRelays()
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Meet>(
             "select distinct m.* from (MEETS m inner join EVENTS e on e.MEETSID = m.MEETSID) inner join SWIMSTYLE s on e.STYLESID = s.SWIMSTYLEID where s.RELAYCOUNT > 1 order by m.MAXDATE desc");
     }
@@ -76,14 +89,14 @@ public class TeamManagerDatabase : ITeamManagerDatabase
     /// <inheritdoc/>
     public async Task<IEnumerable<Event>> GetEvents(int meetId)
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Event>("select * from EVENTS where MEETSID=@Id", new { Id = meetId });
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Event>> GetRelays(int meetId)
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Event, SwimStyle, Event>(
             "select * from EVENTS e INNER JOIN SWIMSTYLE s on e.STYLESID = s.SWIMSTYLEID where e.MEETSID = @Id and s.RELAYCOUNT > 1",
             (ev, swimStyle) => ev with { SwimStyle = swimStyle },
@@ -94,14 +107,14 @@ public class TeamManagerDatabase : ITeamManagerDatabase
     /// <inheritdoc/>
     public async Task<IEnumerable<Member>> GetMembers()
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Member>("select * from MEMBERS");
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<Member>> GetMembers(int meetId)
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Member>(
             "select distinct m.* from RESULTS r INNER JOIN MEMBERS m on r.MEMBERSID = m.MEMBERSID where r.MEETSID = @Id",
             new { Id = meetId });
@@ -110,7 +123,7 @@ public class TeamManagerDatabase : ITeamManagerDatabase
     /// <inheritdoc/>
     public async Task<IEnumerable<Group>> GetGroups()
     {
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         return await connection.QueryAsync<Group>("select * from GROUPS");
     }
 
@@ -126,7 +139,7 @@ public class TeamManagerDatabase : ITeamManagerDatabase
     {
         DateTime minDate = ageDate.AddYears(-maxAge);
         DateTime maxDate = ageDate.AddYears(-minAge);
-        await using OleDbConnection connection = new(this.ConnectionString);
+        OleDbConnection connection = this.GetConnection();
         int styleId = await connection.QueryFirstAsync<int>(
             "select SWIMSTYLEID from SWIMSTYLE where DISTANCE = @Distance and STROKE = @Stroke",
             new { Distance = distance, Stroke = stroke });
@@ -136,6 +149,16 @@ public class TeamManagerDatabase : ITeamManagerDatabase
             (member, entryTime) => (member, TimeSpan.FromMilliseconds(entryTime)),
             new { StyleId = styleId, Gender = (int)gender, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id) },
             splitOn: "TOTALTIME");
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask DisposeAsync()
+    {
+        if (this.sharedConnection is not null)
+        {
+            this.logger.LogDebug("Closing Team Manager connection");
+            await this.sharedConnection.DisposeAsync();
+        }
     }
 
     private static void MapAttributes<T>()
@@ -149,5 +172,24 @@ public class TeamManagerDatabase : ITeamManagerDatabase
                         prop.GetCustomAttributes(false)
                             .OfType<ColumnAttribute>()
                             .Any(attr => attr.Name == columnName))));
+    }
+
+    private OleDbConnection GetConnection()
+    {
+        if (this.sharedConnection is not null)
+        {
+            return this.sharedConnection;
+        }
+
+        lock (this.@lock)
+        {
+            if (this.sharedConnection is null)
+            {
+                this.logger.LogDebug("Connecting to Team Manager database");
+                this.sharedConnection = new OleDbConnection(this.ConnectionString);
+            }
+        }
+
+        return this.sharedConnection;
     }
 }
