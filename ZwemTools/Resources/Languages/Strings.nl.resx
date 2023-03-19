@@ -264,4 +264,7 @@
   <data name="Settings" xml:space="preserve">
     <value>Instellingen</value>
   </data>
+  <data name="Update available" xml:space="preserve">
+    <value>Update beschikbaar</value>
+  </data>
 </root>

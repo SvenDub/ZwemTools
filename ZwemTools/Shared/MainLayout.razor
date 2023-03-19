@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Runtime.InteropServices.WindowsRuntime
+@using Windows.ApplicationModel
+@using Windows.Management.Deployment
+@using AppInfo = Microsoft.Maui.ApplicationModel.AppInfo
+@inherits LayoutComponentBase
 
 @inject IStringLocalizer<Strings> Localizer
 
@@ -14,6 +18,11 @@
         <div class="top-row px-4 d-print-none">
             @Localizer["Version"]
             @AppInfo.Version
+            
+            @if (UpdateAvailability == PackageUpdateAvailability.Available)
+            {
+                <span>&nbsp;| @Localizer["Update available"] </span>
+            }
         </div>
 
         <article class="content px-4">
@@ -24,6 +33,18 @@
 
 @code {
 
-    
+    private PackageUpdateAvailability UpdateAvailability { get; set; } = PackageUpdateAvailability.Unknown;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        UpdateAvailability = await AsyncInfo.Run(async _ =>
+        {
+            PackageManager packageManager = new();
+            Package package = packageManager.FindPackageForUser(string.Empty, Package.Current.Id.FullName);
+            PackageUpdateAvailabilityResult availabilityResult = await package.CheckUpdateAvailabilityAsync();
+            return availabilityResult.Availability;
+        });
+    }
 
 }
