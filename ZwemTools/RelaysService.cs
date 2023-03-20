@@ -41,8 +41,9 @@ public class RelaysService
     /// <param name="availableMembers">The members to consider.</param>
     /// <param name="count">The amount of relays to generate.</param>
     /// <param name="progressEventHandler">Event handler called when the progress is updated.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count, EventHandler<ProgressEventArgs>? progressEventHandler = null)
+    public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count, EventHandler<ProgressEventArgs>? progressEventHandler = null, CancellationToken cancellationToken = default)
     {
         if (count <= 0)
         {
@@ -50,7 +51,7 @@ public class RelaysService
         }
 
         RelayCalculation relayCalculation = new(this.database, this.localizer, this.swimStylesCache, progressEventHandler);
-        return await relayCalculation.CalculateRelays(meet, ev, availableMembers, count);
+        return await relayCalculation.CalculateRelays(meet, ev, availableMembers, count, cancellationToken);
     }
 
     private sealed class RelayCalculation
@@ -78,7 +79,8 @@ public class RelaysService
             Meet meet,
             Event ev,
             ICollection<Member> availableMembers,
-            int count)
+            int count,
+            CancellationToken cancellationToken = default)
         {
             if (count <= 0)
             {
@@ -94,9 +96,11 @@ public class RelaysService
                     await this.CalculateRelay(
                         meet,
                         ev,
-                        availableMembers.Except(relays.SelectMany(r => r.Positions.Select(p => p.Member).WhereNotNull())).ToList()));
+                        availableMembers.Except(relays.SelectMany(r => r.Positions.Select(p => p.Member).WhereNotNull())).ToList(),
+                        cancellationToken));
                 this.ReportProgress();
                 await Task.Yield();
+                cancellationToken.ThrowIfCancellationRequested();
             }
 
             return relays;
@@ -107,7 +111,7 @@ public class RelaysService
             this.progressEventHandler?.Invoke(this, new ProgressEventArgs { Loaded = (this.maxOptions * this.currentRelay) + this.currentOption, Total = this.maxRelays * this.maxOptions, LengthComputable = true });
         }
 
-        private Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
+        private Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers, CancellationToken cancellationToken = default)
         {
             if (ev.SwimStyle is null || ev.SwimStyle.RelayCount <= 1)
             {
@@ -121,13 +125,13 @@ public class RelaysService
 
             if (ev.SwimStyle.Stroke == Stroke.Medley)
             {
-                return this.CalculateMedleyRelay(meet, ev, availableMembers);
+                return this.CalculateMedleyRelay(meet, ev, availableMembers, cancellationToken);
             }
 
             return this.CalculateSingleStrokeRelay(meet, ev, availableMembers);
         }
 
-        private async Task<Relay> CalculateMedleyRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
+        private async Task<Relay> CalculateMedleyRelay(Meet meet, Event ev, ICollection<Member> availableMembers, CancellationToken cancellationToken = default)
         {
             Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
 
@@ -170,7 +174,7 @@ public class RelaysService
                             return new[] { relay }
                                 .ToAsyncEnumerable();
                         })
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
 
                 return relayOptions.MinBy(relay => relay.EntryTime)!;
             }
