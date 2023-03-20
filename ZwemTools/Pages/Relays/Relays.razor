@@ -112,6 +112,10 @@
 @if (IsLoading)
 {
     <p class="my-3">@Localizer["Loading"]</p>
+    @if (Progress is not null)
+    {
+        <RadzenProgressBar Value="Math.Round((Progress.Loaded / (double)Progress.Total) * 100)" Mode="Progress.LengthComputable ? ProgressBarMode.Determinate : ProgressBarMode.Indeterminate"></RadzenProgressBar>
+    }
 }
 
 @if (GeneratedRelays is { } relays && SelectedEvent is { SwimStyle: { } swimStyle })
@@ -151,6 +155,7 @@
     private IEnumerable<Relay>? GeneratedRelays { get; set; }
     private bool IsLoading { get; set; }
     private int RelayCount { get; set; } = 1;
+    private ProgressEventArgs? Progress { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -224,8 +229,9 @@
             {
                 IsLoading = true;
                 GeneratedRelays = Array.Empty<Relay>();
-                await Task.Delay(10);
-                GeneratedRelays = await RelaysService.CalculateRelays(SelectedMeet, SelectedEvent, SelectedMembers, RelayCount);
+                Progress = null;
+                await Task.Yield();
+                GeneratedRelays = await RelaysService.CalculateRelays(SelectedMeet, SelectedEvent, SelectedMembers, RelayCount, OnProgressUpdated);
             }
             catch (Exception e)
             {
@@ -237,6 +243,12 @@
                 IsLoading = false;
             }
         }
+    }
+
+    private void OnProgressUpdated(object? sender, ProgressEventArgs e)
+    {
+        Progress = e;
+        InvokeAsync(StateHasChanged);
     }
 
     private void UpdateFilteredMembers()
