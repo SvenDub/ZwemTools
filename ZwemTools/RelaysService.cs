@@ -96,7 +96,7 @@ public class RelaysService
                     await this.CalculateRelay(
                         meet,
                         ev,
-                        availableMembers.Except(relays.SelectMany(r => r.Positions.Select(p => p.Member).WhereNotNull())).ToList(),
+                        availableMembers.ExceptBy(relays.SelectMany(r => r.Positions.Select(p => p.Member?.Id).WhereNotNull()), member => member.Id).ToList(),
                         cancellationToken));
                 this.ReportProgress();
                 await Task.Yield();

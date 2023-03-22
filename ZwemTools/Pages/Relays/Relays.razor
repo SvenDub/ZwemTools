@@ -240,8 +240,8 @@
                 // Ignore cancellations
                 if (e is not OperationCanceledException)
                 {
-                    Logger.LogError(e, "Error");
-                    await DialogService.Alert(e.Message, "Error");
+                    Logger.LogError(e, "An error has occurred while calculating the relay");
+                    await DialogService.Alert(e.Message, Localizer["Error"]);
                 }
             }
             finally
