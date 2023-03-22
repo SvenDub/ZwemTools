@@ -93,11 +93,27 @@
     </div>
     <div class="row mb-2">
         <div class="col">
+
+            @{
+                bool disabled;
+                if (SelectedEvent.Gender == Gender.Mixed)
+                {
+                    
+                    int membersPerGender = SelectedEvent.SwimStyle.RelayCount * RelayCount / 2;
+                    int maleCount = SelectedMembers.Count(member => member.Gender == Gender.Male);
+                    int femaleCount = SelectedMembers.Count(member => member.Gender == Gender.Female);
+                    disabled = maleCount < membersPerGender || femaleCount < membersPerGender;
+                }
+                else
+                {
+                    disabled = SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount * RelayCount;
+                }
+            }
             <RadzenButton
                 Text="@Strings.Calculate"
                 ButtonStyle="ButtonStyle.Primary"
                 Click="@CalculateRelay"
-                Disabled="@(SelectedMembers.Count < SelectedEvent.SwimStyle.RelayCount)">
+                Disabled="@(disabled)">
             </RadzenButton>
             <RadzenButton
                 Text="@Strings.SelectAllInMeet"
