@@ -267,4 +267,7 @@
   <data name="Update available" xml:space="preserve">
     <value>Update available</value>
   </data>
+  <data name="Use entries after:" xml:space="preserve">
+    <value>Use entries after:</value>
+  </data>
 </root>

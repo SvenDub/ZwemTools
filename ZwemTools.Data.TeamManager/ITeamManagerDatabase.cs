@@ -16,7 +16,8 @@ public interface ITeamManagerDatabase : IAsyncDisposable
         int minAge,
         int maxAge,
         DateTime ageDate,
-        IEnumerable<Member> availableMembers);
+        IEnumerable<Member> availableMembers,
+        DateTime minimumEntryDate);
 
     Task<IEnumerable<Group>> GetGroups();
 

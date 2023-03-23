@@ -22,4 +22,10 @@ public record Meet
 
     [Column("AGEDATE")]
     public required DateTime AgeDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum date from which entry times can be used.
+    /// </summary>
+    [Column("ETIMEDATE")]
+    public required DateTime EntryTimeDate { get; set; }
 }

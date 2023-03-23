@@ -121,6 +121,8 @@
                 Click="@SelectAllInMeet">
             </RadzenButton>
             <RadzenNumeric Min="1" @bind-Value="@RelayCount"/>
+            @Localizer["Use entries after:"]
+            <RadzenDatePicker @bind-Value="@MinimumDate" Max="DateTime.Today" ShowTime="false" DateFormat="d"></RadzenDatePicker>
         </div>
     </div>
 }
@@ -173,6 +175,7 @@
     private int RelayCount { get; set; } = 1;
     private ProgressEventArgs? Progress { get; set; }
     private CancellationTokenSource? CancellationTokenSource { get; set; }
+    private DateTime? MinimumDate { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
@@ -198,6 +201,7 @@
             Events = await Database.GetRelays(meet.Id);
             SelectedEvent = null;
             MembersInMeet = await Database.GetMembers(meet.Id);
+            MinimumDate = meet.EntryTimeDate;
         }
         else
         {
@@ -249,7 +253,7 @@
                 Progress = null;
                 CancellationTokenSource = new CancellationTokenSource();
                 await Task.Yield();
-                GeneratedRelays = await RelaysService.CalculateRelays(SelectedMeet, SelectedEvent, SelectedMembers, RelayCount, OnProgressUpdated, CancellationTokenSource.Token);
+                GeneratedRelays = await RelaysService.CalculateRelays(SelectedMeet, SelectedEvent, SelectedMembers, RelayCount, MinimumDate ?? DateTime.MinValue, OnProgressUpdated, CancellationTokenSource.Token);
             }
             catch (Exception e)
             {

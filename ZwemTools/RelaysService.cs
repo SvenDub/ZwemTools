@@ -40,10 +40,11 @@ public class RelaysService
     /// <param name="ev">The event in the meet to generate the relays for.</param>
     /// <param name="availableMembers">The members to consider.</param>
     /// <param name="count">The amount of relays to generate.</param>
+    /// <param name="minimumEntryDate">The minimum date from which to search for entry times.</param>
     /// <param name="progressEventHandler">Event handler called when the progress is updated.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count, EventHandler<ProgressEventArgs>? progressEventHandler = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Relay>> CalculateRelays(Meet meet, Event ev, ICollection<Member> availableMembers, int count, DateTime minimumEntryDate, EventHandler<ProgressEventArgs>? progressEventHandler = null, CancellationToken cancellationToken = default)
     {
         if (count <= 0)
         {
@@ -51,7 +52,7 @@ public class RelaysService
         }
 
         RelayCalculation relayCalculation = new(this.database, this.localizer, this.swimStylesCache, progressEventHandler);
-        return await relayCalculation.CalculateRelays(meet, ev, availableMembers, count, cancellationToken);
+        return await relayCalculation.CalculateRelays(meet, ev, availableMembers, count, minimumEntryDate, cancellationToken);
     }
 
     private sealed class RelayCalculation
@@ -80,6 +81,7 @@ public class RelaysService
             Event ev,
             ICollection<Member> availableMembers,
             int count,
+            DateTime minimumEntryDate,
             CancellationToken cancellationToken = default)
         {
             if (count <= 0)
@@ -97,6 +99,7 @@ public class RelaysService
                         meet,
                         ev,
                         availableMembers.ExceptBy(relays.SelectMany(r => r.Positions.Select(p => p.Member?.Id).WhereNotNull()), member => member.Id).ToList(),
+                        minimumEntryDate,
                         cancellationToken));
                 this.ReportProgress();
                 await Task.Yield();
@@ -111,7 +114,7 @@ public class RelaysService
             this.progressEventHandler?.Invoke(this, new ProgressEventArgs { Loaded = (this.maxOptions * this.currentRelay) + this.currentOption, Total = this.maxRelays * this.maxOptions, LengthComputable = true });
         }
 
-        private Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers, CancellationToken cancellationToken = default)
+        private Task<Relay> CalculateRelay(Meet meet, Event ev, ICollection<Member> availableMembers, DateTime minimumEntryDate, CancellationToken cancellationToken = default)
         {
             if (ev.SwimStyle is null || ev.SwimStyle.RelayCount <= 1)
             {
@@ -125,13 +128,18 @@ public class RelaysService
 
             if (ev.SwimStyle.Stroke == Stroke.Medley)
             {
-                return this.CalculateMedleyRelay(meet, ev, availableMembers, cancellationToken);
+                return this.CalculateMedleyRelay(meet, ev, availableMembers, minimumEntryDate, cancellationToken);
             }
 
-            return this.CalculateSingleStrokeRelay(meet, ev, availableMembers);
+            return this.CalculateSingleStrokeRelay(meet, ev, availableMembers, minimumEntryDate);
         }
 
-        private async Task<Relay> CalculateMedleyRelay(Meet meet, Event ev, ICollection<Member> availableMembers, CancellationToken cancellationToken = default)
+        private async Task<Relay> CalculateMedleyRelay(
+            Meet meet,
+            Event ev,
+            ICollection<Member> availableMembers,
+            DateTime minimumEntryDate,
+            CancellationToken cancellationToken = default)
         {
             Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
 
@@ -161,14 +169,14 @@ public class RelaysService
                                     .SelectAwait(
                                         async tuples =>
                                         {
-                                            Relay relay = await this.GetRelay(meet, ev, availableMembers, tuples);
+                                            Relay relay = await this.GetRelay(meet, ev, availableMembers, tuples, minimumEntryDate);
                                             this.ReportProgress();
                                             await Task.Yield();
                                             return relay;
                                         });
                             }
 
-                            Relay relay = await this.GetRelay(meet, ev, availableMembers, strokes.Select(stroke => (stroke, ev.Gender)));
+                            Relay relay = await this.GetRelay(meet, ev, availableMembers, strokes.Select(stroke => (stroke, ev.Gender)), minimumEntryDate);
                             this.ReportProgress();
                             await Task.Yield();
                             return new[] { relay }
@@ -197,7 +205,8 @@ public class RelaysService
             Meet meet,
             Event ev,
             ICollection<Member> availableMembers,
-            IEnumerable<(Stroke Stroke, Gender Gender)> strokes)
+            IEnumerable<(Stroke Stroke, Gender Gender)> strokes,
+            DateTime minimumEntryDate)
         {
             Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
             this.currentOption++;
@@ -212,7 +221,8 @@ public class RelaysService
                     ev.MinAge,
                     ev.MaxAge,
                     meet.AgeDate,
-                    availableMembers.ExceptBy(members.Select(x => x.Value.Member.Id), member => member.Id))).FirstOrDefault();
+                    availableMembers.ExceptBy(members.Select(x => x.Value.Member.Id), member => member.Id),
+                    minimumEntryDate)).FirstOrDefault();
                 members[stroke] = fastestForStroke;
 
                 // Yield control to prevent blocking the UI thread for a long time
@@ -247,7 +257,7 @@ public class RelaysService
             };
         }
 
-        private async Task<Relay> CalculateSingleStrokeRelay(Meet meet, Event ev, ICollection<Member> availableMembers)
+        private async Task<Relay> CalculateSingleStrokeRelay(Meet meet, Event ev, ICollection<Member> availableMembers, DateTime minimumEntryDate)
         {
             Debug.Assert(ev.SwimStyle != null, "ev.SwimStyle != null");
 
@@ -256,7 +266,7 @@ public class RelaysService
             if (ev.Gender != Gender.Mixed)
             {
                 IEnumerable<(Member Member, TimeSpan EntryTime)> members =
-                    (await this.database.GetFastestMembers(swimStyle, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                    (await this.database.GetFastestMembers(swimStyle, ev.Gender, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers, minimumEntryDate)).Take(
                         ev.SwimStyle.RelayCount);
                 return new Relay
                 {
@@ -274,10 +284,10 @@ public class RelaysService
             }
 
             IEnumerable<(Member Member, TimeSpan EntryTime)> males =
-                (await this.database.GetFastestMembers(swimStyle, Gender.Male, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                (await this.database.GetFastestMembers(swimStyle, Gender.Male, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers, minimumEntryDate)).Take(
                     ev.SwimStyle.RelayCount / 2);
             IEnumerable<(Member Member, TimeSpan EntryTime)> females =
-                (await this.database.GetFastestMembers(swimStyle, Gender.Female, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers)).Take(
+                (await this.database.GetFastestMembers(swimStyle, Gender.Female, ev.MinAge, ev.MaxAge, meet.AgeDate, availableMembers, minimumEntryDate)).Take(
                     ev.SwimStyle.RelayCount / 2);
             return new Relay
             {

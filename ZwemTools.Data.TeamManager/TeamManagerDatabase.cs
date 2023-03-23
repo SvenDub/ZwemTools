@@ -134,7 +134,8 @@ public sealed class TeamManagerDatabase : ITeamManagerDatabase
         int minAge,
         int maxAge,
         DateTime ageDate,
-        IEnumerable<Member> availableMembers)
+        IEnumerable<Member> availableMembers,
+        DateTime minimumEntryDate)
     {
         DateTime minDate = ageDate.AddYears(-maxAge);
         DateTime maxDate = ageDate.AddYears(-minAge);
@@ -142,9 +143,9 @@ public sealed class TeamManagerDatabase : ITeamManagerDatabase
         Gender[] genders = gender is { } g ? new[] { g } : new[] { Gender.Male, Gender.Female };
 
         return await connection.QueryAsync<Member, int, (Member Member, TimeSpan EntryTime)>(
-            "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER in @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",
+            "select m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS, min(r.TOTALTIME) as TOTALTIME from MEMBERS m inner join RESULTS r on m.MEMBERSID = r.MEMBERSID where r.STYLESID = @StyleId and m.GENDER in @Gender and m.BIRTHDATE between @MinDate and @MaxDate and m.MEMBERSID in @AvailableMembers and r.TOTALTIME > 0 and r.EVENTDATE >= @MinEventDate group by m.MEMBERSID, m.FIRSTNAME, m.LASTNAME, m.BIRTHDATE, m.GROUPS order by min(r.TOTALTIME)",
             (member, entryTime) => (member, TimeSpan.FromMilliseconds(entryTime)),
-            new { StyleId = swimStyle.Id, Gender = genders, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id) },
+            new { StyleId = swimStyle.Id, Gender = genders, MinDate = minDate, MaxDate = maxDate, AvailableMembers = availableMembers.Select(m => m.Id), MinEventDate = minimumEntryDate },
             splitOn: "TOTALTIME");
     }
 
