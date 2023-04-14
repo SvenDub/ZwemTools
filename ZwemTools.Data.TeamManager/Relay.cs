@@ -14,4 +14,6 @@ public record Relay
     public TimeSpan EntryTime => this.Positions.Aggregate(TimeSpan.Zero, (x, y) => x + y.EntryTimeSpan);
 
     public ICollection<RelayPosition> Positions { get; set; } = new List<RelayPosition>();
+
+    public bool IsComplete => this.Positions.All(position => position.Member is not null);
 }

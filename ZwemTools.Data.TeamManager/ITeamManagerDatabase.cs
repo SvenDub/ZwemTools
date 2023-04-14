@@ -13,9 +13,6 @@ public interface ITeamManagerDatabase : IAsyncDisposable
     Task<IEnumerable<(Member Member, TimeSpan EntryTime)>> GetFastestMembers(
         SwimStyle swimStyle,
         Gender? gender,
-        int minAge,
-        int maxAge,
-        DateTime ageDate,
         IEnumerable<Member> availableMembers,
         DateTime minimumEntryDate);
 

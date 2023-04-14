@@ -21,7 +21,7 @@ public record Member
     required public DateTime Birthdate { get; set; }
 
     [Column("GROUPS")]
-    required public string Groups { get; set; }
+    required public string? Groups { get; set; }
 
     /// <summary>
     /// Gets or sets the gender of the member.
@@ -29,7 +29,7 @@ public record Member
     [Column("GENDER")]
     required public Gender Gender { get; set; }
 
-    public IEnumerable<string> GroupNames => this.Groups.Split(",").Select(group => group.Trim());
+    public IEnumerable<string> GroupNames => this.Groups?.Split(",").Select(group => group.Trim()) ?? new List<string>();
 
     public string FullName => $"{this.Firstname} {this.Lastname}";
 }

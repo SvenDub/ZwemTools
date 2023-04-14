@@ -53,7 +53,7 @@ public static class EnumerableExtensions
     {
         return values
             .Where(arg => arg.HasValue)
-            .Select(arg => arg.Value);
+            .Select(arg => arg!.Value);
     }
 
     /// <summary>
@@ -66,5 +66,28 @@ public static class EnumerableExtensions
         where T : notnull
     {
         return values.OfType<T>();
+    }
+
+    /// <summary>
+    /// Returns an enumerable that contains at least the selected amount of elements. If the source enumerable contains fewer elements than the <paramref name="expectedLength"/>,
+    /// <c>default</c> elements are added.
+    /// </summary>
+    /// <param name="values">The enumerable.</param>
+    /// <param name="expectedLength">The expected amount of elements.</param>
+    /// <typeparam name="T">The type of the items.</typeparam>
+    /// <returns>An enumerable of at least the expected length.</returns>
+    public static IEnumerable<T?> AtLeast<T>(this IEnumerable<T> values, int expectedLength)
+    {
+        int length = 0;
+        foreach (T? value in values)
+        {
+            length++;
+            yield return value;
+        }
+
+        for (int i = expectedLength - length - 1; i >= 0; i--)
+        {
+            yield return default;
+        }
     }
 }

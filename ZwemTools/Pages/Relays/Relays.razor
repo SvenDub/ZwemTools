@@ -131,7 +131,7 @@
 {
     @if (Progress is not null)
     {
-        <RadzenProgressBar Value="Progress.Loaded" Max="Progress.Total" ShowValue="false" Mode="Progress.LengthComputable ? ProgressBarMode.Determinate : ProgressBarMode.Indeterminate" class="my-2"></RadzenProgressBar>
+        <RadzenProgressBar Value="Progress.Loaded" Max="Progress.Total" ShowValue="true" Unit="@($" / {Progress.Total}")"  Mode="Progress.LengthComputable ? ProgressBarMode.Determinate : ProgressBarMode.Indeterminate" class="my-2"></RadzenProgressBar>
     }
     <RadzenButton ButtonStyle="ButtonStyle.Secondary" Click="Cancel" class="my-2">@Localizer["Cancel"]</RadzenButton>
 }
@@ -149,7 +149,7 @@
                         @context.EntryTimeSpan.Format()
                     </Template>
                     <FooterTemplate>
-                        <span class="@(relay.Positions.Count < swimStyle.RelayCount ? "text-danger" : "")">@relay.EntryTime.Format()</span>
+                        <span class="@(relay.Positions.Count < swimStyle.RelayCount || !relay.IsComplete ? "text-danger" : "")">@relay.EntryTime.Format()</span>
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="RelayPosition" Property="@nameof(RelayPosition.Stroke)" Title="@Strings.Stroke"/>

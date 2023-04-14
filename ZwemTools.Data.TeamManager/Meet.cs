@@ -23,6 +23,9 @@ public record Meet
     [Column("AGEDATE")]
     required public DateTime AgeDate { get; set; }
 
+    [Column("AGECALCTYPE")]
+    required public AgeCalcType AgeCalcType { get; set; }
+
     /// <summary>
     /// Gets or sets the minimum date from which entry times can be used.
     /// </summary>
