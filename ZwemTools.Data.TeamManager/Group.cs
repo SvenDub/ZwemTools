@@ -9,8 +9,8 @@ namespace ZwemTools.Data.TeamManager;
 public record Group
 {
     [Column("GROUPSID")]
-    public required string Id { get; set; }
+    required public string Id { get; set; }
 
     [Column("NAME")]
-    public required string Name { get; set; }
+    required public string Name { get; set; }
 }

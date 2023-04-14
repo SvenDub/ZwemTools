@@ -9,7 +9,7 @@ namespace ZwemTools.Data.TeamManager;
 public record Relay
 {
     [Column("RELAYSID")]
-    public required int Id { get; set; }
+    required public int Id { get; set; }
 
     public TimeSpan EntryTime => this.Positions.Aggregate(TimeSpan.Zero, (x, y) => x + y.EntryTimeSpan);
 

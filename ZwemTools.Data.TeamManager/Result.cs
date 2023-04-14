@@ -9,7 +9,7 @@ namespace ZwemTools.Data.TeamManager;
 public record Result
 {
     [Column("RESULTSID")]
-    public required int Id { get; init; }
+    required public int Id { get; init; }
 
     public Member? Member { get; set; }
 }

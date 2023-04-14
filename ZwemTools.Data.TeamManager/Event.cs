@@ -9,22 +9,22 @@ namespace ZwemTools.Data.TeamManager;
 public record Event
 {
     [Column("EVENTSID")]
-    public required int Id { get; init; }
+    required public int Id { get; init; }
 
     [Column("MEETSID")]
-    public required int MeetId { get; set; }
+    required public int MeetId { get; set; }
 
     [Column("NUMB")]
-    public required int Number { get; set; }
+    required public int Number { get; set; }
 
     [Column("MINAGE")]
-    public required int MinAge { get; set; }
+    required public int MinAge { get; set; }
 
     [Column("MAXAGE")]
-    public required int MaxAge { get; set; }
+    required public int MaxAge { get; set; }
 
     [Column("GENDER")]
-    public required Gender Gender { get; set; }
+    required public Gender Gender { get; set; }
 
     public SwimStyle? SwimStyle { get; set; }
 }

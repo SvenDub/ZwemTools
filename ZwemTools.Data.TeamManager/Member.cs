@@ -9,25 +9,25 @@ namespace ZwemTools.Data.TeamManager;
 public record Member
 {
     [Column("MEMBERSID")]
-    public required int Id { get; init; }
+    required public int Id { get; init; }
 
     [Column("LASTNAME")]
-    public required string Lastname { get; set; }
+    required public string Lastname { get; set; }
 
     [Column("FIRSTNAME")]
-    public required string Firstname { get; set; }
+    required public string Firstname { get; set; }
 
     [Column("BIRTHDATE")]
-    public required DateTime Birthdate { get; set; }
+    required public DateTime Birthdate { get; set; }
 
     [Column("GROUPS")]
-    public required string Groups { get; set; }
+    required public string Groups { get; set; }
 
     /// <summary>
     /// Gets or sets the gender of the member.
     /// </summary>
     [Column("GENDER")]
-    public required Gender Gender { get; set; }
+    required public Gender Gender { get; set; }
 
     public IEnumerable<string> GroupNames => this.Groups.Split(",").Select(group => group.Trim());
 

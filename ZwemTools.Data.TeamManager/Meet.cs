@@ -9,23 +9,23 @@ namespace ZwemTools.Data.TeamManager;
 public record Meet
 {
     [Column("MEETSID")]
-    public required int Id { get; init; }
+    required public int Id { get; init; }
 
     [Column("NAME")]
-    public required string Name { get; set; }
+    required public string Name { get; set; }
 
     [Column("MAXDATE")]
-    public required DateTime MaxDate { get; set; }
+    required public DateTime MaxDate { get; set; }
 
     [Column("PLACE")]
-    public required string Place { get; set; }
+    required public string Place { get; set; }
 
     [Column("AGEDATE")]
-    public required DateTime AgeDate { get; set; }
+    required public DateTime AgeDate { get; set; }
 
     /// <summary>
     /// Gets or sets the minimum date from which entry times can be used.
     /// </summary>
     [Column("ETIMEDATE")]
-    public required DateTime EntryTimeDate { get; set; }
+    required public DateTime EntryTimeDate { get; set; }
 }
