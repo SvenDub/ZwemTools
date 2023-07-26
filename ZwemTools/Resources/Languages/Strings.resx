@@ -270,4 +270,7 @@
   <data name="Use entries after:" xml:space="preserve">
     <value>Use entries after:</value>
   </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
 </root>

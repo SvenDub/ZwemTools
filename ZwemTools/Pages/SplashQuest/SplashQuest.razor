@@ -16,28 +16,22 @@
 {
     if (LenexElement.Meets is { Count: >0 })
     {
-        MeetElement meet = LenexElement.Meets.First();
-        SessionElement session = meet.Sessions.First();
-        
-        <RadzenNumeric Min="1" Max="8" @bind-Value="@TeamsCount"/>
-        
-        <p>@AthleteCount @Localizer["Athletes"] / @TeamsCount @Localizer["Teams"] = @(((double)AthleteCount / TeamsCount).ToString("g2"))</p>
-                                                                                                                                         
-        <RadzenButton
-            Text="@Localizer["Calculate"]"
-            ButtonStyle="ButtonStyle.Primary"
-            Click="@CalculateTeams">
-        </RadzenButton>
-        
-        <br/>
+        <div class="d-print-none">
+            <RadzenNumeric TValue="int" Min="1" Max="8" Value="@TeamsCount" Change="UpdateTeamsCount"/>
+            
+            <p>@AthleteCount @Localizer["Athletes"] / @TeamsCount @Localizer["Teams"] = @(((double)AthleteCount / TeamsCount).ToString("g2"))</p>
+                                                                                                                                             
+            <hr/>
+        </div>
         
         @foreach (List<AthleteElement> team in Teams)
         {
-            <RadzenDataGrid TItem="AthleteElement" Data="team">
+            <RadzenDataGrid TItem="AthleteElement" Data="team" class="mb-2">
                 <Columns>
                     <RadzenDataGridColumn TItem="AthleteElement" Property="FullName" Title="@Localizer["Name"]"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Time"]"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement">
+                    <RadzenDataGridColumn TItem="AthleteElement" Property="Birthdate.Year" Title="@Localizer["Year"]"></RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Property="Gender" Title="@Localizer["Gender"]"></RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Time"]">
                         <Template>
                             @CalculateEntryTime(context).Format()
                         </Template>
@@ -79,9 +73,12 @@ else
         LenexElement = LenexParser.Parse(ms);
         IsLoading = false;
         AthleteCount = LenexElement.Meets.FirstOrDefault()?.Clubs.SelectMany(club => club.Athletes).Count() ?? 0;
+        TeamsCount = (int)Math.Ceiling(AthleteCount / 8d);
+
+        CalculateTeams();
     }
 
-    async Task CalculateTeams()
+    void CalculateTeams()
     {
         TimeSpan targetAverage = TimeSpan.FromSeconds(LenexElement?.Meets.FirstOrDefault()?.Clubs.SelectMany(club => club.Athletes).Select(CalculateEntryTime).Average(span => span.TotalSeconds) ?? 0);
         SortedDictionary<AthleteElement, TimeSpan> athletes = new(Comparer<AthleteElement>.Create((left, right) => CalculateEntryTime(left).CompareTo(CalculateEntryTime(right))));
@@ -90,11 +87,18 @@ else
             athletes[athlete] = CalculateEntryTime(athlete);
         }
 
-        Teams.Clear();
+        List<List<AthleteElement>> teams = new();
         for (int i = 0; i < TeamsCount; i++)
         {
-            Teams.Add(CreateTeam(athletes, athletes.Count / (TeamsCount - i), targetAverage).ToList());
+            teams.Add(CreateTeam(athletes, athletes.Count / (TeamsCount - i), targetAverage).ToList());
         }
+        Teams = teams;
+    }
+
+    void UpdateTeamsCount(int value)
+    {
+        TeamsCount = value;
+        CalculateTeams();
     }
 
     private TimeSpan CalculateEntryTime(AthleteElement athlete)
@@ -106,25 +110,24 @@ else
     private IEnumerable<AthleteElement> CreateTeam(SortedDictionary<AthleteElement, TimeSpan> available, int count, TimeSpan targetAverage)
     {
         TimeSpan total = TimeSpan.Zero;
-        TimeSpan average = TimeSpan.Zero;
         
         for (int i = 0; i < count; i++)
         {
             AthleteElement? key;
             TimeSpan value;
-            if (average > targetAverage)
+
+            if (i == 0)
             {
                 (key, value) = available.First();
             }
             else
             {
-                (key, value) = available.Last();
+                (key, value) = available.MinBy(pair => Math.Abs(((pair.Value + total) / (i + 1) - targetAverage).TotalSeconds));
             }
             
             available.Remove(key);
             yield return key;
             total += value;
-            average = total / (i + 1);
         }
     }
 }

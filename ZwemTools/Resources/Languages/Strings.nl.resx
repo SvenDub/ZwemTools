@@ -270,4 +270,7 @@
   <data name="Use entries after:" xml:space="preserve">
     <value>Gebruik tijden na:</value>
   </data>
+  <data name="Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
 </root>
