@@ -273,4 +273,28 @@
   <data name="Year" xml:space="preserve">
     <value>Year</value>
   </data>
+  <data name="Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="Butterfly" xml:space="preserve">
+    <value>Butterfly</value>
+  </data>
+  <data name="Backstroke" xml:space="preserve">
+    <value>Backstroke</value>
+  </data>
+  <data name="Breaststroke" xml:space="preserve">
+    <value>Breaststroke</value>
+  </data>
+  <data name="Freestyle" xml:space="preserve">
+    <value>Freestyle</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="Mixed" xml:space="preserve">
+    <value>Mixed</value>
+  </data>
 </root>

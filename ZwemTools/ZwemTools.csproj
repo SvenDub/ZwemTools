@@ -64,12 +64,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Pages\LAC\LAC.razor.css" />
       <None Remove="Resources\AppIcon\appicon.svg" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Pages\LAC\LAC.razor.css" />
     </ItemGroup>
 
     <ItemGroup>

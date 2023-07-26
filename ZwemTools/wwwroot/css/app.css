@@ -80,3 +80,9 @@ a, .btn-link {
         padding-left: env(safe-area-inset-left);
     }
 }
+
+@media print {
+    .pagebreak {
+        page-break-before: always;
+    }
+}

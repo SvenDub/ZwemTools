@@ -9,7 +9,7 @@
 <div class="d-print-none">
     <h3>@Localizer["SplashQuest"]</h3>
 
-    <InputFile OnChange="@LoadFile" accept=".lxf"/>
+    <InputFile OnChange="@LoadFile" accept=".lxf" class="mb-2"/>
 </div>
 
 @if (!IsLoading && LenexElement is not null)
@@ -17,27 +17,58 @@
     if (LenexElement.Meets is { Count: >0 })
     {
         <div class="d-print-none">
-            <RadzenNumeric TValue="int" Min="1" Max="8" Value="@TeamsCount" Change="UpdateTeamsCount"/>
-            
-            <p>@AthleteCount @Localizer["Athletes"] / @TeamsCount @Localizer["Teams"] = @(((double)AthleteCount / TeamsCount).ToString("g2"))</p>
-                                                                                                                                             
-            <hr/>
+            <div class="row mb-2">
+                <div class="col">
+                    <RadzenNumeric TValue="int" Min="1" Max="8" Value="@TeamsCount" Change="UpdateTeamsCount"/>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <p>@AthleteCount @Localizer["Athletes"] / @TeamsCount @Localizer["Teams"] = @(((double)AthleteCount / TeamsCount).ToString("g2"))</p>
+                </div>
+            </div>
         </div>
         
         @foreach (List<AthleteElement> team in Teams)
         {
-            <RadzenDataGrid TItem="AthleteElement" Data="team" class="mb-2">
+            <RadzenDataGrid TItem="AthleteElement" Data="team" class="mb-2 pagebreak">
                 <Columns>
-                    <RadzenDataGridColumn TItem="AthleteElement" Property="FullName" Title="@Localizer["Name"]"></RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Property="FullName" Title="@Localizer["Name"]">
+                        <FooterTemplate>@Localizer["Average"]</FooterTemplate>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="AthleteElement" Property="Birthdate.Year" Title="@Localizer["Year"]"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Property="Gender" Title="@Localizer["Gender"]"></RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Gender"]">
+                        <Template>
+                            @Localizer[context.Gender.ToString()]
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Time"]">
                         <Template>
-                            @CalculateEntryTime(context).Format()
+                            <span class="fw-bold">@CalculateEntryTime(context).Format()</span>
                         </Template>
                         <FooterTemplate>
-                            @TimeSpan.FromSeconds(team.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()
+                            <span class="fw-bold">@TimeSpan.FromSeconds(team.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()</span>
                         </FooterTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Butterfly"]">
+                        <Template>
+                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Fly)?.EventId)?.EntryTime?.Format()
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Backstroke"]">
+                        <Template>
+                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Backstroke)?.EventId)?.EntryTime?.Format()
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Breaststroke"]">
+                        <Template>
+                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Breaststroke)?.EventId)?.EntryTime?.Format()
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Freestyle"]">
+                        <Template>
+                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Freestyle)?.EventId)?.EntryTime?.Format()
+                        </Template>
                     </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
@@ -80,12 +111,18 @@ else
 
     void CalculateTeams()
     {
-        TimeSpan targetAverage = TimeSpan.FromSeconds(LenexElement?.Meets.FirstOrDefault()?.Clubs.SelectMany(club => club.Athletes).Select(CalculateEntryTime).Average(span => span.TotalSeconds) ?? 0);
+        if (LenexElement is not {Meets.Count: >0})
+        {
+            return;
+        }
+        
         SortedDictionary<AthleteElement, TimeSpan> athletes = new(Comparer<AthleteElement>.Create((left, right) => CalculateEntryTime(left).CompareTo(CalculateEntryTime(right))));
-        foreach (AthleteElement athlete in LenexElement?.Meets.FirstOrDefault()?.Clubs.SelectMany(club => club.Athletes))
+        foreach (AthleteElement athlete in LenexElement.Meets.First().Clubs.SelectMany(club => club.Athletes))
         {
             athletes[athlete] = CalculateEntryTime(athlete);
         }
+        
+        TimeSpan targetAverage = TimeSpan.FromSeconds(athletes.Values.Average(span => span.TotalSeconds));
 
         List<List<AthleteElement>> teams = new();
         for (int i = 0; i < TeamsCount; i++)
