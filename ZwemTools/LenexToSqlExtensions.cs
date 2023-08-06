@@ -1,4 +1,4 @@
-﻿// <copyright file="LenexElementsExtensions.cs" company="ZwemTools">
+﻿// <copyright file="LenexToSqlExtensions.cs" company="ZwemTools">
 // Copyright (c) ZwemTools. All rights reserved.
 // </copyright>
 
@@ -8,7 +8,7 @@ using Entry = ZwemTools.Data.Sql.Entry;
 
 namespace ZwemTools;
 
-public static class LenexElementsExtensions
+public static class LenexToSqlExtensions
 {
     public static Meet ToSql(this MeetElement lenex)
     {

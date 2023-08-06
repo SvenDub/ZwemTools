@@ -90,4 +90,6 @@ public static class EnumerableExtensions
             yield return default;
         }
     }
+
+    public static Collection<T> ToCollection<T>(this IEnumerable<T> values) => new(values.ToList());
 }

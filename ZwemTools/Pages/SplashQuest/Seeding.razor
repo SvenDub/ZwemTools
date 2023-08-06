@@ -2,8 +2,13 @@
 
 @using ZwemTools.Data.Sql
 @using ZwemTools.Data.Sql.SplashQuest
+@using ZwemTools.Data.Lenex.Xml
+@using ZwemTools.Data.Lenex
+@using Windows.Storage.Pickers
+@using Windows.Storage
 
 @inject DatabaseContext Context
+@inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
 
 <h3><a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Localizer["Seeding"]</h3>
@@ -11,6 +16,7 @@
 @if (Meet is not null)
 {
     <RadzenButton Text="@Localizer["Calculate seeding"]" Click="CalculateSeeding"></RadzenButton>
+    <RadzenButton Text="@Localizer["Export"]" Click="ExportSeeding"></RadzenButton>
     foreach (Session session in Meet.Meet.Sessions)
     {
         <h4>@session.Name (@session.Date)</h4>
@@ -90,6 +96,51 @@
         }
 
         await Context.SaveChangesAsync();
+    }
+
+    private async Task ExportSeeding()
+    {
+        if (Meet is null)
+        {
+            return;
+        }
+
+        FileSavePicker fileSavePicker = new()
+        {
+            SuggestedFileName = "entries.lxf",
+        };
+        fileSavePicker.FileTypeChoices.Add("Lenex file", new List<string> {".lxf"});
+
+        if (MauiWinUIApplication.Current.Application.Windows[0].Handler?.PlatformView is MauiWinUIWindow window)
+        {
+            WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, window.WindowHandle);
+        }
+        
+        StorageFile? result = await fileSavePicker.PickSaveFileAsync();
+        if (result is not null)
+        {
+            LenexElement lenexElement = new()
+            {
+                Version = "3.0",
+                Constructor = new ConstructorElement
+                {
+                    Name = AppInfo.Name,
+                    Version = AppInfo.Version.ToString(),
+                    Contact = new ContactElement
+                    {
+                        Email = "sven@svendubbeld.nl",
+                    },
+                },
+                Meets = new Collection<MeetElement>
+                {
+                    Meet.Meet.ToLenex(),
+                },
+            };
+
+            string file = Path.GetFileNameWithoutExtension(result.Name);
+            await using Stream stream = await result.OpenStreamForWriteAsync();
+            LenexParser.Write(lenexElement, file, stream);
+        }
     }
 
 }

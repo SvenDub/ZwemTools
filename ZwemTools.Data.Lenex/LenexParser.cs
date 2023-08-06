@@ -17,4 +17,13 @@ public class LenexParser
         XmlSerializer serializer = new(typeof(LenexElement));
         return (LenexElement)serializer.Deserialize(entryStream)!;
     }
+
+    public void Write(LenexElement lenexElement, string file, Stream stream)
+    {
+        using ZipArchive archive = new(stream, ZipArchiveMode.Create);
+        ZipArchiveEntry entry = archive.CreateEntry($"{file}.lef");
+        using Stream entryStream = entry.Open();
+        XmlSerializer serializer = new(typeof(LenexElement));
+        serializer.Serialize(entryStream, lenexElement);
+    }
 }
