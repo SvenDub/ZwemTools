@@ -53,4 +53,14 @@ public class ResultElement
 
     [XmlIgnore]
     public ResultStatus? Status { get; set; }
+
+    [XmlAttribute("points")]
+    public string? PointProxy
+    {
+        get => this.Points?.ToString();
+        set => this.Points = value is not null ? int.Parse(value) : null;
+    }
+
+    [XmlIgnore]
+    public int? Points { get; set; }
 }

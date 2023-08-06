@@ -190,13 +190,14 @@ public static class LenexToSqlExtensions
         LenexId = lenex.AthleteId,
     };
 
-    private static Result ToSql(this ResultElement lenex) => new()
+    public static Result ToSql(this ResultElement lenex) => new()
     {
         LenexEventId = lenex.EventId,
         Lane = lenex.Lane,
         SwimTime = lenex.SwimTime,
         Status = lenex.Status?.ToSql(),
         LenexId = lenex.ResultId,
+        Points = lenex.Points,
     };
 
     private static Entry ToSql(this EntryElement lenex) => new(Guid.NewGuid())

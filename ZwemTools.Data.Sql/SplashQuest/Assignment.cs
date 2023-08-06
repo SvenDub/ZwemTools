@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.Sql.SplashQuest;
+﻿// <copyright file="Assignment.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.Sql.SplashQuest;
 
 [Owned]
 [Index(nameof(Stroke), nameof(AthleteId), IsUnique = true)]

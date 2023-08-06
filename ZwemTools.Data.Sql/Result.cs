@@ -28,6 +28,8 @@ public class Result
 
     required public int LenexEventId { get; set; }
 
+    public int? Points { get; set; }
+
     [NotMapped]
     public TimeSpan SwimTimeWithPenalty
     {

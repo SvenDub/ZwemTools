@@ -15,6 +15,7 @@
     <p>@Meet.Meet.Clubs.SelectMany(c => c.Athletes).Count() athletes</p>
     <p><a href="/splash-quest/@Id/teams">@Meet.Teams.Count teams</a></p>
     <p><a href="/splash-quest/@Id/seeding">@Localizer["Seeding"]</a></p>
+    <p><a href="/splash-quest/@Id/results">@Localizer["Results"]</a></p>
                          
     <InputFile OnChange="@LoadFile" accept=".lxf"/>
     <RadzenButton Text="@Localizer["Clear entries"]" Click="@OnClear"></RadzenButton>

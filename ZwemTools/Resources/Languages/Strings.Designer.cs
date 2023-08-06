@@ -186,6 +186,15 @@ namespace ZwemTools.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fly.
+        /// </summary>
+        public static string Fly {
+            get {
+                return ResourceManager.GetString("Fly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Freestyle.
         /// </summary>
         public static string Freestyle {
@@ -366,6 +375,15 @@ namespace ZwemTools.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Points.
+        /// </summary>
+        public static string Points {
+            get {
+                return ResourceManager.GetString("Points", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Property.
         /// </summary>
         public static string Property {
@@ -542,6 +560,15 @@ namespace ZwemTools.Resources.Languages {
         public static string ToResultTime {
             get {
                 return ResourceManager.GetString("ToResultTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
             }
         }
         

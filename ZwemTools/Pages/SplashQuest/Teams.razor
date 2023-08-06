@@ -7,20 +7,20 @@
 @inject IStringLocalizer<Strings> Localizer
 @inject ContextMenuService ContextMenuService
 
-<div class="d-print-none">
-    <h3><a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Meet?.Meet.Name (@Meet?.Meet.City)</h3>
-</div>
+<h3 class="d-print-none">
+    <a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Meet?.Meet.Name (@Meet?.Meet.City)
+</h3>
 
 @if (!IsLoading && Meet is not null)
 {
-    <a href="/splash-quest/@Id/teams/create">Create teams</a>
+    <a href="/splash-quest/@Id/teams/create" class="d-print-none">Create teams</a>
     
     @foreach (Team team in Meet.Teams.OrderBy(team => team.Name))
     {
-        <h4>@team.Name</h4>
-        <RadzenDataGrid TItem="Athlete" Data="team.Athletes" class="mb-2 pagebreak">
+        <h4 class="pagebreak">@team.Name</h4>
+        <RadzenDataGrid TItem="Athlete" Data="team.Athletes" class="mb-2">
             <Columns>
-                <RadzenDataGridColumn TItem="Athlete" Property="FullName" Title="@Localizer["Name"]">
+                <RadzenDataGridColumn TItem="Athlete" Property="FullName" Title="@Localizer["Name"]" Width="300px">
                     <Template>
                         <span @oncontextmenu="@(args => ShowMoveContextMenu(args, context))">
                             @context.FullName
@@ -28,8 +28,8 @@
                     </Template>
                     <FooterTemplate>@Localizer["Average"]</FooterTemplate>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="Athlete" Property="Birthdate.Year" Title="@Localizer["Year"]"></RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Gender"]">
+                <RadzenDataGridColumn TItem="Athlete" Property="Birthdate.Year" Title="@Localizer["Year"]" Width="100px"></RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Gender"]" Width="100px">
                     <Template>
                         @Localizer[context.Gender.ToString()]
                     </Template>
@@ -39,7 +39,7 @@
                         <span class="fw-bold">@CalculateEntryTime(context).Format()</span>
                     </Template>
                     <FooterTemplate>
-                        <span class="fw-bold">@TimeSpan.FromSeconds(team.Athletes.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()</span>
+                        @TimeSpan.FromSeconds(team.Athletes.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Butterfly"]">

@@ -176,6 +176,7 @@ public static class SqlToLenexExtensions
         Lane = sql.Lane,
         SwimTime = sql.SwimTime,
         Status = sql.Status?.ToLenex(),
+        Points = sql.Points,
     };
 
     public static ResultStatus ToLenex(this Data.Sql.ResultStatus sql) => sql switch

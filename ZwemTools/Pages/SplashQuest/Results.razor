@@ -1,0 +1,112 @@
+﻿@page "/splash-quest/{Id:guid}/results"
+
+@using ZwemTools.Data.Sql
+@using ZwemTools.Data.Lenex
+@using ZwemTools.Data.Lenex.Xml
+@using ZwemTools.Data.Sql.SplashQuest
+
+@inject DatabaseContext Context
+@inject LenexParser LenexParser
+@inject IStringLocalizer<Strings> Localizer
+
+<h3 class="d-print-none">
+    <a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Localizer["Results"]
+</h3>
+
+@if (Meet is not null)
+{
+    <InputFile OnChange="@LoadFile" accept=".lxf" class="d-print-none"/>
+    
+    <RadzenDataGrid TItem="Team" Data="Meet.Teams.OrderByDescending(team => team.Points).ThenBy(team => team.Name)" class="mb-2">
+        <Columns>
+            <RadzenDataGridColumn TItem="Team" Property="Name" Title="@Localizer["Name"]"></RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Team" Property="Points" Title="@Localizer["Points"]"></RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    
+    foreach (Team team in Meet.Teams.OrderBy(team => team.Name))
+    {
+        <h4 class="pagebreak">@team.Name</h4>
+        <RadzenDataGrid TItem="Assignment" Data="team.Assignments.OrderBy(assignment => assignment.Stroke).ThenBy(assignment => assignment.Athlete.FullName)" class="mb-2">
+            <Columns>
+                <RadzenDataGridColumn TItem="Assignment" Property="Athlete.FullName" Title="@Localizer["Name"]">
+                    <FooterTemplate>
+                        @Localizer["Total"]
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Assignment" Property="Stroke" Title="@Localizer["Stroke"]" Width="200px">
+                    <Template>@Localizer[context.Stroke.ToString()]</Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Assignment" Title="@Localizer["Time"]" Width="200px">
+                    <Template>
+                        @{
+                            TimeSpan? swimTime = context.Athlete.Results.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == context.Stroke)?.SwimTime;
+                            if (swimTime?.Ticks == 0)
+                            {
+                                swimTime = null;
+                            }
+                        }
+                        @swimTime?.Format()
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="Assignment" Title="@Localizer["Points"]" Width="100px">
+                    <Template>
+                        @context.Athlete.Results.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == context.Stroke)?.Points
+                    </Template>
+                    <FooterTemplate>
+                        @team.Points
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    }
+}
+
+@code {
+    [Parameter]
+    required public Guid Id { get; set; }
+
+    private SplashQuestMeet? Meet { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        if (Meet is null)
+        {
+            return;
+        }
+        
+        await using Stream stream = e.File.OpenReadStream();
+        MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        
+        LenexElement lenexElement = LenexParser.Parse(ms);
+        MeetElement? meetElement = lenexElement.Meets.FirstOrDefault(element => element.Name == Meet?.Meet.Name);
+
+        if (meetElement is null)
+        {
+            return;
+        }
+
+        foreach (AthleteElement athleteElement in meetElement.Clubs.SelectMany(element => element.Athletes))
+        {
+            Athlete athlete = Meet.Meet.Clubs.SelectMany(club => club.Athletes).First(athlete => athlete.LenexId == athleteElement.AthleteId);
+            athlete.Results.Clear();
+            foreach (ResultElement resultElement in athleteElement.Results)
+            {
+                Result result = resultElement.ToSql();
+                result.Event = Meet.Meet.Sessions.SelectMany(session => session.Events).First(ev => ev.LenexId == resultElement.EventId);
+                result.EventId = result.Event.Id;
+                athlete.Results.Add(result);
+            }
+        }
+
+        await Context.SaveChangesAsync();
+        Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+    }
+}

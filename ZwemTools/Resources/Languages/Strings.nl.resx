@@ -297,4 +297,13 @@
   <data name="Mixed" xml:space="preserve">
     <value>Gemengd</value>
   </data>
+  <data name="Fly" xml:space="preserve">
+    <value>Vlinderslag</value>
+  </data>
+  <data name="Points" xml:space="preserve">
+    <value>Punten</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Totaal</value>
+  </data>
 </root>

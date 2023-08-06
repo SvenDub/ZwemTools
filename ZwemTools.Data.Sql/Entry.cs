@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.Sql;
+﻿// <copyright file="Entry.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.Sql;
 
 [Owned]
 public record Entry(Guid Id)

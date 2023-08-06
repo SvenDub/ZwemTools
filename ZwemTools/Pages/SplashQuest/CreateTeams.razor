@@ -48,7 +48,7 @@
                         <span class="fw-bold">@CalculateEntryTime(context).Format()</span>
                     </Template>
                     <FooterTemplate>
-                        <span class="fw-bold">@TimeSpan.FromSeconds(team.Athletes.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()</span>
+                        @TimeSpan.FromSeconds(team.Athletes.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()
                     </FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Butterfly"]">

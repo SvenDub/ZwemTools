@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.Sql.SplashQuest;
+﻿// <copyright file="SplashQuestMeet.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.Sql.SplashQuest;
 
 public record SplashQuestMeet(Guid Id)
 {

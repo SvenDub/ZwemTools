@@ -1,4 +1,8 @@
-﻿namespace ZwemTools.Data.Sql;
+﻿// <copyright file="Heat.cs" company="ZwemTools">
+// Copyright (c) ZwemTools. All rights reserved.
+// </copyright>
+
+namespace ZwemTools.Data.Sql;
 
 public record Heat(Guid Id)
 {
