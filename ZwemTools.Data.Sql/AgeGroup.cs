@@ -19,4 +19,6 @@ public class AgeGroup
     public Gender? Gender { get; set; }
 
     public virtual ICollection<Ranking> Rankings { get; set; } = new Collection<Ranking>();
+
+    required public int LenexId { get; set; }
 }

@@ -24,6 +24,10 @@ public class Result
 
     public ResultStatus? Status { get; set; }
 
+    required public int LenexId { get; set; }
+
+    required public int LenexEventId { get; set; }
+
     [NotMapped]
     public TimeSpan SwimTimeWithPenalty
     {

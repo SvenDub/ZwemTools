@@ -15,4 +15,6 @@ public class Ranking
     public int ResultId { get; set; }
 
     public virtual Result Result { get; set; } = null!;
+
+    required public int LenexResultId { get; set; }
 }

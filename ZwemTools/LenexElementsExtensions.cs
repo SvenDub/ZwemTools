@@ -34,8 +34,7 @@ public static class LenexElementsExtensions
                 {
                     foreach (Ranking ranking in ageGroup.Rankings)
                     {
-                        ranking.Result = sql.Clubs.SelectMany(x => x.Athletes).SelectMany(x => x.Results).Single(x => x.Id == ranking.ResultId);
-                        ranking.ResultId = default;
+                        ranking.Result = sql.Clubs.SelectMany(x => x.Athletes).SelectMany(x => x.Results).Single(x => x.LenexId == ranking.LenexResultId);
                     }
                 }
             }
@@ -47,24 +46,14 @@ public static class LenexElementsExtensions
             {
                 foreach (Result result in athlete.Results)
                 {
-                    result.Event = sql.Sessions.SelectMany(x => x.Events).Single(x => x.Id == result.EventId);
-                    result.EventId = default;
-                    result.Id = default;
+                    result.Event = sql.Sessions.SelectMany(x => x.Events).Single(x => x.LenexId == result.LenexEventId);
                 }
 
                 foreach (Entry entry in athlete.Entries)
                 {
-                    entry.Event = sql.Sessions.SelectMany(x => x.Events).Single(x => x.Id == entry.EventId);
-                    entry.EventId = default;
+                    entry.Event = sql.Sessions.SelectMany(x => x.Events).Single(x => x.LenexId == entry.LenexEventId);
+                    entry.Heat = entry.Event.Heats.SingleOrDefault(x => x.LenexId == entry.LenexHeatId);
                 }
-            }
-        }
-
-        foreach (Session session in sql.Sessions)
-        {
-            foreach (Event @event in session.Events)
-            {
-                @event.Id = default;
             }
         }
 
@@ -75,6 +64,7 @@ public static class LenexElementsExtensions
     {
         Name = lenex.Name,
         Athletes = lenex.Athletes.Select(x => x.ToSql()).ToList(),
+        LenexId = lenex.ClubId,
     };
 
     private static AgeDate ToSql(this AgeDateElement lenex) => new()
@@ -123,12 +113,19 @@ public static class LenexElementsExtensions
 
     private static Event ToSql(this EventElement lenex) => new()
     {
-        Id = lenex.EventId,
         AgeGroups = lenex.AgeGroups.Select(x => x.ToSql()).ToList(),
         Time = lenex.Time,
         Gender = lenex.Gender?.ToSql(),
         Number = lenex.Number,
         SwimStyle = lenex.SwimStyle.ToSql(),
+        LenexId = lenex.EventId,
+        Heats = lenex.Heats.Select(x => x.ToSql()).ToList(),
+    };
+
+    private static Heat ToSql(this HeatElement lenex) => new(Guid.NewGuid())
+    {
+        Number = lenex.Number,
+        LenexId = lenex.HeatId,
     };
 
     private static Data.Sql.Gender ToSql(this Data.Lenex.Xml.Gender lenex) => lenex switch
@@ -169,13 +166,14 @@ public static class LenexElementsExtensions
         MinAge = lenex.MinAge,
         Gender = lenex.Gender?.ToSql(),
         Rankings = lenex.Rankings.Select(x => x.ToSql()).ToList(),
+        LenexId = lenex.AgeGroupId,
     };
 
     private static Ranking ToSql(this RankingElement lenex) => new()
     {
         Order = lenex.Order,
         Place = lenex.Place,
-        ResultId = lenex.ResultId,
+        LenexResultId = lenex.ResultId,
     };
 
     private static Athlete ToSql(this AthleteElement lenex) => new()
@@ -188,21 +186,23 @@ public static class LenexElementsExtensions
         NamePrefix = lenex.NamePrefix,
         Results = lenex.Results.Select(x => x.ToSql()).ToList(),
         Entries = lenex.Entries.Select(x => x.ToSql()).ToList(),
+        LenexId = lenex.AthleteId,
     };
 
     private static Result ToSql(this ResultElement lenex) => new()
     {
-        EventId = lenex.EventId,
+        LenexEventId = lenex.EventId,
         Lane = lenex.Lane,
-        Id = lenex.ResultId,
         SwimTime = lenex.SwimTime,
         Status = lenex.Status?.ToSql(),
+        LenexId = lenex.ResultId,
     };
 
     private static Entry ToSql(this EntryElement lenex) => new(Guid.NewGuid())
     {
-        EventId = lenex.EventId,
+        LenexEventId = lenex.EventId,
         EntryTime = lenex.EntryTime,
+        Lane = lenex.Lane,
     };
 
     private static Data.Sql.ResultStatus ToSql(this Data.Lenex.Xml.ResultStatus lenex) => lenex switch

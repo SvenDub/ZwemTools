@@ -33,6 +33,8 @@ public class Athlete
 
     public virtual ICollection<Team> SplashQuestTeams { get; set; } = new Collection<Team>();
 
+    required public int LenexId { get; set; }
+
     [NotMapped]
     public string FullName => string.Join(" ", new[] { this.FirstName, this.NamePrefix, this.LastName }.Where(x => x is not null));
 }

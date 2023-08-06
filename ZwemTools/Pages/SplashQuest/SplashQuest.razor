@@ -54,8 +54,23 @@ else
             return;
         }
         
-        List<Club> athletes = meetElement.Clubs.Select(element => element.ToSql()).ToList();
-        Meet.Meet.Clubs = athletes;
+        List<Club> clubs = meetElement.Clubs.Select(element => element.ToSql()).ToList();
+        foreach (Athlete athlete in clubs.SelectMany(club => club.Athletes))
+        {
+            foreach (Result result in athlete.Results)
+            {
+                result.Event = Meet.Meet.Sessions.SelectMany(x => x.Events).Single(x => x.LenexId == result.LenexEventId);
+            }
+
+            foreach (Entry entry in athlete.Entries)
+            {
+                entry.Event = Meet.Meet.Sessions.SelectMany(x => x.Events).Single(x => x.LenexId == entry.LenexEventId);
+                entry.Heat = entry.Event.Heats.SingleOrDefault(x => x.LenexId == entry.LenexHeatId);
+            }
+        }
+        
+        Context.Clubs.AddRange(clubs);
+        Meet.Meet.Clubs = clubs;
         await Context.SaveChangesAsync();
     }
 

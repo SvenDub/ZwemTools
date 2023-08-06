@@ -15,4 +15,6 @@ public class Club
     public virtual Meet Meet { get; set; } = null!;
 
     public virtual ICollection<Athlete> Athletes { get; set; } = new Collection<Athlete>();
+
+    required public int LenexId { get; set; }
 }

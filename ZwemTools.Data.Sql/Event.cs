@@ -23,4 +23,10 @@ public class Event
     public virtual SwimStyle SwimStyle { get; set; } = null!;
 
     public virtual ICollection<Result> Results { get; set; } = new Collection<Result>();
+
+    public virtual ICollection<Entry> Entries { get; set; } = new Collection<Entry>();
+
+    public virtual ICollection<Heat> Heats { get; set; } = new Collection<Heat>();
+
+    required public int LenexId { get; set; }
 }
