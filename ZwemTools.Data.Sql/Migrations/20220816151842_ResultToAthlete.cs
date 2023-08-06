@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ZwemTools.Data.Sql.Migrations
 {
+    /// <inheritdoc />
     public partial class ResultToAthlete : Migration
     {
         /// <inheritdoc/>

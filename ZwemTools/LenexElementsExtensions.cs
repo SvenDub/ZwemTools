@@ -4,6 +4,7 @@
 
 using ZwemTools.Data.Lenex.Xml;
 using ZwemTools.Data.Sql;
+using Entry = ZwemTools.Data.Sql.Entry;
 
 namespace ZwemTools;
 
@@ -50,6 +51,12 @@ public static class LenexElementsExtensions
                     result.EventId = default;
                     result.Id = default;
                 }
+
+                foreach (Entry entry in athlete.Entries)
+                {
+                    entry.Event = sql.Sessions.SelectMany(x => x.Events).Single(x => x.Id == entry.EventId);
+                    entry.EventId = default;
+                }
             }
         }
 
@@ -63,6 +70,12 @@ public static class LenexElementsExtensions
 
         return sql;
     }
+
+    public static Club ToSql(this ClubElement lenex) => new()
+    {
+        Name = lenex.Name,
+        Athletes = lenex.Athletes.Select(x => x.ToSql()).ToList(),
+    };
 
     private static AgeDate ToSql(this AgeDateElement lenex) => new()
     {
@@ -165,12 +178,6 @@ public static class LenexElementsExtensions
         ResultId = lenex.ResultId,
     };
 
-    private static Club ToSql(this ClubElement lenex) => new()
-    {
-        Name = lenex.Name,
-        Athletes = lenex.Athletes.Select(x => x.ToSql()).ToList(),
-    };
-
     private static Athlete ToSql(this AthleteElement lenex) => new()
     {
         Birthdate = DateOnly.FromDateTime(lenex.Birthdate),
@@ -180,6 +187,7 @@ public static class LenexElementsExtensions
         License = lenex.License,
         NamePrefix = lenex.NamePrefix,
         Results = lenex.Results.Select(x => x.ToSql()).ToList(),
+        Entries = lenex.Entries.Select(x => x.ToSql()).ToList(),
     };
 
     private static Result ToSql(this ResultElement lenex) => new()
@@ -189,6 +197,12 @@ public static class LenexElementsExtensions
         Id = lenex.ResultId,
         SwimTime = lenex.SwimTime,
         Status = lenex.Status?.ToSql(),
+    };
+
+    private static Entry ToSql(this EntryElement lenex) => new(Guid.NewGuid())
+    {
+        EventId = lenex.EventId,
+        EntryTime = lenex.EntryTime,
     };
 
     private static Data.Sql.ResultStatus ToSql(this Data.Lenex.Xml.ResultStatus lenex) => lenex switch

@@ -1,170 +1,74 @@
-﻿@page "/splash-quest"
+﻿@page "/splash-quest/{Id:guid}"
 
-@using ZwemTools.Data.Lenex.Xml
+@using ZwemTools.Data.Sql
+@using ZwemTools.Data.Sql.SplashQuest
 @using ZwemTools.Data.Lenex
+@using ZwemTools.Data.Lenex.Xml
 
+@inject DatabaseContext Context
 @inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
 
-<div class="d-print-none">
-    <h3>@Localizer["SplashQuest"]</h3>
-
-    <InputFile OnChange="@LoadFile" accept=".lxf" class="mb-2"/>
-</div>
-
-@if (!IsLoading && LenexElement is not null)
+@if (Meet is not null)
 {
-    if (LenexElement.Meets is { Count: >0 })
-    {
-        <div class="d-print-none">
-            <div class="row mb-2">
-                <div class="col">
-                    <RadzenNumeric TValue="int" Min="1" Max="8" Value="@TeamsCount" Change="UpdateTeamsCount"/>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <p>@AthleteCount @Localizer["Athletes"] / @TeamsCount @Localizer["Teams"] = @(((double)AthleteCount / TeamsCount).ToString("g2"))</p>
-                </div>
-            </div>
-        </div>
-        
-        @foreach (List<AthleteElement> team in Teams)
-        {
-            <RadzenDataGrid TItem="AthleteElement" Data="team" class="mb-2 pagebreak">
-                <Columns>
-                    <RadzenDataGridColumn TItem="AthleteElement" Property="FullName" Title="@Localizer["Name"]">
-                        <FooterTemplate>@Localizer["Average"]</FooterTemplate>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Property="Birthdate.Year" Title="@Localizer["Year"]"></RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Gender"]">
-                        <Template>
-                            @Localizer[context.Gender.ToString()]
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Time"]">
-                        <Template>
-                            <span class="fw-bold">@CalculateEntryTime(context).Format()</span>
-                        </Template>
-                        <FooterTemplate>
-                            <span class="fw-bold">@TimeSpan.FromSeconds(team.Select(CalculateEntryTime).Average(span => span.TotalSeconds)).Format()</span>
-                        </FooterTemplate>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Butterfly"]">
-                        <Template>
-                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Fly)?.EventId)?.EntryTime?.Format()
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Backstroke"]">
-                        <Template>
-                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Backstroke)?.EventId)?.EntryTime?.Format()
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Breaststroke"]">
-                        <Template>
-                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Breaststroke)?.EventId)?.EntryTime?.Format()
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AthleteElement" Title="@Localizer["Freestyle"]">
-                        <Template>
-                            @context.Entries.FirstOrDefault(entry => entry.EventId == LenexElement.Meets.First().Sessions.First().Events.FirstOrDefault(ev => ev.EventId == entry.EventId && ev.SwimStyle.Stroke == Stroke.Freestyle)?.EventId)?.EntryTime?.Format()
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
-        }
-    }
-    else
-    {
-        <p class="my-3">@Localizer["NoData"]</p>
-    }
-}
-else if (IsLoading)
-{
-    <p class="my-3">@Localizer["Loading"]</p>
+    <h3>@Meet.Meet.Name</h3>
+    <p>@Meet.Meet.Clubs.SelectMany(c => c.Athletes).Count() athletes</p>
+    <p><a href="/splash-quest/@Id/teams">@Meet.Teams.Count teams</a></p>
+                         
+    <InputFile OnChange="@LoadFile" accept=".lxf"/>
+    <RadzenButton Text="@Localizer["Clear entries"]" Click="@OnClear"></RadzenButton>
 }
 else
 {
-    <p class="my-3">@Localizer["NoData"]</p>
+    <p>@Localizer["MeetNotFound"]</p>
 }
 
 @code {
-    private LenexElement? LenexElement { get; set; }
-    private bool IsLoading { get; set; }
-    private int TeamsCount { get; set; } = 4;
-    private int AthleteCount { get; set; }
-    private List<List<AthleteElement>> Teams { get; set; } = new();
+    [Parameter]
+    required public Guid Id { get; set; }
 
+    private SplashQuestMeet? Meet { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+    }
+    
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
-        IsLoading = true;
-        await using Stream stream = e.File.OpenReadStream();
-        MemoryStream ms = new();
-        await stream.CopyToAsync(ms);
-        LenexElement = LenexParser.Parse(ms);
-        IsLoading = false;
-        AthleteCount = LenexElement.Meets.FirstOrDefault()?.Clubs.SelectMany(club => club.Athletes).Count() ?? 0;
-        TeamsCount = (int)Math.Ceiling(AthleteCount / 8d);
-
-        CalculateTeams();
-    }
-
-    void CalculateTeams()
-    {
-        if (LenexElement is not {Meets.Count: >0})
+        if (Meet is null)
         {
             return;
         }
         
-        SortedDictionary<AthleteElement, TimeSpan> athletes = new(Comparer<AthleteElement>.Create((left, right) => CalculateEntryTime(left).CompareTo(CalculateEntryTime(right))));
-        foreach (AthleteElement athlete in LenexElement.Meets.First().Clubs.SelectMany(club => club.Athletes))
+        await using Stream stream = e.File.OpenReadStream();
+        MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        
+        LenexElement lenexElement = LenexParser.Parse(ms);
+        MeetElement? meetElement = lenexElement.Meets.FirstOrDefault(element => element.Name == Meet?.Meet.Name);
+
+        if (meetElement is null)
         {
-            athletes[athlete] = CalculateEntryTime(athlete);
+            return;
         }
         
-        TimeSpan targetAverage = TimeSpan.FromSeconds(athletes.Values.Average(span => span.TotalSeconds));
+        List<Club> athletes = meetElement.Clubs.Select(element => element.ToSql()).ToList();
+        Meet.Meet.Clubs = athletes;
+        await Context.SaveChangesAsync();
+    }
 
-        List<List<AthleteElement>> teams = new();
-        for (int i = 0; i < TeamsCount; i++)
+    private async Task OnClear()
+    {
+        if (Meet is null)
         {
-            teams.Add(CreateTeam(athletes, athletes.Count / (TeamsCount - i), targetAverage).ToList());
+            return;
         }
-        Teams = teams;
-    }
-
-    void UpdateTeamsCount(int value)
-    {
-        TeamsCount = value;
-        CalculateTeams();
-    }
-
-    private TimeSpan CalculateEntryTime(AthleteElement athlete)
-    {
-        return athlete.Entries.Select(entry => entry.EntryTime).WhereNotNull().Aggregate(TimeSpan.Zero, (left, right) => left + right);
-    }
-
-
-    private IEnumerable<AthleteElement> CreateTeam(SortedDictionary<AthleteElement, TimeSpan> available, int count, TimeSpan targetAverage)
-    {
-        TimeSpan total = TimeSpan.Zero;
         
-        for (int i = 0; i < count; i++)
-        {
-            AthleteElement? key;
-            TimeSpan value;
-
-            if (i == 0)
-            {
-                (key, value) = available.First();
-            }
-            else
-            {
-                (key, value) = available.MinBy(pair => Math.Abs(((pair.Value + total) / (i + 1) - targetAverage).TotalSeconds));
-            }
-            
-            available.Remove(key);
-            yield return key;
-            total += value;
-        }
+        Meet.Teams.Clear();
+        Meet.Meet.Clubs.Clear();
+        await Context.SaveChangesAsync();
     }
+
 }

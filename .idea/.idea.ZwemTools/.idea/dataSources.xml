@@ -8,5 +8,15 @@
       <jdbc-url>jdbc:ucanaccess://C:/ProgramData/Team Manager/Team.mdb;newdatabaseversion=V2010</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="meets.db" uuid="9b4e27f3-b7ef-4ddd-a100-d2740298c0b6">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$USER_HOME$/AppData/Local/ZwemTools/meets.db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="journal_mode" value="WAL" />
+      </driver-properties>
+    </data-source>
   </component>
 </project>

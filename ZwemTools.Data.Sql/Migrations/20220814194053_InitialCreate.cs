@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ZwemTools.Data.Sql.Migrations
 {
+    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
         /// <inheritdoc/>

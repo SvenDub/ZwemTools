@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations.Schema;
+using ZwemTools.Data.Sql.SplashQuest;
 
 namespace ZwemTools.Data.Sql;
 
@@ -27,6 +28,10 @@ public class Athlete
     public string? NamePrefix { get; set; }
 
     public virtual ICollection<Result> Results { get; set; } = new Collection<Result>();
+
+    public virtual ICollection<Entry> Entries { get; set; } = new Collection<Entry>();
+
+    public virtual ICollection<Team> SplashQuestTeams { get; set; } = new Collection<Team>();
 
     [NotMapped]
     public string FullName => string.Join(" ", new[] { this.FirstName, this.NamePrefix, this.LastName }.Where(x => x is not null));

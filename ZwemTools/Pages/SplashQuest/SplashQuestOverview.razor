@@ -1,0 +1,106 @@
+﻿@page "/splash-quest"
+
+@using ZwemTools.Data.Sql
+@using ZwemTools.Data.Lenex.Xml
+@using ZwemTools.Data.Lenex
+@using ZwemTools.Data.Sql.SplashQuest
+
+@inject DatabaseContext Context
+@inject LenexParser LenexParser
+@inject IStringLocalizer<Strings> Localizer
+
+<h3>Splash Quest</h3>
+
+@foreach (SplashQuestMeet meet in SavedMeets)
+{
+    <ul>
+        <li>
+            <a href="@($"splash-quest/{meet.Id}")">
+                @meet.Meet.Name (@meet.Meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min())
+            </a>
+        </li>
+    </ul>
+}
+
+<InputFile OnChange="@LoadFile" accept=".lxf"/>
+
+@if (!IsLoading && LenexElement is not null)
+{
+    <RadzenButton IsBusy="@IsSaving" Click="@OnSave" Text="@Localizer["Save"]"/>
+    <table class="table my-3">
+        <thead>
+        <tr>
+            <th>@Localizer["Property"]</th>
+            <th>@Localizer["Value"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>@Localizer["LenexVersion"]</td>
+            <td>@LenexElement.Version</td>
+        </tr>
+        <tr>
+            <td>@Localizer["Software"]</td>
+            <td>@LenexElement.Constructor.Name (@LenexElement.Constructor.Version)</td>
+        </tr>
+        <tr>
+            <td>@Localizer["RegisteredTo"]</td>
+            <td>@LenexElement.Constructor.Registration</td>
+        </tr>
+        <tr>
+            <td>@Localizer["Software contact"]</td>
+            <td>@LenexElement.Constructor.Contact.Email</td>
+        </tr>
+        </tbody>
+    </table>
+}
+else
+{
+    if (IsLoading)
+    {
+        <p class="my-3">@Localizer["Loading"]</p>
+    }
+    else
+    {
+        <p class="my-3">@Localizer["NoData"]</p>
+    }
+}
+
+@code {
+    private List<SplashQuestMeet> SavedMeets { get; set; } = new();
+    
+    private LenexElement? LenexElement { get; set; }
+    private bool IsLoading { get; set; }
+    private bool IsSaving { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        SavedMeets = Context.SplashQuestMeets.ToList();
+        Context.SavedChanges += (_, _) => { SavedMeets = Context.SplashQuestMeets.ToList(); };
+    }
+    
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        IsLoading = true;
+        await using Stream stream = e.File.OpenReadStream();
+        MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        LenexElement = LenexParser.Parse(ms);
+        IsLoading = false;
+    }
+
+    private async Task OnSave(MouseEventArgs args)
+    {
+        IsSaving = true;
+
+        if (LenexElement is not null)
+        {
+            IEnumerable<SplashQuestMeet> splashQuestMeets = LenexElement.Meets.Select(x => new SplashQuestMeet(Guid.NewGuid()) { Meet = x.ToSql() });
+            await Context.SplashQuestMeets.AddRangeAsync(splashQuestMeets);
+            await Context.SaveChangesAsync();
+        }
+
+        IsSaving = false;
+    }
+}

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZwemTools.Data.Sql;
 
@@ -10,9 +11,11 @@ using ZwemTools.Data.Sql;
 namespace ZwemTools.Data.Sql.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230805223031_AddSplashQuest")]
+    partial class AddSplashQuest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,30 +118,6 @@ namespace ZwemTools.Data.Sql.Migrations
                     b.HasIndex("MeetId");
 
                     b.ToTable("Clubs");
-                });
-
-            modelBuilder.Entity("ZwemTools.Data.Sql.Entry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeSpan?>("EntryTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AthleteId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Entries");
                 });
 
             modelBuilder.Entity("ZwemTools.Data.Sql.Event", b =>
@@ -378,25 +357,6 @@ namespace ZwemTools.Data.Sql.Migrations
                     b.Navigation("Meet");
                 });
 
-            modelBuilder.Entity("ZwemTools.Data.Sql.Entry", b =>
-                {
-                    b.HasOne("ZwemTools.Data.Sql.Athlete", "Athlete")
-                        .WithMany("Entries")
-                        .HasForeignKey("AthleteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ZwemTools.Data.Sql.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Athlete");
-
-                    b.Navigation("Event");
-                });
-
             modelBuilder.Entity("ZwemTools.Data.Sql.Event", b =>
                 {
                     b.HasOne("ZwemTools.Data.Sql.Session", "Session")
@@ -565,8 +525,6 @@ namespace ZwemTools.Data.Sql.Migrations
 
             modelBuilder.Entity("ZwemTools.Data.Sql.Athlete", b =>
                 {
-                    b.Navigation("Entries");
-
                     b.Navigation("Results");
                 });
 
