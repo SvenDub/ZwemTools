@@ -4,5 +4,5 @@ public record SplashQuestMeet(Guid Id)
 {
     required public virtual Meet Meet { get; init; }
 
-    public virtual ICollection<Team> Teams { get; set; } = new Collection<Team>();
+    public virtual IList<Team> Teams { get; set; } = new List<Team>();
 }

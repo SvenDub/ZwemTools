@@ -24,6 +24,8 @@ public class Meet
 
     public string? LiveTiming { get; set; }
 
+    public Pool? Pool { get; set; }
+
     public virtual ICollection<Session> Sessions { get; set; } = new Collection<Session>();
 
     public virtual ICollection<Club> Clubs { get; set; } = new Collection<Club>();

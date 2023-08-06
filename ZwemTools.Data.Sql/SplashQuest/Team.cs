@@ -6,5 +6,5 @@ public record Team(Guid Id)
 
     public virtual ICollection<Athlete> Athletes { get; set; } = new Collection<Athlete>();
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new Collection<Assignment>();
+    public virtual IList<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

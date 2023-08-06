@@ -1,0 +1,95 @@
+﻿@page "/splash-quest/{Id:guid}/seeding"
+
+@using ZwemTools.Data.Sql
+@using ZwemTools.Data.Sql.SplashQuest
+
+@inject DatabaseContext Context
+@inject IStringLocalizer<Strings> Localizer
+
+<h3><a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Localizer["Seeding"]</h3>
+
+@if (Meet is not null)
+{
+    <RadzenButton Text="@Localizer["Calculate seeding"]" Click="CalculateSeeding"></RadzenButton>
+    foreach (Session session in Meet.Meet.Sessions)
+    {
+        <h4>@session.Name (@session.Date)</h4>
+        foreach (Event ev in session.Events.OrderBy(ev => ev.Number))
+        {
+            <h5>@ev.Number - @ev.SwimStyle</h5>
+            foreach (Heat heat in ev.Heats.OrderBy(heat => heat.Number))
+            {
+                <h6>@heat.Number</h6>
+                <ol>
+                @foreach (Entry entry in heat.Entries.OrderBy(entry => entry.Lane))
+                {
+                    <li value="@entry.Lane">@entry.Athlete.FullName (@Meet.Teams.First(team => team.Athletes.Contains(entry.Athlete)).Name) | @entry.EntryTime.Format()</li>
+                }
+                </ol>
+            }
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    required public Guid Id { get; set; }
+
+    private SplashQuestMeet? Meet { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+    }
+
+    private async Task CalculateSeeding()
+    {
+        if (Meet is null)
+        {
+            return;
+        }
+
+        int lanes = Meet.Meet.Pool?.Lanes ?? 4;
+
+        foreach (Session session in Meet.Meet.Sessions)
+        {
+            foreach (Event ev in session.Events)
+            {
+                foreach (Entry entry in ev.Entries)
+                {
+                    entry.Lane = null;
+                    entry.Heat = null;
+                    entry.HeatId = null;
+                }
+
+                for (int heat = 0; heat < 8; heat++)
+                {
+                    for (int lane = 0; lane < lanes; lane++)
+                    {
+                        int teamIdx = (heat % 2) * lanes + lane;
+                        if (teamIdx < Meet.Teams.Count)
+                        {
+                            Team team = Meet.Teams
+                                .OrderBy(team => team.Name)
+                                .Skip(teamIdx)
+                                .First();
+                            Assignment assignment = team.Assignments
+                                .Where(assignment => assignment.Stroke == ev.SwimStyle.Stroke)
+                                .OrderByDescending(assignment => assignment.Athlete.Entries.First(entry => entry.Event == ev).EntryTime)
+                                .Skip(heat / 2)
+                                .First();
+                            Entry entry = assignment.Athlete.Entries.First(entry => entry.Event == ev);
+                            entry.Heat = ev.Heats.First(h => h.Number == heat + 1);
+                            entry.HeatId = entry.Heat.Id;
+                            entry.Lane = lane + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        await Context.SaveChangesAsync();
+    }
+
+}

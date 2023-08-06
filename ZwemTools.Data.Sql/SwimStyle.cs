@@ -12,4 +12,15 @@ public class SwimStyle
     public int RelayCount { get; set; }
 
     public Stroke Stroke { get; set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        if (this.RelayCount > 1)
+        {
+            return $"{this.RelayCount}x{this.Distance} {this.Stroke}";
+        }
+
+        return $"{this.Distance} {this.Stroke}";
+    }
 }
