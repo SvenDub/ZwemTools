@@ -5,20 +5,27 @@
 
 @inject DatabaseContext Context
 @inject IStringLocalizer<Strings> Localizer
+@inject ContextMenuService ContextMenuService
 
 <div class="d-print-none">
-    <h3>@Localizer["SplashQuest"]</h3>
+    <h3><a href="/splash-quest/@Id"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Meet?.Meet.Name (@Meet?.Meet.City)</h3>
 </div>
 
 @if (!IsLoading && Meet is not null)
 {
-    <a href="/splash-quest/@Id/create-teams">Create teams</a>
+    <a href="/splash-quest/@Id/teams/create">Create teams</a>
     
-    @foreach (Team team in Meet.Teams)
+    @foreach (Team team in Meet.Teams.OrderBy(team => team.Name))
     {
+        <h4>@team.Name</h4>
         <RadzenDataGrid TItem="Athlete" Data="team.Athletes" class="mb-2 pagebreak">
             <Columns>
                 <RadzenDataGridColumn TItem="Athlete" Property="FullName" Title="@Localizer["Name"]">
+                    <Template>
+                        <span @oncontextmenu="@(args => ShowMoveContextMenu(args, context))">
+                            @context.FullName
+                        </span>
+                    </Template>
                     <FooterTemplate>@Localizer["Average"]</FooterTemplate>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Property="Birthdate.Year" Title="@Localizer["Year"]"></RadzenDataGridColumn>
@@ -109,4 +116,38 @@ else
         Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
     }
 
+    private void ShowMoveContextMenu(MouseEventArgs args, Athlete athlete)
+    {
+        if (Meet is not null)
+        {
+            ContextMenuService.Open(
+                args,
+                ds => @<RadzenMenu Click="eventArgs => MoveAthlete(eventArgs, athlete)">
+                          <RadzenMenuItem Text="@Localizer["Move"]">
+                              @foreach (Team team in Meet.Teams.OrderBy(team => team.Name))
+                              {
+                                  <RadzenMenuItem Text="@team.Name" Value="@team"></RadzenMenuItem>
+                              }
+                          </RadzenMenuItem>
+                      </RadzenMenu>
+                );
+        }
+    }
+
+    private void MoveAthlete(MenuItemEventArgs args, Athlete athlete)
+    {
+        if (Meet is not null && args.Value is Team team)
+        {
+            Team currentTeam = Meet.Teams.First(t => t.Athletes.Contains(athlete));
+            foreach (Assignment assignment in currentTeam.Assignments.Where(assignment => assignment.Athlete == athlete))
+            {
+                currentTeam.Assignments.Remove(assignment);
+            }
+            currentTeam.Athletes.Remove(athlete);
+            team.Athletes.Add(athlete);
+
+            Context.SaveChanges();
+            Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+        }
+    }
 }

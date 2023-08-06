@@ -88,6 +88,7 @@ public static class MauiProgram
     {
         services.AddScoped<DialogService>();
         services.AddScoped<NotificationService>();
+        services.AddScoped<ContextMenuService>();
         return services;
     }
 }

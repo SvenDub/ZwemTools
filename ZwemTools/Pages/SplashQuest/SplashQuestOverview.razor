@@ -16,7 +16,7 @@
     <ul>
         <li>
             <a href="@($"splash-quest/{meet.Id}")">
-                @meet.Meet.Name (@meet.Meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min())
+                @meet.Meet.Sessions.Select(x => x.Date).DefaultIfEmpty().Min() - @meet.Meet.Name (@meet.Meet.City)
             </a>
         </li>
     </ul>

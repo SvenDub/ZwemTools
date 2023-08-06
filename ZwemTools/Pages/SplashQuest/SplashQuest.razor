@@ -11,7 +11,7 @@
 
 @if (Meet is not null)
 {
-    <h3>@Meet.Meet.Name</h3>
+    <h3><a href="/splash-quest"><i class="fa-solid fa-chevron-left mr-2" aria-label="Back"></i></a>@Meet.Meet.Name (@Meet.Meet.City)</h3>
     <p>@Meet.Meet.Clubs.SelectMany(c => c.Athletes).Count() athletes</p>
     <p><a href="/splash-quest/@Id/teams">@Meet.Teams.Count teams</a></p>
                          
