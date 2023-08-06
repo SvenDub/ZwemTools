@@ -2,7 +2,7 @@
 
 [Owned]
 [Index(nameof(Stroke), nameof(AthleteId), IsUnique = true)]
-public record Assignment
+public record Assignment(Guid Id)
 {
     required public Stroke Stroke { get; init; }
 

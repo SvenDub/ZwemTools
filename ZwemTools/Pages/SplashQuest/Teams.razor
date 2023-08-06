@@ -37,21 +37,25 @@
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Butterfly"]">
                     <Template>
+                        <RadzenCheckBox TValue="bool" Value="team.Assignments.Any(assignment => assignment.Athlete == context && assignment.Stroke == Stroke.Fly)" Change="b => OnAssignmentChange(team, context, Stroke.Fly, b)"></RadzenCheckBox>
                         @context.Entries.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == Stroke.Fly)?.EntryTime?.Format()
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Backstroke"]">
                     <Template>
+                        <RadzenCheckBox TValue="bool" Value="team.Assignments.Any(assignment => assignment.Athlete == context && assignment.Stroke == Stroke.Backstroke)" Change="b => OnAssignmentChange(team, context, Stroke.Backstroke, b)"></RadzenCheckBox>
                         @context.Entries.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == Stroke.Backstroke)?.EntryTime?.Format()
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Breaststroke"]">
                     <Template>
+                        <RadzenCheckBox TValue="bool" Value="team.Assignments.Any(assignment => assignment.Athlete == context && assignment.Stroke == Stroke.Breaststroke)" Change="b => OnAssignmentChange(team, context, Stroke.Breaststroke, b)"></RadzenCheckBox>
                         @context.Entries.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == Stroke.Breaststroke)?.EntryTime?.Format()
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="Athlete" Title="@Localizer["Freestyle"]">
                     <Template>
+                        <RadzenCheckBox TValue="bool" Value="team.Assignments.Any(assignment => assignment.Athlete == context && assignment.Stroke == Stroke.Freestyle)" Change="b => OnAssignmentChange(team, context, Stroke.Freestyle, b)"></RadzenCheckBox>
                         @context.Entries.FirstOrDefault(entry => entry.Event.SwimStyle.Stroke == Stroke.Freestyle)?.EntryTime?.Format()
                     </Template>
                 </RadzenDataGridColumn>
@@ -85,4 +89,24 @@ else
     {
         return athlete.Entries.Select(entry => entry.EntryTime).WhereNotNull().Aggregate(TimeSpan.Zero, (left, right) => left + right);
     }
+
+    private async Task OnAssignmentChange(Team team, Athlete athlete, Stroke stroke, bool value)
+    {
+        if (value && !team.Assignments.Any(assignment => assignment.Athlete == athlete && assignment.Stroke == stroke))
+        {
+            team.Assignments.Add(new Assignment(Guid.NewGuid()) { AthleteId = athlete.Id, Stroke = stroke, Athlete = athlete });
+        }
+        else if (!value)
+        {
+            Assignment? assignment = team.Assignments.FirstOrDefault(assignment => assignment.Athlete == athlete && assignment.Stroke == stroke);
+            if (assignment is not null)
+            {
+                team.Assignments.Remove(assignment);
+            }
+        }
+
+        await Context.SaveChangesAsync();
+        Meet = Context.SplashQuestMeets.SingleOrDefault(x => x.Id == Id);
+    }
+
 }
