@@ -99,7 +99,7 @@ public static class SqlToLenexExtensions
         Data.Sql.Gender.Female => Gender.Female,
         Data.Sql.Gender.Male => Gender.Male,
         Data.Sql.Gender.Mixed => Gender.Mixed,
-        _ => throw new ArgumentOutOfRangeException(nameof(sql), sql, "Unkown value"),
+        _ => throw new ArgumentOutOfRangeException(nameof(sql), sql, "Unknown value"),
     };
 
     public static EventElement ToLenex(this Event sql) => new()
@@ -110,7 +110,7 @@ public static class SqlToLenexExtensions
         Gender = sql.Gender?.ToLenex(),
         SwimStyle = sql.SwimStyle.ToLenex(),
         AgeGroups = sql.AgeGroups.Select(group => group.ToLenex()).ToCollection(),
-        Heats = sql.Heats.Select(heat => heat.ToLenex()).ToCollection(),
+        Heats = sql.Heats.OrderBy(heat => heat.Order).Select(heat => heat.ToLenex()).ToCollection(),
     };
 
     public static SwimStyleElement ToLenex(this SwimStyle sql) => new()
@@ -133,7 +133,7 @@ public static class SqlToLenexExtensions
         Data.Sql.Stroke.Medley => Stroke.Medley,
         Data.Sql.Stroke.Surface => Stroke.Surface,
         Data.Sql.Stroke.Unknown => Stroke.Unknown,
-        _ => throw new ArgumentOutOfRangeException(nameof(sql), sql, "Unkown value"),
+        _ => throw new ArgumentOutOfRangeException(nameof(sql), sql, "Unknown value"),
     };
 
     public static AgeGroupElement ToLenex(this AgeGroup sql) => new()
@@ -156,6 +156,7 @@ public static class SqlToLenexExtensions
     {
         Number = sql.Number,
         HeatId = sql.LenexId,
+        Order = sql.Order,
     };
 
     public static EntryElement ToLenex(this Entry sql) => new()
@@ -164,7 +165,7 @@ public static class SqlToLenexExtensions
         HeatId = sql.Heat?.LenexId,
         Lane = sql.Lane,
         EntryTime = sql.EntryTime,
-        Course = null, // TODO
+        Course = sql.Course?.ToLenex(),
     };
 
     public static ResultElement ToLenex(this Result sql) => new()

@@ -22,4 +22,6 @@ public record Entry(Guid Id)
     public int? LenexHeatId { get; set; }
 
     required public int LenexEventId { get; set; }
+
+    public Course? Course { get; set; }
 }

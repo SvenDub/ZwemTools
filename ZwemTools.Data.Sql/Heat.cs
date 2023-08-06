@@ -6,5 +6,7 @@ public record Heat(Guid Id)
 
     required public int LenexId { get; set; }
 
+    public int? Order { get; set; }
+
     public virtual ICollection<Entry> Entries { get; set; } = new Collection<Entry>();
 }

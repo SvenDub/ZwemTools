@@ -11,4 +11,14 @@ public class HeatElement
 
     [XmlAttribute("number")]
     public int Number { get; set; }
+
+    [XmlIgnore]
+    public int? Order { get; set; }
+
+    [XmlAttribute("order")]
+    public string? OrderProxy
+    {
+        get => this.Order?.ToString();
+        set => this.Order = value is not null ? int.Parse(value) : null;
+    }
 }

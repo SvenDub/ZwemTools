@@ -126,6 +126,7 @@ public static class LenexToSqlExtensions
     {
         Number = lenex.Number,
         LenexId = lenex.HeatId,
+        Order = lenex.Order,
     };
 
     private static Data.Sql.Gender ToSql(this Data.Lenex.Xml.Gender lenex) => lenex switch
@@ -201,8 +202,10 @@ public static class LenexToSqlExtensions
     private static Entry ToSql(this EntryElement lenex) => new(Guid.NewGuid())
     {
         LenexEventId = lenex.EventId,
+        LenexHeatId = lenex.HeatId,
         EntryTime = lenex.EntryTime,
         Lane = lenex.Lane,
+        Course = lenex.Course?.ToSql(),
     };
 
     private static Data.Sql.ResultStatus ToSql(this Data.Lenex.Xml.ResultStatus lenex) => lenex switch
