@@ -80,15 +80,19 @@
                                 .OrderBy(team => team.Name)
                                 .Skip(teamIdx)
                                 .First();
-                            Assignment assignment = team.Assignments
+                            Assignment? assignment = team.Assignments
                                 .Where(assignment => assignment.Stroke == ev.SwimStyle.Stroke)
                                 .OrderByDescending(assignment => assignment.Athlete.Entries.First(entry => entry.Event == ev).EntryTime)
                                 .Skip(heat / 2)
-                                .First();
-                            Entry entry = assignment.Athlete.Entries.First(entry => entry.Event == ev);
-                            entry.Heat = ev.Heats.First(h => h.Number == heat + 1);
-                            entry.HeatId = entry.Heat.Id;
-                            entry.Lane = lane + 1;
+                                .FirstOrDefault();
+
+                            if (assignment is not null)
+                            {
+                                Entry entry = assignment.Athlete.Entries.First(entry => entry.Event == ev);
+                                entry.Heat = ev.Heats.First(h => h.Number == heat + 1);
+                                entry.HeatId = entry.Heat.Id;
+                                entry.Lane = lane + 1;
+                            }
                         }
                     }
                 }
@@ -119,6 +123,12 @@
         StorageFile? result = await fileSavePicker.PickSaveFileAsync();
         if (result is not null)
         {
+            MeetElement meetElement = Meet.Meet.ToLenex();
+            foreach (AthleteElement athleteElement in meetElement.Clubs.SelectMany(element => element.Athletes))
+            {
+                athleteElement.Level = Meet.Teams.FirstOrDefault(team => team.Athletes.Any(athlete => athlete.LenexId == athleteElement.AthleteId))?.Name;
+            }
+
             LenexElement lenexElement = new()
             {
                 Version = "3.0",
@@ -133,7 +143,7 @@
                 },
                 Meets = new Collection<MeetElement>
                 {
-                    Meet.Meet.ToLenex(),
+                    meetElement,
                 },
             };
 

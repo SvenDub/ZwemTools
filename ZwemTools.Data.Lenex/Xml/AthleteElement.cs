@@ -42,6 +42,9 @@ public class AthleteElement
     [XmlArrayItem("ENTRY")]
     public Collection<EntryElement> Entries { get; set; } = new();
 
+    [XmlAttribute("level")]
+    public string? Level { get; set; }
+
     [XmlIgnore]
     public string FullName => string.Join(" ", new[] { this.FirstName, this.NamePrefix, this.LastName }.Where(x => x is not null));
 }
