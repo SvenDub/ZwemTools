@@ -95,7 +95,7 @@
 
         foreach (AthleteElement athleteElement in meetElement.Clubs.SelectMany(element => element.Athletes))
         {
-            Athlete athlete = Meet.Meet.Clubs.SelectMany(club => club.Athletes).First(athlete => athlete.LenexId == athleteElement.AthleteId);
+            Athlete athlete = Meet.Meet.Clubs.SelectMany(club => club.Athletes).First(athlete => athlete.License == athleteElement.License);
             athlete.Results.Clear();
             foreach (ResultElement resultElement in athleteElement.Results)
             {
