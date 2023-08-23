@@ -57,6 +57,7 @@
         }
 
         int lanes = Meet.Meet.Pool?.Lanes ?? 4;
+        int firstLane = Meet.Meet.Pool?.LaneMin ?? 1;
 
         foreach (Session session in Meet.Meet.Sessions)
         {
@@ -91,7 +92,7 @@
                                 Entry entry = assignment.Athlete.Entries.First(entry => entry.Event == ev);
                                 entry.Heat = ev.Heats.First(h => h.Number == heat + 1);
                                 entry.HeatId = entry.Heat.Id;
-                                entry.Lane = lane + 1;
+                                entry.Lane = lane + firstLane;
                             }
                         }
                     }

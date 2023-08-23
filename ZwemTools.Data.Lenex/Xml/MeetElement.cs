@@ -37,6 +37,9 @@ public class MeetElement
     [XmlAttribute("result.url")]
     public string? LiveTiming { get; set; }
 
+    [XmlElement("POOL")]
+    public PoolElement? Pool { get; set; }
+
     [XmlArray("SESSIONS")]
     [XmlArrayItem("SESSION")]
     public Collection<SessionElement> Sessions { get; set; } = new();

@@ -24,6 +24,7 @@ public static class LenexToSqlExtensions
             LiveTiming = lenex.LiveTiming,
             Sessions = lenex.Sessions.Select(x => x.ToSql()).ToList(),
             Clubs = lenex.Clubs.Select(x => x.ToSql()).ToList(),
+            Pool = lenex.Pool?.ToSql(),
         };
 
         foreach (Session session in sql.Sessions)
@@ -218,5 +219,11 @@ public static class LenexToSqlExtensions
         Data.Lenex.Xml.ResultStatus.Sick => Data.Sql.ResultStatus.Sick,
         Data.Lenex.Xml.ResultStatus.Withdrawn => Data.Sql.ResultStatus.Withdrawn,
         _ => throw new ArgumentOutOfRangeException(nameof(lenex), lenex, "Unknown value"),
+    };
+
+    private static Pool ToSql(this PoolElement lenex) => new()
+    {
+        LaneMin = lenex.LaneMin,
+        LaneMax = lenex.LaneMax,
     };
 }

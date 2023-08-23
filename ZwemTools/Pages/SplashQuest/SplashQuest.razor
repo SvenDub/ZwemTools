@@ -19,6 +19,7 @@
                          
     <InputFile OnChange="@LoadFile" accept=".lxf"/>
     <RadzenButton Text="@Localizer["Clear entries"]" Click="@OnClear"></RadzenButton>
+    <RadzenButton Text="@Localizer["Delete"]" Click="@OnDelete" ButtonStyle="ButtonStyle.Danger"></RadzenButton>
 }
 else
 {
@@ -88,4 +89,24 @@ else
         await Context.SaveChangesAsync();
     }
 
+
+    private async Task OnDelete()
+    {
+        await MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            if (Application.Current?.MainPage is not null)
+            {
+                bool delete = await Application.Current.MainPage.DisplayAlert(Localizer["Confirm"], Localizer["Delete meet?"], Localizer["Ok"], Localizer["Cancel"]);
+                if (delete)
+                {
+                    if (Meet is not null)
+                    {
+                        Context.Remove(Meet);
+                        await Context.SaveChangesAsync();
+                        Meet = null;
+                    }
+                }
+            }
+        });
+    }
 }
