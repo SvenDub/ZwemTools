@@ -7,9 +7,9 @@
     <MainPackage
         Name="E814678F-1B0B-4462-9EFC-36B392FD1522"
         Publisher="CN=ZwemTools"
-        Version="1.0.0.9"
+        Version="1.0.0.10"
         ProcessorArchitecture="x64"
-        Uri="https://github.com/SvenDub/ZwemTools/releases/download/1.0.0.9/ZwemTools_1.0.0.9_x64.msix" />
+        Uri="https://github.com/SvenDub/ZwemTools/releases/download/1.0.0.10/ZwemTools_1.0.0.10_x64.msix" />
 
     <UpdateSettings>
         <OnLaunch 

@@ -87,6 +87,10 @@ a, .btn-link {
     .pagebreak {
         page-break-before: always;
     }
+
+    :root {
+        --bs-body-bg: none;
+    }
 }
 
 .rz-datatable-tfoot {
