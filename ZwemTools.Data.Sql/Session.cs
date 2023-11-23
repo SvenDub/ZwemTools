@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.Sql;
 
-public class Session
+public record Session
 {
     public int Id { get; set; }
 

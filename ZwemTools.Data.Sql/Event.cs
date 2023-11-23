@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.Sql;
 
-public class Event
+public record Event
 {
     public int Id { get; set; }
 

@@ -41,7 +41,7 @@ public class BoomsmaService
                             .SelectMany(x => x.Results)
                             .Where(MatchResult(stroke, athlete))
                             .ToList();
-                        Result? fromResult = eventResults.SingleOrDefault();
+                        Result? fromResult = eventResults.FirstOrDefault();
                         if (@event.SwimStyle.Stroke == stroke && athlete.Gender == gender)
                         {
                             TimeSpan? difference = fromResult is { Status: not ResultStatus.Withdrawn } && result is { Status: not ResultStatus.Withdrawn }

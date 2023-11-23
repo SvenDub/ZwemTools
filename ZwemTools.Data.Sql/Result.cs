@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZwemTools.Data.Sql;
 
-public class Result
+public record Result
 {
     public int Id { get; set; }
 

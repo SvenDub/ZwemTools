@@ -5,7 +5,7 @@
 namespace ZwemTools.Data.Sql;
 
 [Owned]
-public class AgeDate
+public record AgeDate
 {
     public AgeDateType Type { get; set; }
 

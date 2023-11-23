@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.Sql;
 
-public class Club
+public record Club
 {
     public int Id { get; set; }
 

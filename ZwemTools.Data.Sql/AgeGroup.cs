@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.Sql;
 
-public class AgeGroup
+public record AgeGroup
 {
     public int Id { get; set; }
 

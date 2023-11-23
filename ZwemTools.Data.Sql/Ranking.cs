@@ -4,7 +4,7 @@
 
 namespace ZwemTools.Data.Sql;
 
-public class Ranking
+public record Ranking
 {
     public int Id { get; set; }
 

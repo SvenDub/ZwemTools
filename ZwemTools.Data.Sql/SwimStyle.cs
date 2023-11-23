@@ -5,7 +5,7 @@
 namespace ZwemTools.Data.Sql;
 
 [Owned]
-public class SwimStyle
+public record SwimStyle
 {
     public int Distance { get; set; }
 

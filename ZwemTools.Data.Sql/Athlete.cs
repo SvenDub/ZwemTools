@@ -7,7 +7,7 @@ using ZwemTools.Data.Sql.SplashQuest;
 
 namespace ZwemTools.Data.Sql;
 
-public class Athlete
+public record Athlete
 {
     public int Id { get; set; }
 
