@@ -6,6 +6,10 @@
 @inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
 
+<HeadContent>
+    <link href="css/portrait.css" rel="stylesheet" type="text/css"/>
+</HeadContent>
+
 <div class="d-print-none">
     <h3>LAC</h3>
 
@@ -70,6 +74,7 @@ else
         }
 
         return Entries()
+            .Where(tuple => GetEvent(session, tuple.entry.EventId).SwimStyle.Distance >= 800)
             .OrderBy(tuple => GetEvent(session, tuple.entry.EventId).Number)
             .ThenBy(tuple => tuple.entry.HeatId is { } heatId ? GetHeat(session, heatId).Number : 0)
             .ThenBy(tuple => tuple.entry.Lane);
