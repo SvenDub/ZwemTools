@@ -14,7 +14,7 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DatabaseContext()
     {
-        const Environment.SpecialFolder folder = Environment.SpecialFolder.LocalApplicationData;
+        const Environment.SpecialFolder folder = Environment.SpecialFolder.ApplicationData;
         string path = Environment.GetFolderPath(folder);
         path = Path.Join(path, "ZwemTools");
         Directory.CreateDirectory(path);
