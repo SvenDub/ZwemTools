@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Radzen;
 using Serilog;
 using Serilog.Events;
+using Velopack;
 using ZwemTools.Abstractions;
 using ZwemTools.Data.Lenex;
 using ZwemTools.Data.Sql;
@@ -25,6 +26,7 @@ public static class MauiProgram
     /// <returns>The application.</returns>
     public static MauiApp CreateMauiApp()
     {
+        VelopackApp.Build().Run();
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
         SetupSerilog();
