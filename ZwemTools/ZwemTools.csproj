@@ -42,76 +42,77 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" TintColor="White" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" TintColor="White"/>
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+        <MauiImage Include="Resources\Images\*"/>
+        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208"/>
 
         <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*" />
+        <MauiFont Include="Resources\Fonts\*"/>
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="libman.json" />
-      <Content Remove="stylecop.json" />
+        <Content Remove="libman.json"/>
+        <Content Remove="stylecop.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Resources\AppIcon\appicon.svg" />
+        <None Remove="Resources\AppIcon\appicon.svg"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="libman.json" />
-      <None Include="wwwroot\img\logo.svg" />
+        <None Include="libman.json"/>
+        <None Include="wwwroot\img\logo.svg"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="stylecop.json" />
+        <AdditionalFiles Include="stylecop.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.4" />
-      <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.6"/>
-      <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
-      <PackageReference Include="Radzen.Blazor" Version="4.7.11" />
-      <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-      <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.4"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175"/>
+        <PackageReference Include="Radzen.Blazor" Version="4.7.11"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ZwemTools.Abstractions\ZwemTools.Abstractions.csproj" />
-      <ProjectReference Include="..\ZwemTools.Data.Lenex\ZwemTools.Data.Lenex.csproj" />
-      <ProjectReference Include="..\ZwemTools.Data.Sql\ZwemTools.Data.Sql.csproj" />
-      <ProjectReference Include="..\ZwemTools.Data.TeamManager\ZwemTools.Data.TeamManager.csproj" />
+        <ProjectReference Include="..\ZwemTools.Abstractions\ZwemTools.Abstractions.csproj"/>
+        <ProjectReference Include="..\ZwemTools.Data.Lenex\ZwemTools.Data.Lenex.csproj"/>
+        <ProjectReference Include="..\ZwemTools.Data.Sql\ZwemTools.Data.Sql.csproj"/>
+        <ProjectReference Include="..\ZwemTools.Data.TeamManager\ZwemTools.Data.TeamManager.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Resources\Languages\Strings.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Strings.resx</DependentUpon>
-      </Compile>
+        <Compile Update="Resources\Languages\Strings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Strings.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="Resources\Languages\Strings.resx">
-        <Generator>PublicResXFileCodeGenerator</Generator>
-        <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Languages\Strings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 </Project>

@@ -41,10 +41,17 @@
     {
         UpdateAvailability = await AsyncInfo.Run(async _ =>
         {
-            PackageManager packageManager = new();
-            Package package = packageManager.FindPackageForUser(string.Empty, Package.Current.Id.FullName);
-            PackageUpdateAvailabilityResult availabilityResult = await package.CheckUpdateAvailabilityAsync();
-            return availabilityResult.Availability;
+            try
+            {
+                PackageManager packageManager = new();
+                Package package = packageManager.FindPackageForUser(string.Empty, Package.Current.Id.FullName);
+                PackageUpdateAvailabilityResult availabilityResult = await package.CheckUpdateAvailabilityAsync();
+                return availabilityResult.Availability;
+            }
+            catch (Exception)
+            {
+                return PackageUpdateAvailability.Error;
+            }
         });
     }
 
