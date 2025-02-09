@@ -28,4 +28,5 @@ jobs:
           dotnet tool restore
           dotnet vpk download github --repoUrl https://github.com/${{ github.repository }}
           dotnet vpk pack -u SvenDub.ZwemTools -v ${{ github.ref_name }} -p publish -e ZwemTools.exe --packTitle ZwemTools
-          dotnet vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "ZwemTools ${{ github.ref_name }}" --tag ${{ github.ref_name }} --token ${{ secrets.GITHUB_TOKEN }} 
+          dotnet vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "ZwemTools ${{ github.ref_name }}" --tag ${{ github.ref_name }} --token ${{ secrets.GITHUB_TOKEN }}
+ 

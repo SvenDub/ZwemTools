@@ -21,7 +21,7 @@
             
             @if (UpdateInfo is not null)
             {
-                <span>&nbsp;| @Localizer["Update available"] </span>
+                <a @onclick="RunUpdate">&nbsp;| @Localizer["Update available"] </a>
             }
         </div>
 
@@ -56,8 +56,6 @@
                 }
 
                 await updateManager.DownloadUpdatesAsync(UpdateInfo, cancelToken: cancellationToken);
-
-                updateManager.ApplyUpdatesAndRestart(UpdateInfo);
             }
             catch (Exception)
             {
@@ -66,4 +64,11 @@
         });
     }
 
+    private void RunUpdate()
+    {
+        if (UpdateInfo is not null)
+        {
+            updateManager.ApplyUpdatesAndRestart(UpdateInfo);
+        }
+    }
 }
