@@ -1,0 +1,28 @@
+﻿name: Deploy to GitHub Releases
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  deploy-to-github-releases:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish Application
+        run: dotnet publish ZwemTools -c Release --self-contained -r win-x64 -f net8.0-windows10.0.19041.0 -o publish
+
+      - name: Create Velopack Release
+        run: |
+          dotnet tool restore
+          vpk download github --repoUrl https://github.com/${{ github.repository }}
+          vpk pack -u ZwemTools -v ${{ github.ref_name }} -p publish
+          vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "ZwemTools ${{ github.ref_name }}" --tag ${{ github.ref_name }} 

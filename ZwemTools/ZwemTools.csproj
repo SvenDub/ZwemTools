@@ -38,6 +38,8 @@
         <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        
+        <WindowsPackageType>None</WindowsPackageType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -92,7 +94,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
-        <PackageReference Include="Velopack" Version="0.0.359"/>
+        <PackageReference Include="Velopack" Version="0.0.1053" />
     </ItemGroup>
 
     <ItemGroup>

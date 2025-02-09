@@ -1,7 +1,6 @@
 ﻿@using System.Runtime.InteropServices.WindowsRuntime
-@using Windows.ApplicationModel
-@using Windows.Management.Deployment
-@using AppInfo = Microsoft.Maui.ApplicationModel.AppInfo
+@using Velopack
+@using Velopack.Sources
 @inherits LayoutComponentBase
 
 @inject IStringLocalizer<Strings> Localizer
@@ -18,9 +17,9 @@
     <main>
         <div class="top-row px-4 d-print-none">
             @Localizer["Version"]
-            @AppInfo.Version
+            @(updateManager.CurrentVersion?.ToString() ?? "?")
             
-            @if (UpdateAvailability == PackageUpdateAvailability.Available)
+            @if (UpdateInfo is not null)
             {
                 <span>&nbsp;| @Localizer["Update available"] </span>
             }
@@ -34,23 +33,35 @@
 
 @code {
 
-    private PackageUpdateAvailability UpdateAvailability { get; set; } = PackageUpdateAvailability.Unknown;
+    private readonly UpdateManager updateManager = new(new GithubSource("https://github.com/SvenDub/ZwemTools", null, false));
+
+    private UpdateInfo? UpdateInfo { get; set; }
 
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        UpdateAvailability = await AsyncInfo.Run(async _ =>
+        await AsyncInfo.Run(async cancellationToken =>
         {
             try
             {
-                PackageManager packageManager = new();
-                Package package = packageManager.FindPackageForUser(string.Empty, Package.Current.Id.FullName);
-                PackageUpdateAvailabilityResult availabilityResult = await package.CheckUpdateAvailabilityAsync();
-                return availabilityResult.Availability;
+                if (!updateManager.IsInstalled)
+                {
+                    return;
+                }
+                
+                UpdateInfo = await updateManager.CheckForUpdatesAsync();
+                if (UpdateInfo is null)
+                {
+                    return;
+                }
+
+                await updateManager.DownloadUpdatesAsync(UpdateInfo, cancelToken: cancellationToken);
+
+                updateManager.ApplyUpdatesAndRestart(UpdateInfo);
             }
             catch (Exception)
             {
-                return PackageUpdateAvailability.Error;
+                // Ignore updater exceptions
             }
         });
     }

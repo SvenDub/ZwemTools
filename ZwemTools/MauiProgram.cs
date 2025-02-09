@@ -26,7 +26,6 @@ public static class MauiProgram
     /// <returns>The application.</returns>
     public static MauiApp CreateMauiApp()
     {
-        VelopackApp.Build().Run();
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
         SetupSerilog();
@@ -56,10 +55,13 @@ public static class MauiProgram
 
         builder.Services.AddScoped<IPreferenceService, PreferenceService>();
 
+        builder.Logging.AddDebug();
         builder.Logging.AddEventLog();
         builder.Logging.AddSerilog(dispose: true);
 
         MauiApp app = builder.Build();
+
+        VelopackApp.Build().Run(app.Services.GetRequiredService<ILogger<VelopackApp>>());
 
         RunStartupTasks(app);
 
