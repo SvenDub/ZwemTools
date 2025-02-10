@@ -56,7 +56,7 @@
     }
 </div>
 
-@if (SelectedEvent is { SwimStyle: { } })
+@if (SelectedEvent is { SwimStyle: not null })
 {
     <div class="row mb-2">
         <div class="col-2">
@@ -281,7 +281,7 @@
     private void UpdateFilteredMembers()
     {
         FilteredMembers.Clear();
-        FilteredMembers.AddRange(Members?.Where(member => member.GroupNames.Any(group => SelectedGroups.Any(s => s.Id == group))) ?? Enumerable.Empty<Member>());
+        FilteredMembers.AddRange(Members?.Where(member => member.GroupNames.Any(group => SelectedGroups.Any(s => s.Id == group))) ?? []);
     }
 
     private void Cancel()
