@@ -306,4 +306,7 @@
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
+  <data name="Finals" xml:space="preserve">
+    <value>Finals</value>
+  </data>
 </root>

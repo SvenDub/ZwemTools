@@ -186,6 +186,15 @@ namespace ZwemTools.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finals.
+        /// </summary>
+        public static string Finals {
+            get {
+                return ResourceManager.GetString("Finals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fly.
         /// </summary>
         public static string Fly {

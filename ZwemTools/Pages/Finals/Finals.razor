@@ -1,0 +1,173 @@
+﻿@page "/finals"
+
+@using Windows.Storage
+@using Windows.Storage.Pickers
+@using ZwemTools.Data.Lenex
+@using ZwemTools.Data.Lenex.Xml
+
+@inject LenexParser LenexParser
+@inject IStringLocalizer<Strings> Localizer
+
+<InputFile OnChange="@LoadFile" accept=".lxf"/>
+
+@if (!IsLoading && LenexElement is not null)
+{
+    if (LenexElement.Meets is { Count: >0 })
+    {
+        <p>Series</p>
+        <RadzenListBox
+            @bind-Value="@SelectedSeries"
+            Multiple
+            AllowClear
+            Data="LenexElement.Meets.First().Sessions.First().Events">
+        </RadzenListBox>
+        
+        <p>Finale</p>
+        <RadzenListBox
+            @bind-Value="@SelectedFinal"
+            AllowClear
+            Data="LenexElement.Meets.First().Sessions.First().Events">
+        </RadzenListBox>
+        
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Click="@CalculateFinals" Disabled="@(SelectedFinal is null || SelectedSeries.Count == 0)">@Localizer["Calculate"]</RadzenButton>
+    }
+    else
+    {
+        <p class="my-3">@Localizer["NoData"]</p>
+    }
+}
+else if (IsLoading)
+{
+    <p class="my-3">@Localizer["Loading"]</p>
+}
+else
+{
+    <p class="my-3">@Localizer["NoData"]</p>
+}
+
+@code {
+    private LenexElement? LenexElement { get; set; }
+    private bool IsLoading { get; set; }
+
+    private ICollection<EventElement> SelectedSeries { get; set; } = [];
+    private EventElement? SelectedFinal { get; set; }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        IsLoading = true;
+        await using Stream stream = e.File.OpenReadStream();
+        MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        LenexElement = LenexParser.Parse(ms);
+        IsLoading = false;
+    }
+
+    private async Task CalculateFinals()
+    {
+        if (SelectedFinal is null || SelectedSeries.Count == 0)
+        {
+            return;
+        }
+        
+        FileSavePicker fileSavePicker = new()
+        {
+            SuggestedFileName = "entries.lxf",
+        };
+        fileSavePicker.FileTypeChoices.Add("Lenex file", new List<string> {".lxf"});
+
+        if (MauiWinUIApplication.Current.Application.Windows[0].Handler?.PlatformView is MauiWinUIWindow window)
+        {
+            WinRT.Interop.InitializeWithWindow.Initialize(fileSavePicker, window.WindowHandle);
+        }
+        
+        StorageFile? fileResult = await fileSavePicker.PickSaveFileAsync();
+
+        if (fileResult is null)
+        {
+            return;
+        }
+
+        int lanes = LenexElement?.Meets.First().Pool?.LaneMax - LenexElement?.Meets.First().Pool?.LaneMin + 1 ?? 4;
+
+        SessionElement sessionElement = new();
+        sessionElement.Events.Add(SelectedFinal);
+
+        int heat = 1;
+        int heatId = LenexElement?.Meets.SelectMany(element => element.Sessions).SelectMany(element => element.Events).SelectMany(element => element.Heats).Max(element => element.HeatId) + 1 ?? 1;
+
+        List<AgeGroupElement> ageGroups = SelectedFinal.AgeGroups.OrderBy(element => element.MinAge).ThenBy(element => element.Gender).ToList();
+        foreach (AgeGroupElement ageGroup in ageGroups)
+        {
+            Dictionary<AthleteElement, List<ResultElement>> athletes = [];
+            
+            foreach (EventElement series in SelectedSeries)
+            {
+                AgeGroupElement resultAgeGroup = series.AgeGroups.First(element => element.Gender == ageGroup.Gender && element.MinAge == ageGroup.MinAge && element.MaxAge == ageGroup.MaxAge);
+                foreach (RankingElement ranking in resultAgeGroup.Rankings)
+                {
+                    ResultElement? result = LenexElement?.Meets.First().GetResult(ranking.ResultId);
+                    AthleteElement? athlete = LenexElement?.Meets.First().GetAthleteForResult(ranking.ResultId);
+
+                    if (result is null || athlete is null)
+                    {
+                        continue;
+                    }
+
+                    List<ResultElement> results = athletes.GetValueOrDefault(athlete, []);
+                    results.Add(result);
+                    athletes[athlete] = results;
+                }
+            }
+
+            List<KeyValuePair<AthleteElement, List<ResultElement>>> finalists = athletes
+                .Where(pair => pair.Value.Count == SelectedSeries.Count)
+                .OrderBy(pair => pair.Value.Sum(element => element.SwimTime.TotalSeconds))
+                .Take(lanes)
+                .ToList();
+            
+            SelectedFinal.Heats.Add(new HeatElement
+            {
+                HeatId = heatId,
+                Number = heat,
+                Order = heat,
+            });
+
+            int lane = LenexElement?.Meets.First().Pool?.LaneMin ?? 1;
+            foreach (KeyValuePair<AthleteElement, List<ResultElement>> finalist in finalists)
+            {
+                finalist.Key.Entries.Add(new EntryElement
+                {
+                    HeatId = heatId,
+                    EventId = SelectedFinal.EventId,
+                    Lane = lane,
+                    EntryTime = TimeSpan.FromSeconds(finalist.Value.Select(element => element.SwimTime).Sum(span => span.TotalSeconds)),
+                });
+
+                lane++;
+            }
+
+            heat++;
+            heatId++;
+        }
+        
+        LenexElement finalElement = new()
+        {
+            Version = "3.0",
+            Constructor = new ConstructorElement
+            {
+                Name = AppInfo.Name,
+                Version = AppInfo.Version.ToString(),
+                Contact = new ContactElement
+                {
+                    Email = "sven@svendubbeld.nl",
+                },
+            },
+            Meets = LenexElement?.Meets ?? [],
+        };
+        
+        string file = Path.GetFileNameWithoutExtension(fileResult.Name);
+        await using Stream stream = await fileResult.OpenStreamForWriteAsync();
+        LenexParser.Write(finalElement, file, stream);
+    }
+
+}

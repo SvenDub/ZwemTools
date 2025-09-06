@@ -10,7 +10,7 @@ public class EventElement
 {
     [XmlArray("AGEGROUPS")]
     [XmlArrayItem("AGEGROUP")]
-    public Collection<AgeGroupElement> AgeGroups { get; set; } = new();
+    public Collection<AgeGroupElement> AgeGroups { get; set; } = [];
 
     [XmlAttribute("daytime")]
     public string? TimeProxy
@@ -43,5 +43,11 @@ public class EventElement
 
     [XmlArray("HEATS")]
     [XmlArrayItem("HEAT")]
-    public Collection<HeatElement> Heats { get; set; } = new();
+    public Collection<HeatElement> Heats { get; set; } = [];
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Number}. {this.Gender}, {this.SwimStyle.Distance} {this.SwimStyle.Stroke}";
+    }
 }
