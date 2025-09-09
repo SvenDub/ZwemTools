@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZwemTools.Data.TeamManager"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZwemTools.Abstractions", "ZwemTools.Abstractions\ZwemTools.Abstractions.csproj", "{E57C1549-93D8-483E-A05F-74413E4960CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZwemTools.Utils", "ZwemTools.Utils\ZwemTools.Utils.csproj", "{2A356581-9900-4BA7-B605-89B5055A9BD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZwemTools.Utils.Test", "ZwemTools.Utils.Test\ZwemTools.Utils.Test.csproj", "{DDA01D92-E064-4A84-9511-6FFEF0FBA741}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,14 @@ Global
 		{E57C1549-93D8-483E-A05F-74413E4960CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E57C1549-93D8-483E-A05F-74413E4960CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E57C1549-93D8-483E-A05F-74413E4960CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A356581-9900-4BA7-B605-89B5055A9BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A356581-9900-4BA7-B605-89B5055A9BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A356581-9900-4BA7-B605-89B5055A9BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A356581-9900-4BA7-B605-89B5055A9BD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDA01D92-E064-4A84-9511-6FFEF0FBA741}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDA01D92-E064-4A84-9511-6FFEF0FBA741}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDA01D92-E064-4A84-9511-6FFEF0FBA741}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDA01D92-E064-4A84-9511-6FFEF0FBA741}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

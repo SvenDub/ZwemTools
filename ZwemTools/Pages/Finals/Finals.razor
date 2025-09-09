@@ -4,6 +4,7 @@
 @using Windows.Storage.Pickers
 @using ZwemTools.Data.Lenex
 @using ZwemTools.Data.Lenex.Xml
+@using ZwemTools.Utils
 
 @inject LenexParser LenexParser
 @inject IStringLocalizer<Strings> Localizer
@@ -132,8 +133,12 @@ else
                 Order = heat,
             });
 
-            int lane = LenexElement?.Meets.First().Pool?.LaneMin ?? 1;
-            foreach (KeyValuePair<AthleteElement, List<ResultElement>> finalist in finalists)
+            int startLane = LenexElement?.Meets.First().Pool?.LaneMin ?? 1;
+            int endLane = LenexElement?.Meets.First().Pool?.LaneMax ?? 4;
+
+            IEnumerable<int> laneOrder = LaneOrder.GetLaneOrder(startLane, endLane);
+
+            foreach ((KeyValuePair<AthleteElement, List<ResultElement>> finalist, int lane) in finalists.Zip(laneOrder))
             {
                 finalist.Key.Entries.Add(new EntryElement
                 {
@@ -142,8 +147,6 @@ else
                     Lane = lane,
                     EntryTime = TimeSpan.FromSeconds(finalist.Value.Select(element => element.SwimTime).Sum(span => span.TotalSeconds)),
                 });
-
-                lane++;
             }
 
             heat++;

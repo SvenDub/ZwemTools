@@ -82,6 +82,7 @@
         <ProjectReference Include="..\ZwemTools.Data.Lenex\ZwemTools.Data.Lenex.csproj"/>
         <ProjectReference Include="..\ZwemTools.Data.Sql\ZwemTools.Data.Sql.csproj"/>
         <ProjectReference Include="..\ZwemTools.Data.TeamManager\ZwemTools.Data.TeamManager.csproj"/>
+        <ProjectReference Include="..\ZwemTools.Utils\ZwemTools.Utils.csproj" />
     </ItemGroup>
 
     <ItemGroup>
