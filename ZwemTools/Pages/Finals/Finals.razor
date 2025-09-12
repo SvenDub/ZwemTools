@@ -109,7 +109,7 @@ else
                     ResultElement? result = LenexElement?.Meets.First().GetResult(ranking.ResultId);
                     AthleteElement? athlete = LenexElement?.Meets.First().GetAthleteForResult(ranking.ResultId);
 
-                    if (result is null || athlete is null)
+                    if (result is null || athlete is null || result.SwimTime == TimeSpan.Zero || result.Status is not null)
                     {
                         continue;
                     }
