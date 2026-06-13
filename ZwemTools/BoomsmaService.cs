@@ -71,13 +71,13 @@ public class BoomsmaService
                     && (
                         (
                             x.Athlete.License != null
+                            && athlete.License != null
                             && x.Athlete.License == athlete.License)
                         ||
                         (
                             x.Athlete.FirstName == athlete.FirstName
                             && x.Athlete.LastName == athlete.LastName
-                            && x.Athlete.NamePrefix == athlete.NamePrefix
-                            && x.Athlete.Birthdate == athlete.Birthdate));
+                            && x.Athlete.NamePrefix == athlete.NamePrefix));
     }
 
     private TimeSpan CalculateDifference(Result from, Result to)
